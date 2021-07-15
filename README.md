@@ -1,4 +1,4 @@
-# Koolhas(search-system)
+# Koolhas(search-system) Cloned
 
 簡易な検索システムのバックエンドサーバー
 
