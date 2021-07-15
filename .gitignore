@@ -1,0 +1,19 @@
+.DS_Store
+.env
+backend/database/data
+backend/database/mysql_data
+backend/database/seeder/reviews
+backend/tmp
+backend/statics
+
+koolhaas_firebase.json
+key.json
+cloud_sql_proxy
+app.yaml
+backend/koolhaas-api-firebase.json
+
+# benchmark
+.vegeta
+
+# profile
+.pprof
