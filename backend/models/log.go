@@ -9,16 +9,16 @@ type TaskTimeLogParam struct {
 	Uid string `db:"uid" json:"uid"`
 
 	// TimeOnPage : User's page viewing time.
-	TimeOnPage int64 `db:"time_on_page" json:"timeOnPage"`
+	TimeOnPage int64 `db:"time_on_page" json:"time"`
 
 	// Url : The url of user viewing page.
 	Url string `db:"url" json:"url"`
 
 	// TaskId : The Id of task that user working.
-	TaskId int64 `db:"task_id" json:"taskId"`
+	TaskId int64 `db:"task_id" json:"task"`
 
 	// ConditionId : User's condition Id that means group and task category.
-	ConditionId int64 `db:"condition_id" json:"conditionId"`
+	ConditionId int64 `db:"condition_id" json:"condition"`
 }
 
 // SearchPageClickLogParam : Create page click log. Table name is `behavior_logs_click`.
