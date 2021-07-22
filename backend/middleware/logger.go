@@ -1,7 +1,8 @@
-package router
+package middleware
 
 import (
 	"os"
+	"time"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -31,21 +32,20 @@ func logFormat() string {
 	return format
 }
 
+func Logger() echo.MiddlewareFunc {
 
-func New() *echo.Echo {
-	e := echo.New()
+	ts := time.Now().Format("2006-01-02--15-04-05")
+	fn := "./.logs/access/" + ts + ".log"
 
+	logFile, err := os.OpenFile(fn, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		panic(err)
+	}
+
+	// [TODO] Switch output
 	logger := middleware.LoggerWithConfig((middleware.LoggerConfig{
 		Format: logFormat(),
-		Output: os.Stdout,
+		Output: logFile,
 	}))
-	e.Use(logger)
-	e.Use(middleware.Recover())
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
-		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
-	}))
-	return e
+	return logger
 }
-

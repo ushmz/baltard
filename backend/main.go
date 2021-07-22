@@ -2,23 +2,34 @@ package main
 
 import (
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 	"github.com/ymmt3-lab/koolhaas/backend/database"
 	"github.com/ymmt3-lab/koolhaas/backend/handler"
 	mw "github.com/ymmt3-lab/koolhaas/backend/middleware"
-	"github.com/ymmt3-lab/koolhaas/backend/router"
 )
 
 func main() {
-	r := router.New()
+	e := echo.New()
+	e.HideBanner = true
+	e.HidePort = true
+
+	e.Use(middleware.Recover())
+	e.Use(mw.Logger())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
+	}))
 
 	d := database.New()
 	h := &handler.Handler{DB: d}
 
-	v1 := r.Group("/v1")
-	v1.Use(mw.Auth())
+	v1 := e.Group("/v1")
+	// v1.Use(mw.Auth())
 
 	// users
-	r.POST("/users", h.CreateUser)
+	e.POST("/users", h.CreateUser)
 	v1.GET("/users/code/:id", h.GetCompletionCode)
 
 	// task
@@ -33,5 +44,5 @@ func main() {
 
 	defer d.Close()
 
-	r.Logger.Fatal(r.Start(":8080"))
+	e.Logger.Fatal(e.Start(":8080"))
 }
