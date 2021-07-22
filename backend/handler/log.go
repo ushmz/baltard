@@ -93,7 +93,7 @@ func (h *Handler) CreateSerpClickLog(c echo.Context) error {
 			:time_on_page, 
 			:serp_page,
 			:serp_rank,
-			:is_visivle
+			:is_visible
 		)`
 
 	// Execute SQL query.
