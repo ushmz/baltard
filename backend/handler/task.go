@@ -10,6 +10,7 @@ import (
 
 // FetchTaskInfo : Fetch task info by task id
 func (h *Handler) FetchTaskInfo(c echo.Context) error {
+
 	// taskId : Get task Id from path parameter.
 	taskId := c.Param("id")
 
@@ -30,6 +31,7 @@ func (h *Handler) FetchTaskInfo(c echo.Context) error {
 		`, taskId)
 	if err != nil {
 		if err == sql.ErrNoRows {
+			// Unreachable code block
 			c.Echo().Logger.Infof("TaskId %v not found", taskId)
 			return c.NoContent(http.StatusNotFound)
 		}

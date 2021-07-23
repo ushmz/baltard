@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 
 	firebase "firebase.google.com/go"
@@ -11,14 +10,13 @@ import (
 	"google.golang.org/api/option"
 )
 
-// 認証用ミドルウェア
 func auth(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 		if ctx == nil {
 			ctx = context.Background()
 		}
-		// firebase SDKのセットアップ
+		// Set up firebase SDK
 		opt := option.WithCredentialsFile("koolhaas-api-firebase.json")
 		app, err := firebase.NewApp(context.Background(), nil, opt)
 		if err != nil {
@@ -41,7 +39,6 @@ func auth(next echo.HandlerFunc) echo.HandlerFunc {
 			return err
 		}
 
-		log.Printf("Verified ID token %v\n", token)
 		c.Set("token", token)
 		return next(c)
 	}

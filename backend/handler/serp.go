@@ -81,7 +81,7 @@ func (h *Handler) FetchSerpByID(c echo.Context) error {
 	// minId : Get minimum ID from offset value.
 	minId := rng[0].Min + 10*offset
 	// maxId : Get maximum ID from offset value.
-	maxId := minId + 10
+	maxId := minId + 9
 
 	// serp : Search result pages.
 	serp := []models.SearchPage{}
@@ -96,8 +96,6 @@ func (h *Handler) FetchSerpByID(c echo.Context) error {
 			search_pages
 		WHERE
 			task_id = ?
-		AND
-			snippet != ""
 		AND
 			id BETWEEN ? AND ?
 	`, taskId, minId, maxId)
