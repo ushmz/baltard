@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
 	"github.com/ymmt3-lab/koolhaas/backend/models"
 )
@@ -79,14 +80,33 @@ func (h *Handler) FetchSerpByID(c echo.Context) error {
 	// offset : Get min value with comparing maxOffset and requested offset value.
 	offset = int(math.Min(float64(maxOffset), float64(offset)))
 	// minId : Get minimum ID from offset value.
-	minId := rng[0].Min + 10*offset
+	// minId := rng[0].Min + 10*offset
 	// maxId : Get maximum ID from offset value.
-	maxId := minId + 9
+	// maxId := minId + 9
 
-	// serp : Search result pages.
-	serp := []models.SearchPage{}
-	// Fetch search pages from DB.
-	err = h.DB.Select(&serp, `
+	var intrng []int
+	err = h.DB.Select(&intrng, `
+	SELECT
+		page_id
+	FROM
+		serp_sim2000_relation_top10
+	WHERE
+		task_id = ?
+	GROUP BY
+		page_id
+	LIMIT
+		?, 10
+	`, taskId, 10*offset)
+	if err != nil {
+		fmt.Println(err)
+		msg := models.ErrorMessage{
+			Message: "Database execution error: Failed to fetch search pages range",
+		}
+		return c.JSON(http.StatusInternalServerError, msg)
+	}
+
+	// Generate SQL `in` query
+	q, p, err := sqlx.In(`
 		SELECT
 			id,
 			title,
@@ -97,9 +117,20 @@ func (h *Handler) FetchSerpByID(c echo.Context) error {
 		WHERE
 			task_id = ?
 		AND
-			id BETWEEN ? AND ?
-	`, taskId, minId, maxId)
+			id IN (?)
+	`, taskId, intrng)
 	if err != nil {
+		fmt.Println(err)
+		msg := models.ErrorMessage{
+			Message: "Database execution error: Failed to generate in query",
+		}
+		return c.JSON(http.StatusInternalServerError, msg)
+	}
+
+	// serp : Search result pages.
+	serp := []models.SearchPage{}
+	// Fetch search pages from DB.
+	if err = h.DB.Select(&serp, q, p...); err != nil {
 		fmt.Println(err)
 		msg := models.ErrorMessage{
 			Message: "Database execution error: Failed to fetch search pages",
