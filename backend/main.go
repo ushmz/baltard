@@ -1,6 +1,13 @@
 package main
 
 import (
+	"errors"
+	"log"
+	"net/http"
+	_ "net/http/pprof"
+	"os"
+	"strconv"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -9,7 +16,31 @@ import (
 	mw "github.com/ymmt3-lab/koolhaas/backend/middleware"
 )
 
+func getBoolEnv(key string) (bool, error) {
+
+	val, present := os.LookupEnv("LOCAL")
+	if !present {
+		return false, errors.New("getenv: environment variable empty")
+	}
+	boolval, err := strconv.ParseBool(val)
+	if err != nil {
+		return false, err
+	}
+	return boolval, nil
+}
+
 func main() {
+
+	isProd, err := getBoolEnv("PROD")
+	if err != nil {
+		panic(err)
+	}
+	if !isProd {
+		go func() {
+			log.Println(http.ListenAndServe("localhost:6060", nil))
+		}()
+	}
+
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
