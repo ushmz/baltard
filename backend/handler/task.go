@@ -39,7 +39,6 @@ func (h *Handler) FetchTaskInfo(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	c.Echo().Logger.Info(task)
 	return c.JSON(http.StatusOK, task)
 }
 
@@ -47,8 +46,7 @@ func (h *Handler) FetchTaskInfo(c echo.Context) error {
 func (h *Handler) SubmitTaskAnswer(c echo.Context) error {
 	// answer : Bind request body to struct
 	answer := new(models.TaskAnswer)
-	var err error
-	if err = c.Bind(answer); err != nil {
+	if err := c.Bind(answer); err != nil {
 		c.Echo().Logger.Errorf("Error. Invalid request body : %v", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
@@ -77,8 +75,7 @@ func (h *Handler) SubmitTaskAnswer(c echo.Context) error {
 	vals := &answer
 
 	// Execute query.
-	_, err = h.DB.NamedExec(query, vals)
-	if err != nil {
+	if _, err := h.DB.NamedExec(query, vals); err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		return c.JSON(http.StatusInternalServerError, models.ErrorMessage{
 			Message: "Failed to submit answer.",
