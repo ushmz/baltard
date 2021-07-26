@@ -27,7 +27,6 @@ type MySQLConnectionEnv struct {
 	ConnectionName string
 }
 
-
 func NewMySQLConnectionEnv() *MySQLConnectionEnv {
 	return &MySQLConnectionEnv{
 		Host:           getEnv("MYSQL_HOST", "0.0.0.0"),
@@ -78,7 +77,7 @@ func New() *sqlx.DB {
 	// DB指定
 	db.Exec("USE koolhaas")
 
-	db.SetMaxOpenConns(1000)
-	db.SetMaxIdleConns(1500)
+	db.SetMaxOpenConns(25500)
+	db.SetMaxIdleConns(25500)
 	return db
 }
