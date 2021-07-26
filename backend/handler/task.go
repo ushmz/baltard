@@ -80,8 +80,10 @@ func (h *Handler) SubmitTaskAnswer(c echo.Context) error {
 	_, err = h.DB.NamedExec(query, vals)
 	if err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
-		return c.NoContent(http.StatusInternalServerError)
+		return c.JSON(http.StatusInternalServerError, models.ErrorMessage{
+			Message: "Failed to submit answer.",
+		})
 	}
 
-	return c.JSON(http.StatusOK, answer)
+	return c.NoContent(http.StatusCreated)
 }
