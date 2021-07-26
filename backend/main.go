@@ -18,7 +18,7 @@ import (
 
 func getBoolEnv(key string) (bool, error) {
 
-	val, present := os.LookupEnv("LOCAL")
+	val, present := os.LookupEnv(key)
 	if !present {
 		return false, errors.New("getenv: environment variable empty")
 	}
@@ -57,7 +57,7 @@ func main() {
 	h := &handler.Handler{DB: d}
 
 	v1 := e.Group("/v1")
-	// v1.Use(mw.Auth())
+	v1.Use(mw.Auth())
 
 	// users
 	e.POST("/users", h.CreateUser)

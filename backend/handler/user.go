@@ -130,14 +130,36 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	rand.Seed(time.Now().UnixNano())
-	// randomNumber : Used as completion code
-	randomNumber := rand.Intn(100000)
-	// randomstr : Used as password (not necessary)
-	randstr := generateRandomPasswd(12)
+	// exist : Given uid is already exist or not
+	exist := true
+	// eu : Exist user information
+	eu := []models.ExistUser{}
+	err := h.DB.Select(&eu, `
+		SELECT
+			id,
+			uid,
+			generated_secret
+		FROM
+			users
+		WHERE
+			uid = ?
+	`, u.Uid)
+	if err != nil {
+		c.Echo().Logger.Errorf("Cannot detect user existence. : %v", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
 
-	// Insert user information
-	rows, err := h.DB.Exec(`
+	if len(eu) == 0 {
+		exist = false
+
+		rand.Seed(time.Now().UnixNano())
+		// randomNumber : Used as completion code
+		randomNumber := rand.Intn(100000)
+		// randomstr : Used as password (not necessary)
+		randstr := generateRandomPasswd(12)
+
+		// Insert user information
+		rows, err := h.DB.Exec(`
 		INSERT INTO
 			users (
 				uid,
@@ -147,37 +169,44 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		ON DUPLICATE
 			KEY UPDATE
 				generated_secret = ?`,
-		u.Uid,
-		randstr,
-		randstr,
-	)
-	if err != nil {
-		c.Echo().Logger.Errorf("Database Execution error : %v", err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
+			u.Uid,
+			randstr,
+			randstr,
+		)
+		if err != nil {
+			c.Echo().Logger.Errorf("Database Execution error : %v", err)
+			return c.NoContent(http.StatusInternalServerError)
+		}
 
-	// Get last inserted id as user id
-	insertedId, err := rows.LastInsertId()
-	if err != nil {
-		c.Echo().Logger.Errorf("Database Execution error : %v", err)
-		return c.JSON(http.StatusInternalServerError, err)
-	}
+		// Get last inserted id as user id
+		insertedId, err := rows.LastInsertId()
+		if err != nil {
+			c.Echo().Logger.Errorf("Database Execution error : %v", err)
+			return c.JSON(http.StatusInternalServerError, err)
+		}
 
-	// Insert completion code
-	_, err = h.DB.Exec(`
+		// Insert completion code
+		_, err = h.DB.Exec(`
 		INSERT INTO 
 			completion_codes (
 				uid, 
 				completion_code
 			)
 		VALUES (?, ?)`,
-		u.Uid,
-		randomNumber,
-	)
-	if err != nil {
-		c.Echo().Logger.Errorf("Database Execution error : %v", err)
-		return c.JSON(http.StatusInternalServerError, models.ErrorMessage{
-			Message: err.Error(),
+			u.Uid,
+			randomNumber,
+		)
+		if err != nil {
+			c.Echo().Logger.Errorf("Database Execution error : %v", err)
+			return c.JSON(http.StatusInternalServerError, models.ErrorMessage{
+				Message: err.Error(),
+			})
+		}
+
+		eu = append(eu, models.ExistUser{
+			Id:     insertedId,
+			Uid:    u.Uid,
+			Secret: randstr,
 		})
 	}
 
@@ -207,8 +236,9 @@ func (h *Handler) CreateUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, models.UserResponse{
-		UserId:      insertedId,
-		Secret:      randstr,
+		Exist:       exist,
+		UserId:      eu[0].Id,
+		Secret:      eu[0].Secret,
 		TaskIds:     taskIds,
 		ConditionId: conditionId,
 		GroupId:     groupId,
