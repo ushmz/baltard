@@ -108,3 +108,40 @@ func (h *Handler) CreateSerpClickLog(c echo.Context) error {
 
 	return c.NoContent(http.StatusCreated)
 }
+
+func (h *Handler) StoreSearchSeeion(c echo.Context) error {
+	s := new(models.SearchSession)
+	if err := c.Bind(s); err != nil {
+		c.Echo().Logger.Errorf("Invalid request body : %v", err)
+		msg := models.ErrorMessage{
+			Message: "Invalid request body.",
+		}
+		return c.JSON(http.StatusInternalServerError, msg)
+	}
+
+	_, err := h.DB.NamedExec(`
+		INSERT INTO
+			search_session(
+				user_id,
+				task_id,
+				condition_id
+			)
+		VALUES (
+			:user_id,
+			:task_id,
+			:condition_id
+		)
+		ON DUPLICATE KEY
+			UPDATE
+				ended_at = CURRENT_TIMESTAMP
+		`, s)
+	if err != nil {
+		c.Echo().Logger.Errorf("Database Execution error : %v", err)
+		msg := models.ErrorMessage{
+			Message: "Database Execution error.",
+		}
+		return c.JSON(http.StatusInternalServerError, msg)
+	}
+
+	return c.NoContent(http.StatusCreated)
+}

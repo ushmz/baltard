@@ -71,3 +71,14 @@ type SearchPageClickLogParam struct {
 	// IsVisible : Risk is visible or not.
 	IsVisible bool `db:"is_visible" json:"visible"`
 }
+
+type SearchSession struct {
+	// UserId : Allocated ID of user (worker)
+	UserId int `db:"user_id" json:"user"`
+
+	// TaskId : The Id of task that user working.
+	TaskId int `db:"task_id" json:"task"`
+
+	// ConditionId : User's condition Id that means group and task category.
+	ConditionId int `db:"condition_id" json:"condition"`
+}
