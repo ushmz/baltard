@@ -11,6 +11,264 @@ import (
 	"github.com/ymmt3-lab/koolhaas/backend/models"
 )
 
+// FetchSerp : Wrapper function
+// func (h *Handler) FetchSerp(c echo.Context) error {}
+
+func (h *Handler) FetchSerpWithDistributionByID(c echo.Context) error {
+	// taskId : Get task Id from path parameter.
+	taskId := c.Param("id")
+
+	// offsetstr : Get offset from query parameter.
+	offsetstr := c.QueryParam("offset")
+	// offset : Parse string value to int value.
+	offset, err := strconv.Atoi(offsetstr)
+	if err != nil {
+		msg := models.ErrorMessage{
+			Message: "Parameter `offset` must be int value",
+		}
+		return c.JSON(http.StatusBadRequest, msg)
+	}
+
+	// topstr : Return this number of top category.
+	topstr := c.QueryParam("top")
+	// If value is not specified, set default value `3`
+	if topstr == "" {
+		topstr = "3"
+	}
+	// top : Parse string value to int value.
+	top, err := strconv.Atoi(topstr)
+	if err != nil {
+		msg := models.ErrorMessage{
+			Message: "Parameter `top` must be int value",
+		}
+		return c.JSON(http.StatusBadRequest, msg)
+	}
+
+	swd := []models.SerpWithDistributionQueryResult{}
+	err = h.DB.Select(&swd, `
+		SELECT
+			t.id,
+			t.title,
+			t.url,
+			t.snippet,
+			similarweb_categories.category,
+			t.category_count category_count,
+			t.similarweb_count similarweb_count,
+			t.category_count / t.similarweb_count as category_distribution,
+			ROW_NUMBER() OVER(PARTITION BY t.id ORDER BY t.category_count DESC) category_rank
+		FROM (
+			SELECT DISTINCT
+				search_result.id,
+				search_result.title,
+				search_result.url,
+				search_result.snippet,
+				similarweb_pages.category similarweb_category,
+				COUNT(*) OVER(PARTITION BY search_result.id) similarweb_count,
+				COUNT(*) OVER(
+					PARTITION BY search_result.id, similarweb_pages.category
+					ORDER BY similarweb_pages.category DESC
+				) category_count
+		FROM (
+			SELECT
+				search_pages.id,
+				search_pages.task_id,
+				search_pages.title,
+				search_pages.url,
+				search_pages.snippet
+			FROM
+				search_pages
+			WHERE
+				search_pages.task_id = ?
+			LIMIT ?, 10
+		) as search_result
+		LEFT JOIN
+			search_page_similarweb_relation
+			ON
+				search_result.id = search_page_similarweb_relation.page_id
+		LEFT JOIN
+			similarweb_pages
+			ON
+				search_page_similarweb_relation.similarweb_id = similarweb_pages.id
+		LEFT JOIN
+			similarweb_idf_by_task
+			ON
+				similarweb_pages.id = similarweb_idf_by_task.similarweb_id
+			AND
+				search_result.task_id = similarweb_idf_by_task.task_id
+		) as t
+		LEFT JOIN
+			similarweb_categories
+			ON
+				t.similarweb_category = similarweb_categories.id
+	`, taskId, offset)
+	if err != nil {
+		msg := models.ErrorMessage{
+			Message: "Database execution error: Failed to fetch relations",
+		}
+		return c.JSON(http.StatusInternalServerError, msg)
+	}
+
+	// serpMap : Map object to format SQL result to return struct.
+	serpMap := map[int]models.SerpWithDistribution{}
+
+	// serp : Return struct of this method
+	serp := []models.SerpWithDistribution{}
+
+	for _, v := range swd {
+		if _, ok := serpMap[v.PageId]; !ok {
+			serpMap[v.PageId] = models.SerpWithDistribution{
+				PageId:       v.PageId,
+				Title:        v.Title,
+				Url:          v.Url,
+				Snippet:      v.Snippet,
+				Leaks:        v.SimilarwebCount,
+				Distribution: []models.SimilarwebDistribution{},
+			}
+		}
+
+		if v.CategoryRank <= top {
+			tempSerp := serpMap[v.PageId]
+			tempSerp.Distribution = append(tempSerp.Distribution, models.SimilarwebDistribution{
+				Category:   v.Category,
+				Count:      v.CategoryCount,
+				Percentage: v.CategoryDistribution,
+			})
+			serpMap[v.PageId] = tempSerp
+		}
+	}
+
+	for _, v := range serpMap {
+		serp = append(serp, v)
+	}
+
+	return c.JSON(http.StatusOK, serp)
+}
+
+// FetchSerpWithIconByID : Return search result pages with similarweb icon
+func (h *Handler) FetchSerpWithIconByID(c echo.Context) error {
+	// taskId : Get task Id from path parameter.
+	taskId := c.Param("id")
+
+	// offsetstr : Get offset from query parameter.
+	offsetstr := c.QueryParam("offset")
+	// offset : Parse offset string to int value.
+	offset, err := strconv.Atoi(offsetstr)
+	if err != nil {
+		fmt.Println(err)
+		msg := models.ErrorMessage{
+			Message: "Parameter `offset` must be int value",
+		}
+		return c.JSON(http.StatusBadRequest, msg)
+	}
+
+	// topstr : Return this number of top category.
+	topstr := c.QueryParam("top")
+	// If value is not specified, set default value `3`
+	if topstr == "" {
+		topstr = "10"
+	}
+	// top : Parse string value to int value.
+	top, err := strconv.Atoi(topstr)
+	if err != nil {
+		msg := models.ErrorMessage{
+			Message: "Parameter `top` must be int value",
+		}
+		return c.JSON(http.StatusBadRequest, msg)
+	}
+
+	// swi : SQL query result, serp with top 10 of largest similarweb idf
+	swi := []models.SerpWithIconQueryResult{}
+	err = h.DB.Select(&swi, `
+		SELECT
+			*
+		FROM (
+			SELECT
+				search_result.id,
+				search_result.title,
+				search_result.url,
+				search_result.snippet,
+				similarweb_pages.id similarweb_id,
+				similarweb_pages.title similarweb_title,
+				similarweb_pages.url similarweb_url,
+				similarweb_pages.icon_path similarweb_icon,
+				similarweb_pages.category similarweb_category,
+				similarweb_idf_by_task.idf similarweb_idf,
+				ROW_NUMBER() OVER(
+					PARTITION BY search_result.id
+					ORDER BY similarweb_idf_by_task.idf
+					DESC
+				) idf_rank
+			FROM (
+				SELECT
+					search_pages.id,
+					search_pages.task_id,
+					search_pages.title,
+					search_pages.url,
+					search_pages.snippet
+				FROM
+					search_pages
+				WHERE
+					search_pages.task_id = ?
+				LIMIT ?, 10
+			) as search_result
+			LEFT JOIN
+				search_page_similarweb_relation
+			ON
+				search_result.id = search_page_similarweb_relation.page_id
+			LEFT JOIN
+				similarweb_pages
+			ON
+				search_page_similarweb_relation.similarweb_id = similarweb_pages.id
+			LEFT JOIN
+				similarweb_idf_by_task
+			ON
+				similarweb_pages.id = similarweb_idf_by_task.similarweb_id
+			AND
+				search_result.task_id = similarweb_idf_by_task.task_id
+		) as t
+	WHERE
+		t.idf_rank <= ?`, taskId, offset, top)
+	if err != nil {
+		msg := models.ErrorMessage{
+			Message: "Database execution error: Failed to fetch relations",
+		}
+		return c.JSON(http.StatusInternalServerError, msg)
+	}
+
+	// serpMap : Map object to format SQL result to return struct.
+	serpMap := map[int]models.SerpWithIcon{}
+
+	// serp : Return struct of this method
+	serp := []models.SerpWithIcon{}
+
+	for _, v := range swi {
+		if _, ok := serpMap[v.PageId]; !ok {
+			serpMap[v.PageId] = models.SerpWithIcon{
+				PageId:  v.PageId,
+				Title:   v.Title,
+				Url:     v.Url,
+				Snippet: v.Snippet,
+				Leaks:   []models.SimilarwebPage{},
+			}
+		}
+		tempSerp := serpMap[v.PageId]
+		tempSerp.Leaks = append(tempSerp.Leaks, models.SimilarwebPage{
+			Id:       v.SimilarwebId,
+			Title:    v.SimilarwebTitle,
+			Url:      v.SimilarwebUrl,
+			Icon:     v.SimilarwebIcon,
+			Category: v.SimilarwebCategory,
+		})
+		serpMap[v.PageId] = tempSerp
+	}
+
+	for _, v := range serpMap {
+		serp = append(serp, v)
+	}
+
+	return c.JSON(http.StatusOK, serp)
+}
+
 // FetchSerpByID : Return search result pages with probably leaked pages by task id .
 func (h *Handler) FetchSerpByID(c echo.Context) error {
 	// taskId : Get task Id from path parameter.
@@ -36,7 +294,7 @@ func (h *Handler) FetchSerpByID(c echo.Context) error {
 			page_id,
 			similarweb_id
 		FROM
-			serp_sim2000_relation_top10
+			search_page_similarweb_relation
 		WHERE
 			task_id = ?
 	`, taskId)
@@ -89,7 +347,7 @@ func (h *Handler) FetchSerpByID(c echo.Context) error {
 	SELECT
 		page_id
 	FROM
-		serp_sim2000_relation_top10
+		search_page_similarweb_relation
 	WHERE
 		task_id = ?
 	GROUP BY
@@ -150,12 +408,17 @@ func (h *Handler) FetchSerpByID(c echo.Context) error {
 	// Fetch all similarweb pages from DB.
 	err = h.DB.Select(&similars, `
 		SELECT
-			id,
-			title,
-			url,
-			icon_path
+			similarweb_pages.id,
+			similarweb_pages.title,
+			similarweb_pages.url,
+			similarweb_pages.icon_path,
+			similarweb_categories.category
 		FROM
-			similarweb_2000_pages
+			similarweb_pages
+		JOIN
+			similarweb_categories
+		ON
+			similarweb_pages.category = similarweb_categories.id
 	`)
 	if err != nil {
 		fmt.Println(err)
@@ -181,15 +444,35 @@ func (h *Handler) FetchSerpByID(c echo.Context) error {
 		similarIds := relMap[pageId]
 		// leaks : similarweb pages that linked with the search result page.
 		leaks := []models.SimilarwebPage{}
+
+		percent := map[string]int{}
+		categ := map[string]float64{}
 		for _, v := range similarIds {
 			leaks = append(leaks, similarsMap[v])
 		}
+
+		for _, v := range leaks {
+			percent[v.Category] += 1
+		}
+
+		sum := 0
+		for _, v := range percent {
+			sum += v
+		}
+
+		for k, v := range percent {
+			fmt.Println(k, v, sum)
+			fmt.Println(sum, " = ", len(leaks))
+			categ[k] = float64(v) / float64(sum)
+		}
+
 		response = append(response, models.Serp{
-			PageId:  page.PageId,
-			Title:   page.Title,
-			Url:     page.Url,
-			Snippet: page.Snippet,
-			Leaks:   leaks,
+			PageId:       page.PageId,
+			Title:        page.Title,
+			Url:          page.Url,
+			Snippet:      page.Snippet,
+			Leaks:        leaks,
+			Distribution: categ,
 		})
 	}
 	c.Echo().Logger.Info(response)
