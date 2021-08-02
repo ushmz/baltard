@@ -47,63 +47,64 @@ func (h *Handler) FetchSerpWithDistributionByID(c echo.Context) error {
 	swd := []models.SerpWithDistributionQueryResult{}
 	err = h.DB.Select(&swd, `
 		SELECT
-			t.id,
-			t.title,
-			t.url,
-			t.snippet,
-			similarweb_categories.category,
-			t.category_count category_count,
-			t.similarweb_count similarweb_count,
-			t.category_count / t.similarweb_count as category_distribution,
-			ROW_NUMBER() OVER(PARTITION BY t.id ORDER BY t.category_count DESC) category_rank
+			relation_count.id,
+			relation_count.title,
+			relation_count.url,
+			relation_count.snippet,
+			relation_count.category,
+			ROW_NUMBER() OVER(
+				PARTITION BY relation_count.id
+				ORDER BY relation_count.category_count
+				DESC
+			) category_rank,
+			relation_count.category_count,
+			relation_count.similarweb_count,
+			relation_count.category_count / relation_count.similarweb_count category_distribution
 		FROM (
 			SELECT DISTINCT
-				search_result.id,
-				search_result.title,
-				search_result.url,
-				search_result.snippet,
-				similarweb_pages.category similarweb_category,
-				COUNT(*) OVER(PARTITION BY search_result.id) similarweb_count,
-				COUNT(*) OVER(
-					PARTITION BY search_result.id, similarweb_pages.category
-					ORDER BY similarweb_pages.category DESC
-				) category_count
-		FROM (
-			SELECT
 				search_pages.id,
-				search_pages.task_id,
 				search_pages.title,
 				search_pages.url,
-				search_pages.snippet
+				search_pages.snippet,
+				similarweb_categories.category,
+				COUNT(*) OVER(PARTITION BY search_pages.id) similarweb_count,
+				COUNT(*) OVER(PARTITION BY search_pages.id, similarweb_categories.category) category_count
+			FROM ( SELECT
+				page_id,
+				similarweb_id,
+				idf
 			FROM
-				search_pages
+				search_page_similarweb_relation
 			WHERE
-				search_pages.task_id = ?
-			LIMIT ?, 10
-		) as search_result
-		LEFT JOIN
-			search_page_similarweb_relation
-			ON
-				search_result.id = search_page_similarweb_relation.page_id
-		LEFT JOIN
-			similarweb_pages
-			ON
-				search_page_similarweb_relation.similarweb_id = similarweb_pages.id
-		LEFT JOIN
-			similarweb_idf_by_task
-			ON
-				similarweb_pages.id = similarweb_idf_by_task.similarweb_id
-			AND
-				search_result.task_id = similarweb_idf_by_task.task_id
-		) as t
-		LEFT JOIN
-			similarweb_categories
-			ON
-				t.similarweb_category = similarweb_categories.id
-	`, taskId, offset)
+				page_id IN (SELECT * FROM (
+					SELECT
+						page_id
+					FROM
+						search_page_similarweb_relation
+					WHERE
+						task_id = ?
+					GROUP BY
+						page_id
+					LIMIT ?, 10
+					) as result)
+				) as relation
+				JOIN
+					search_pages
+				ON
+					relation.page_id = search_pages.id
+				JOIN
+					similarweb_pages
+				ON
+					relation.similarweb_id = similarweb_pages.id
+				JOIN
+					similarweb_categories
+				ON
+					similarweb_pages.category = similarweb_categories.id
+			) as relation_count
+	`, taskId, offset*10)
 	if err != nil {
 		msg := models.ErrorMessage{
-			Message: "Database execution error: Failed to fetch relations",
+			Message: "Database execution error: Failed to fetch relations: " + err.Error(),
 		}
 		return c.JSON(http.StatusInternalServerError, msg)
 	}
@@ -121,19 +122,21 @@ func (h *Handler) FetchSerpWithDistributionByID(c echo.Context) error {
 				Title:        v.Title,
 				Url:          v.Url,
 				Snippet:      v.Snippet,
-				Leaks:        v.SimilarwebCount,
+				Total:        v.SimilarwebCount,
 				Distribution: []models.SimilarwebDistribution{},
 			}
 		}
 
-		if v.CategoryRank <= top {
-			tempSerp := serpMap[v.PageId]
-			tempSerp.Distribution = append(tempSerp.Distribution, models.SimilarwebDistribution{
-				Category:   v.Category,
-				Count:      v.CategoryCount,
-				Percentage: v.CategoryDistribution,
-			})
-			serpMap[v.PageId] = tempSerp
+		if v.Category != "" {
+			if v.CategoryRank <= top {
+				tempSerp := serpMap[v.PageId]
+				tempSerp.Distribution = append(tempSerp.Distribution, models.SimilarwebDistribution{
+					Category:   v.Category,
+					Count:      v.CategoryCount,
+					Percentage: v.CategoryDistribution,
+				})
+				serpMap[v.PageId] = tempSerp
+			}
 		}
 	}
 
@@ -180,57 +183,54 @@ func (h *Handler) FetchSerpWithIconByID(c echo.Context) error {
 	swi := []models.SerpWithIconQueryResult{}
 	err = h.DB.Select(&swi, `
 		SELECT
-			*
+			search_pages.id,
+			search_pages.title,
+			search_pages.url,
+			search_pages.snippet,
+			similarweb_pages.id similarweb_id,
+			similarweb_pages.title similarweb_title,
+			similarweb_pages.url similarweb_url,
+			similarweb_pages.icon_path similarweb_icon,
+			similarweb_categories.category similarweb_category
 		FROM (
 			SELECT
-				search_result.id,
-				search_result.title,
-				search_result.url,
-				search_result.snippet,
-				similarweb_pages.id similarweb_id,
-				similarweb_pages.title similarweb_title,
-				similarweb_pages.url similarweb_url,
-				similarweb_pages.icon_path similarweb_icon,
-				similarweb_pages.category similarweb_category,
-				similarweb_idf_by_task.idf similarweb_idf,
-				ROW_NUMBER() OVER(
-					PARTITION BY search_result.id
-					ORDER BY similarweb_idf_by_task.idf
-					DESC
-				) idf_rank
-			FROM (
-				SELECT
-					search_pages.id,
-					search_pages.task_id,
-					search_pages.title,
-					search_pages.url,
-					search_pages.snippet
-				FROM
-					search_pages
-				WHERE
-					search_pages.task_id = ?
-				LIMIT ?, 10
-			) as search_result
-			LEFT JOIN
+				page_id,
+				similarweb_id,
+				idf,
+				ROW_NUMBER() OVER(PARTITION BY page_id ORDER BY idf DESC) idf_rank
+			FROM
 				search_page_similarweb_relation
-			ON
-				search_result.id = search_page_similarweb_relation.page_id
-			LEFT JOIN
-				similarweb_pages
-			ON
-				search_page_similarweb_relation.similarweb_id = similarweb_pages.id
-			LEFT JOIN
-				similarweb_idf_by_task
-			ON
-				similarweb_pages.id = similarweb_idf_by_task.similarweb_id
-			AND
-				search_result.task_id = similarweb_idf_by_task.task_id
-		) as t
-	WHERE
-		t.idf_rank <= ?`, taskId, offset, top)
+			WHERE
+				page_id IN (SELECT * FROM (
+					SELECT
+						page_id
+					FROM
+						search_page_similarweb_relation
+					WHERE
+						task_id = ?
+					GROUP BY
+						page_id
+					LIMIT ?, 10
+				) as result)
+			) as relation
+		JOIN
+			search_pages
+		ON
+			relation.page_id = search_pages.id
+		JOIN
+			similarweb_pages
+		ON
+			relation.similarweb_id = similarweb_pages.id
+		JOIN
+			similarweb_categories
+		ON
+			similarweb_pages.category = similarweb_categories.id
+		WHERE
+			relation.idf_rank <= ?
+		`, taskId, offset*10, top)
 	if err != nil {
 		msg := models.ErrorMessage{
-			Message: "Database execution error: Failed to fetch relations",
+			Message: "Database execution error: Failed to fetch relations : " + err.Error(),
 		}
 		return c.JSON(http.StatusInternalServerError, msg)
 	}
@@ -251,15 +251,18 @@ func (h *Handler) FetchSerpWithIconByID(c echo.Context) error {
 				Leaks:   []models.SimilarwebPage{},
 			}
 		}
-		tempSerp := serpMap[v.PageId]
-		tempSerp.Leaks = append(tempSerp.Leaks, models.SimilarwebPage{
-			Id:       v.SimilarwebId,
-			Title:    v.SimilarwebTitle,
-			Url:      v.SimilarwebUrl,
-			Icon:     v.SimilarwebIcon,
-			Category: v.SimilarwebCategory,
-		})
-		serpMap[v.PageId] = tempSerp
+
+		if v.SimilarwebId != 0 {
+			tempSerp := serpMap[v.PageId]
+			tempSerp.Leaks = append(tempSerp.Leaks, models.SimilarwebPage{
+				Id:       v.SimilarwebId,
+				Title:    v.SimilarwebTitle,
+				Url:      v.SimilarwebUrl,
+				Icon:     v.SimilarwebIcon,
+				Category: v.SimilarwebCategory,
+			})
+			serpMap[v.PageId] = tempSerp
+		}
 	}
 
 	for _, v := range serpMap {
