@@ -66,7 +66,7 @@ func (h *Handler) SubmitTaskAnswer(c echo.Context) error {
 			:uid,
 			:task_id,
 			:condition_id,
-			:author_id,
+			2,
 			:answer,
 			:reason
 		)`
