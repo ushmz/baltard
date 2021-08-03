@@ -33,10 +33,10 @@ type TaskAnswer struct {
 	Uid string `db:"uid" json:"uid"`
 
 	// TaskId : The identity of task.
-	TaskId int `db:"task_id" json:"taskId"`
+	TaskId int `db:"task_id" json:"task"`
 
 	// ConditionId : This point out which kind of task did user take.
-	ConditionId int `db:"condition_id" json:"conditionId"`
+	ConditionId int `db:"condition_id" json:"condition"`
 
 	// AuthorId : The identity of task author
 	AuthorId int `db:"author_id" json:"authorId"`
