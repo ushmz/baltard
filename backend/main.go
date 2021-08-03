@@ -36,6 +36,8 @@ func main() {
 	// task
 	v1.GET("/task/:id", h.FetchTaskInfo)
 	v1.GET("/serp/:id", h.FetchSerpByID)
+	v1.GET("/serp/:id/icon", h.FetchSerpWithIconByID)
+	v1.GET("/serp/:id/pct", h.FetchSerpWithDistributionByID)
 	v1.POST("/task/answer", h.SubmitTaskAnswer)
 
 	// logs

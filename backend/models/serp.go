@@ -21,7 +21,6 @@ type SerpSimilarwebRelation struct {
 // SearchPage : Each of search result pages.
 type SearchPage struct {
 	// PageId : ID of search page.
-	// This is assumed to be used as `key` of search result in front-side app (savitr).
 	PageId int `db:"id" json:"id"`
 
 	// Title : The title of each search result page.
@@ -34,9 +33,29 @@ type SearchPage struct {
 	Snippet string `db:"snippet" json:"snippet"`
 }
 
-// SearchPageWithLeaks : The list of this type struct will be returned as a response of `serp` endpoint.
+// Serp : The list of this type struct will be returned as a response of `serp` endpoint.
 type Serp struct {
-	// PageId : This is assumed to be used as `key` of search result in front-side app (savitr).
+	// PageId : ID of search page.
+	PageId int `json:"id"`
+
+	// Title : The title of each search result page.
+	Title string `json:"title"`
+
+	// Url : Url of each search result page.
+	Url string `json:"url"`
+
+	// Snippet : Snippet of each search result page.
+	Snippet string `json:"snippet"`
+
+	// LeaksSet : Users' behavioral data that probably leaked to third party. For more detail, see `Leaks` type.
+	Leaks []SimilarwebPage `json:"leaks"`
+
+	Distribution map[string]float64 `json:"distribution"`
+}
+
+// SerpWithIcon : The list of this type struct will be returned as a response of `serp` endpoint.
+type SerpWithIcon struct {
+	// PageId : ID of search page.
 	PageId int `json:"id"`
 
 	// Title : The title of each search result page.
@@ -50,4 +69,94 @@ type Serp struct {
 
 	// LeaksSet : Users' behavioral data that probably leaked to third party. For more detail, see `Leaks` type.
 	Leaks []SimilarwebPage `json:"leaks"`
+}
+
+// SerpWithIconQueryResult : Database select result struct
+type SerpWithIconQueryResult struct {
+	// PageId : ID of search page.
+	PageId int `db:"id"`
+
+	// Title : The title of each search result page.
+	Title string `db:"title"`
+
+	// Url : Url of each search result page.
+	Url string `db:"url"`
+
+	// Snippet : Snippet of each search result page.
+	Snippet string `db:"snippet"`
+
+	// SimilarwebId : ID of the similarweb page.
+	SimilarwebId int `db:"similarweb_id"`
+
+	// SimilarwebTitle : Title of the similarweb page.
+	SimilarwebTitle string `db:"similarweb_title"`
+
+	// SimilarwebUrl : Url of the similarweb page.
+	SimilarwebUrl string `db:"similarweb_url"`
+
+	// SimilarwebIcon : Url of the similarweb page favicon.
+	SimilarwebIcon string `db:"similarweb_icon"`
+
+	// SimilarwebCategory : Category of the similarweb page.
+	SimilarwebCategory string `db:"similarweb_category"`
+}
+
+type SimilarwebDistribution struct {
+	// Category : Category name.
+	Category string `json:"category"`
+	// Count : Total number of pages.
+	Count int `json:"count"`
+	// Percentage : The percentage of this category.
+	Percentage float64 `json:"pct"`
+}
+
+// SerpWithDistribution : The list of this type struct will be returned as a response of `serp` endpoint.
+type SerpWithDistribution struct {
+	// PageId : ID of search page.
+	PageId int `json:"id"`
+
+	// Title : The title of each search result page.
+	Title string `json:"title"`
+
+	// Url : Url of each search result page.
+	Url string `json:"url"`
+
+	// Snippet : Snippet of each search result page.
+	Snippet string `db:"snippet" json:"snippet"`
+
+	// Total : Total number of similarweb pages.
+	Total int `json:"total"`
+
+	// Distribution :
+	Distribution []SimilarwebDistribution `json:"distribution"`
+}
+
+// SerpWithDistributionQueryResult : Database select result struct
+type SerpWithDistributionQueryResult struct {
+	// PageId : ID of search page.
+	PageId int `db:"id"`
+
+	// Title : The title of each search result page.
+	Title string `db:"title"`
+
+	// Url : Url of each search result page.
+	Url string `db:"url"`
+
+	// Snippet : Snippet of each search result page.
+	Snippet string `db:"snippet"`
+
+	// Category : Category name.
+	Category string `db:"category"`
+
+	// CategoryRank : DESC rank of category.
+	CategoryRank int `db:"category_rank"`
+
+	// CategoryCount : Total number of similarweb pages in the category.
+	CategoryCount int `db:"category_count"`
+
+	// SimilarwebCount : The number of all similarweb pages.
+	SimilarwebCount int `db:"similarweb_count"`
+
+	// CategoryDistribution : The percentage of this category.
+	CategoryDistribution float64 `db:"category_distribution"`
 }

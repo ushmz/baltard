@@ -13,4 +13,6 @@ type SimilarwebPage struct {
 
 	// Icon : Favicon url of the page.
 	Icon string `db:"icon_path" json:"icon"`
+
+	Category string `db:"category" json:"category"`
 }
