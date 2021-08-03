@@ -1,5 +1,6 @@
 .DS_Store
 .env
+backup/
 backend/database/data
 backend/database/mysql_data
 backend/database/seeder/reviews
