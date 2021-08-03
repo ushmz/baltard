@@ -3,8 +3,10 @@ package handler
 import (
 	"fmt"
 	"math"
+	"math/rand"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
@@ -179,6 +181,8 @@ func (h *Handler) FetchSerpWithIconByID(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
+	other := top / 2
+
 	// swi : SQL query result, serp with top 10 of largest similarweb idf
 	swi := []models.SerpWithIconQueryResult{}
 	err = h.DB.Select(&swi, `
@@ -227,7 +231,53 @@ func (h *Handler) FetchSerpWithIconByID(c echo.Context) error {
 			similarweb_pages.category = similarweb_categories.id
 		WHERE
 			relation.idf_rank <= ?
-		`, taskId, offset*10, top)
+		UNION
+		SELECT
+			search_pages.id,
+			search_pages.title,
+			search_pages.url,
+			search_pages.snippet,
+			similarweb_pages.id similarweb_id,
+			similarweb_pages.title similarweb_title,
+			similarweb_pages.url similarweb_url,
+			similarweb_pages.icon_path similarweb_icon,
+			similarweb_categories.category similarweb_category
+		FROM (
+			SELECT
+				page_id,
+				similarweb_id,
+				idf,
+				ROW_NUMBER() OVER(PARTITION BY page_id ORDER BY idf ASC) idf_rank
+			FROM
+				search_page_similarweb_relation
+			WHERE
+				page_id IN (SELECT * FROM (
+					SELECT
+						page_id
+					FROM
+						search_page_similarweb_relation
+					WHERE
+						task_id = ?
+					GROUP BY
+						page_id
+					LIMIT ?, 10
+				) as result)
+			) as relation
+		JOIN
+			search_pages
+		ON
+			relation.page_id = search_pages.id
+		JOIN
+			similarweb_pages
+		ON
+			relation.similarweb_id = similarweb_pages.id
+		JOIN
+			similarweb_categories
+		ON
+			similarweb_pages.category = similarweb_categories.id
+		WHERE
+			relation.idf_rank <= ?
+		`, taskId, offset*10, other, taskId, offset*10, top-other)
 	if err != nil {
 		msg := models.ErrorMessage{
 			Message: "Database execution error: Failed to fetch relations : " + err.Error(),
@@ -266,6 +316,9 @@ func (h *Handler) FetchSerpWithIconByID(c echo.Context) error {
 	}
 
 	for _, v := range serpMap {
+		rand.Seed(time.Now().UnixNano())
+		rand.Shuffle(len(v.Leaks), func(i, j int) { v.Leaks[i], v.Leaks[j] = v.Leaks[j], v.Leaks[i] })
+
 		serp = append(serp, v)
 	}
 
