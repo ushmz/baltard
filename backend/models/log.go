@@ -2,17 +2,11 @@ package models
 
 // TaskTimeLogParam : Struct for task viewing time log request body
 type TaskTimeLogParam struct {
-	// Id : The ID of each log record.
-	Id string `db:"id" json:"id"`
-
-	// Uid : The ID of user (worker)
-	Uid string `db:"uid" json:"uid"`
+	// UserId : The ID of user (worker)
+	UserId string `db:"user_id" json:"user"`
 
 	// TimeOnPage : User's page viewing time.
 	TimeOnPage int64 `db:"time_on_page" json:"time"`
-
-	// Url : The url of user viewing page.
-	Url string `db:"url" json:"url"`
 
 	// TaskId : The Id of task that user working.
 	TaskId int64 `db:"task_id" json:"task"`
