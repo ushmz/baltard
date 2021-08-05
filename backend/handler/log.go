@@ -25,28 +25,20 @@ func (h *Handler) CreateTaskTimeLog(c echo.Context) error {
 	query := `
 		INSERT INTO
 			behavior_logs (
-				id,
-				uid,
-				time_on_page,
-				url,
+				user_id,
 				task_id,
+				time_on_page,
 				condition_id
 			)
 		VALUES (
-			:id, 
-			:uid, 
-			:time_on_page, 
-			:url, 
+			:user_id, 
 			:task_id, 
+			:time_on_page, 
 			:condition_id
 		)
 		ON DUPLICATE
 			KEY UPDATE
-				uid = :uid, 
 				time_on_page = :time_on_page, 
-				url = :url, 
-				task_id = :task_id, 
-				condition_id = :condition_id, 
 				updated_at = CURRENT_TIMESTAMP`
 
 	// Execute query
