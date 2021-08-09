@@ -1,7 +1,5 @@
 package models
 
-import "database/sql"
-
 type Task struct {
 	// Id : The ID of task
 	Id int `db:"id" json:"id"`
@@ -16,13 +14,13 @@ type Task struct {
 	Description string `db:"description" json:"description"`
 
 	// AuthorId : Author of this task.
-	AuthorId string `db:"author_id" json:"authorId"`
+	// AuthorId string `db:"author_id" json:"authorId"`
 
 	// SearchUrl : Url used in this task.
 	SearchUrl string `db:"search_url" json:"searchUrl"`
 
 	// Type : Task type, used like category if needed.
-	Type sql.NullString `db:"type" json:"type"`
+	// Type sql.NullString `db:"type" json:"type"`
 }
 
 type TaskAnswer struct {

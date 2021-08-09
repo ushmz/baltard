@@ -84,7 +84,7 @@ func (t TaskImpl) FetchTaskIdsByGroupId(groupId int) ([]int, error) {
 // FetchTaskInfo : Fetch task info by task id
 func (t TaskImpl) FetchTaskInfo(taskId int) (*models.Task, error) {
 	task := models.Task{}
-	row := t.DB.QueryRow(`
+	row := t.DB.QueryRowx(`
 		SELECT
 			id,
 			query,
@@ -97,7 +97,7 @@ func (t TaskImpl) FetchTaskInfo(taskId int) (*models.Task, error) {
 			id = ?
 		`, taskId)
 
-	if err := row.Scan(&task); err != nil {
+	if err := row.StructScan(&task); err != nil {
 		return nil, err
 	}
 

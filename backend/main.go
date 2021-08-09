@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/middleware"
 	"github.com/ymmt3-lab/koolhaas/backend/api/handler"
 	"github.com/ymmt3-lab/koolhaas/backend/database"
-	mw "github.com/ymmt3-lab/koolhaas/backend/middleware"
+	// mw "github.com/ymmt3-lab/koolhaas/backend/middleware"
 )
 
 func main() {
@@ -33,7 +33,7 @@ func NewRouter(d *sqlx.DB) *echo.Echo {
 	h := handler.NewHandler(d)
 
 	v1 := e.Group("/v1")
-	v1.Use(mw.Auth())
+	// v1.Use(mw.Auth())
 
 	// users
 	e.POST("/users", h.CreateUser)
