@@ -2,10 +2,9 @@ package handler
 
 import (
 	"database/sql"
-	"strconv"
-
 	"math/rand"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo"
