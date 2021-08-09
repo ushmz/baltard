@@ -8,25 +8,16 @@ type UserParam struct {
 
 // User : Struct for `users` table model
 type User struct {
-	// Id : The ID of user.
-	Id int64 `db:"id" json:"id"`
-
 	// Uid : User name/Id for label.
 	Uid string `db:"uid" json:"uid"`
 
-	// ExternalId : External user Id.
-	ExternalId string `db:"external_id" json:"externalId"`
-
-	// Email : uid + dummy domain use for firebase authentication.
-	Email string `db:"email" json:"email"`
-
-	// CreatedAt : Auto generated datatime information.
-	CreatedAt string `db:"created_at" json:"createdAt"`
+	// Secret : Generated secret string.
+	Secret string `db:"generated_secret" json:"secret"`
 }
 
 type ExistUser struct {
 	// Id : The ID of user.
-	Id int64 `db:"id" json:"id"`
+	Id int `db:"id" json:"id"`
 
 	// Uid : User name/Id for label.
 	Uid string `db:"uid" json:"uid"`
@@ -41,7 +32,7 @@ type UserResponse struct {
 	Exist bool `json:"exist"`
 
 	// UserId : Unique Id used in koolhaas DB.
-	UserId int64 `json:"user"`
+	UserId int `json:"user"`
 
 	// Secret : Generated secret string.
 	Secret string `json:"secret"`

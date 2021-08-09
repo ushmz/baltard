@@ -7,7 +7,7 @@ fi
 
 GIT_MYSQL=./backup/`date "+%Y-%m-%d--%H-%M-%S"`---koolhaas@localhost
 mkdir -p $GIT_MYSQL
-for T in `docker exec ${1} mysql -u koolhaas -pkoolhaas -N -B -e 'show tables from koolhaas'`;
+for T in `docker exec ${1} mysql -u koolhaas -p${2} -N -B -e 'show tables from koolhaas'`;
 do
     echo "--- Backing up $T ---"
     docker exec ${1} mysqldump --skip-comments --no-tablespaces  -u koolhaas -p${2} -d -n koolhaas $T > $GIT_MYSQL/CREATE_TABLE---$T.sql

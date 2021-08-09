@@ -4,7 +4,7 @@ import "database/sql"
 
 type Task struct {
 	// Id : The ID of task
-	Id int64 `db:"id" json:"id"`
+	Id int `db:"id" json:"id"`
 
 	// Query : Search query for this task.
 	Query string `db:"query" json:"query"`
@@ -46,4 +46,10 @@ type TaskAnswer struct {
 
 	// Reason : The reason of users' decision.
 	Reason string `db:"reason" json:"reason"`
+}
+
+// GroupCounts : Struct for group count
+type GroupCounts struct {
+	GroupId int `db:"group_id" json:"groupId"`
+	Count   int `db:"count" json:"count"`
 }

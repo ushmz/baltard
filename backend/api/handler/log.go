@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo"
-	"github.com/ymmt3-lab/koolhaas/backend/models"
+	"github.com/ymmt3-lab/koolhaas/backend/api/models"
 )
 
 // CreateTaskTimeLog : Create task time log. Table name is `behacior_logs`.
@@ -12,8 +12,7 @@ import (
 func (h *Handler) CreateTaskTimeLog(c echo.Context) error {
 	// l : Bind request body to struct.
 	l := new(models.TaskTimeLogParam)
-	var err error
-	if err = c.Bind(l); err != nil {
+	if err := c.Bind(l); err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		msg := models.ErrorMessage{
 			Message: "Database Execution error.",
@@ -21,28 +20,7 @@ func (h *Handler) CreateTaskTimeLog(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, msg)
 	}
 
-	// query : Task log insert query with format characters.
-	query := `
-		INSERT INTO
-			behavior_logs (
-				user_id,
-				task_id,
-				time_on_page,
-				condition_id
-			)
-		VALUES (
-			:user_id, 
-			:task_id, 
-			:time_on_page, 
-			:condition_id
-		)
-		ON DUPLICATE
-			KEY UPDATE
-				time_on_page = :time_on_page, 
-				updated_at = CURRENT_TIMESTAMP`
-
-	// Execute query
-	_, err = h.DB.NamedExec(query, l)
+	err := h.Log.CreateTaskTimeLog(l)
 	if err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		msg := models.ErrorMessage{
@@ -57,8 +35,7 @@ func (h *Handler) CreateTaskTimeLog(c echo.Context) error {
 func (h *Handler) CreateSerpClickLog(c echo.Context) error {
 	// p : Bind request body to struct.
 	p := new(models.SearchPageClickLogParam)
-	var err error
-	if err = c.Bind(p); err != nil {
+	if err := c.Bind(p); err != nil {
 		c.Echo().Logger.Errorf("Failed to bind request body : %v", err)
 		msg := models.ErrorMessage{
 			Message: "Failed to bind request body.",
@@ -66,30 +43,7 @@ func (h *Handler) CreateSerpClickLog(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	// query : Task log insert query.
-	query := `
-		INSERT INTO
-			behavior_logs_click (
-				user_id,
-				task_id,
-				condition_id,
-				time_on_page,
-				serp_page,
-				serp_rank,
-				is_visible
-			)
-		VALUES (
-			:user_id, 
-			:task_id, 
-			:condition_id,
-			:time_on_page, 
-			:serp_page,
-			:serp_rank,
-			:is_visible
-		)`
-
-	// Execute SQL query.
-	_, err = h.DB.NamedExec(query, p)
+	err := h.Log.CreateSerpClickLog(p)
 	if err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		msg := models.ErrorMessage{
@@ -111,22 +65,7 @@ func (h *Handler) StoreSearchSeeion(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, msg)
 	}
 
-	_, err := h.DB.NamedExec(`
-		INSERT INTO
-			search_session(
-				user_id,
-				task_id,
-				condition_id
-			)
-		VALUES (
-			:user_id,
-			:task_id,
-			:condition_id
-		)
-		ON DUPLICATE KEY
-			UPDATE
-				ended_at = CURRENT_TIMESTAMP
-		`, s)
+	err := h.Log.StoreSearchSeeion(s)
 	if err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		msg := models.ErrorMessage{

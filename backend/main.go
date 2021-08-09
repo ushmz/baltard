@@ -2,15 +2,22 @@ package main
 
 import (
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"github.com/ymmt3-lab/koolhaas/backend/api/handler"
 	"github.com/ymmt3-lab/koolhaas/backend/database"
-	"github.com/ymmt3-lab/koolhaas/backend/handler"
 	mw "github.com/ymmt3-lab/koolhaas/backend/middleware"
 )
 
 func main() {
+	d := database.New()
+	defer d.Close()
+	r := NewRouter(d)
+	r.Logger.Fatal(r.Start(":8080"))
+}
 
+func NewRouter(d *sqlx.DB) *echo.Echo {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
@@ -23,8 +30,7 @@ func main() {
 		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
 	}))
 
-	d := database.New()
-	h := &handler.Handler{DB: d}
+	h := handler.NewHandler(d)
 
 	v1 := e.Group("/v1")
 	v1.Use(mw.Auth())
@@ -46,7 +52,5 @@ func main() {
 	v1.POST("/users/logs/click", h.CreateSerpClickLog)
 	v1.POST("/task/session", h.StoreSearchSeeion)
 
-	defer d.Close()
-
-	e.Logger.Fatal(e.Start(":8080"))
+	return e
 }

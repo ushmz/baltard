@@ -3,16 +3,16 @@ package models
 // TaskTimeLogParam : Struct for task viewing time log request body
 type TaskTimeLogParam struct {
 	// UserId : The ID of user (worker)
-	UserId string `db:"user_id" json:"user"`
+	UserId int `db:"user_id" json:"user"`
 
 	// TimeOnPage : User's page viewing time.
-	TimeOnPage int64 `db:"time_on_page" json:"time"`
+	TimeOnPage int `db:"time_on_page" json:"time"`
 
 	// TaskId : The Id of task that user working.
-	TaskId int64 `db:"task_id" json:"task"`
+	TaskId int `db:"task_id" json:"task"`
 
 	// ConditionId : User's condition Id that means group and task category.
-	ConditionId int64 `db:"condition_id" json:"condition"`
+	ConditionId int `db:"condition_id" json:"condition"`
 }
 
 // SearchPageClickLogParam : Create page click log. Table name is `behavior_logs_click`.
@@ -24,19 +24,19 @@ type SearchPageClickLogParamWithoutVisible struct {
 	Uid string `db:"uid" json:"uid"`
 
 	// TaskId : The Id of task that user working.
-	TaskId int64 `db:"task_id" json:"taskId"`
+	TaskId int `db:"task_id" json:"taskId"`
 
 	// ConditionId : User's condition Id that means group and task category.
-	ConditionId int64 `db:"condition_id" json:"conditionId"`
+	ConditionId int `db:"condition_id" json:"conditionId"`
 
 	// Time : User's page viewing time.
-	Time int64 `db:"time_on_page" json:"time"`
+	Time int `db:"time_on_page" json:"time"`
 
 	// Page : The Id of page that user clicked.
-	Page int64 `db:"serp_page" json:"page"`
+	Page int `db:"serp_page" json:"page"`
 
 	// Rank : Search result rank that user clicked.
-	Rank int64 `db:"serp_rank" json:"rank"`
+	Rank int `db:"serp_rank" json:"rank"`
 }
 
 // SearchPageClickLogParamWithVisible : Create page click log. Table name is `behavior_logs_click`.

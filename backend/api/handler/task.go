@@ -3,9 +3,10 @@ package handler
 import (
 	"database/sql"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo"
-	"github.com/ymmt3-lab/koolhaas/backend/models"
+	"github.com/ymmt3-lab/koolhaas/backend/api/models"
 )
 
 // FetchTaskInfo : Fetch task info by task id
@@ -13,22 +14,16 @@ func (h *Handler) FetchTaskInfo(c echo.Context) error {
 
 	// taskId : Get task Id from path parameter.
 	taskId := c.Param("id")
+	task, err := strconv.Atoi(taskId)
+	if err != nil {
+		msg := models.ErrorMessage{
+			Message: "Parameter `taskId` must be number",
+		}
+		return c.JSON(http.StatusBadRequest, msg)
+	}
 
-	// task : Task information.
-	task := []models.Task{}
 	// Fetch task information by task Id
-	err := h.DB.Select(&task, `
-		SELECT
-			id,
-			query,
-			title,
-			description,
-			search_url
-		FROM
-			tasks
-		WHERE
-			id = ?
-		`, taskId)
+	ti, err := h.Task.FetchTaskInfo(task)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// Unreachable code block
@@ -39,7 +34,7 @@ func (h *Handler) FetchTaskInfo(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	return c.JSON(http.StatusOK, task)
+	return c.JSON(http.StatusOK, ti)
 }
 
 // SubmitTaskAnswer : Submit task answer
@@ -51,31 +46,9 @@ func (h *Handler) SubmitTaskAnswer(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	// query : Task answer insert query with named format characters.
-	query := `
-		INSERT INTO
-			answers (
-				uid,
-				task_id,
-				condition_id,
-				author_id,
-				answer,
-				reason
-			)
-		VALUES (
-			:uid,
-			:task_id,
-			:condition_id,
-			2,
-			:answer,
-			:reason
-		)`
-
-	// vals : Parameters of SQL query.
-	vals := &answer
-
+	err := h.Answer.SubmitTaskAnswer(answer)
 	// Execute query.
-	if _, err := h.DB.NamedExec(query, vals); err != nil {
+	if err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		return c.JSON(http.StatusInternalServerError, models.ErrorMessage{
 			Message: "Failed to submit answer.",

@@ -47,21 +47,14 @@ func getEnv(key, defaultValue string) string {
 }
 
 func (mc *MySQLConnectionEnv) ConnectDB() (*sqlx.DB, error) {
-	var dsn string
-	if getEnv("ENV", "") == "prd" {
-		dsn = fmt.Sprintf("%s:%s@unix(/cloudsql/%s)/%s?charset=utf8mb4&parseTime=True", mc.User, mc.Password, mc.ConnectionName, mc.DBName)
-		fmt.Printf(dsn)
-	} else {
-		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", mc.User, mc.Password, mc.Host, mc.Port, mc.DBName)
-	}
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", mc.User, mc.Password, mc.Host, mc.Port, mc.DBName)
 	return sqlx.Open("mysql", dsn)
 }
 
 func New() *sqlx.DB {
 	mySQLConnectionData = NewMySQLConnectionEnv()
 
-	var err error
-	db, err = mySQLConnectionData.ConnectDB()
+	db, err := mySQLConnectionData.ConnectDB()
 	if err != nil {
 		log.Printf("DB connection failed: %v", err)
 	}
