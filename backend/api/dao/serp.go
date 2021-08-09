@@ -134,7 +134,7 @@ func (s SerpImpl) FetchSerpWithIconByID(taskId, offset, top int) ([]models.SerpW
 			similarweb_pages.category = similarweb_categories.id
 		WHERE
 			relation.idf_rank <= ?
-		`, taskId, offset*10, top, taskId, offset*10, top-top/2)
+		`, taskId, offset*10, top/2, taskId, offset*10, top-top/2)
 	if err != nil {
 		return nil, err
 	}
