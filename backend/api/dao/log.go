@@ -65,7 +65,7 @@ func (l LogImpl) CreateSerpClickLog(p *models.SearchPageClickLogParam) error {
 			:serp_page,
 			:serp_rank,
 			:is_visible
-	`, p)
+		)`, p)
 	if err != nil {
 		return err
 	}
