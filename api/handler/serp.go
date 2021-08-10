@@ -7,8 +7,9 @@ import (
 	"strconv"
 	"time"
 
+	"baltard/api/models"
+
 	"github.com/labstack/echo"
-	"github.com/ymmt3-lab/koolhaas/backend/api/models"
 )
 
 // FetchSerp : Wrapper function

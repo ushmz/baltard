@@ -1,8 +1,9 @@
 package dao
 
 import (
+	"baltard/api/models"
+
 	"github.com/jmoiron/sqlx"
-	"github.com/ymmt3-lab/koolhaas/backend/api/models"
 )
 
 type Log interface {

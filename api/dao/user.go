@@ -3,8 +3,9 @@ package dao
 import (
 	"database/sql"
 
+	"baltard/api/models"
+
 	"github.com/jmoiron/sqlx"
-	"github.com/ymmt3-lab/koolhaas/backend/api/models"
 )
 
 type User interface {
