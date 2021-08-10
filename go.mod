@@ -8,12 +8,13 @@ require (
 	cloud.google.com/go/storage v1.12.0 // indirect
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/google/go-cmp v0.5.3 // indirect
+	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/lib/pq v1.9.0 // indirect
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
+	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0 // indirect
 	golang.org/x/mod v0.3.1-0.20200828183125-ce943fd02449 // indirect
