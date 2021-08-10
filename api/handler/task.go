@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
+	"baltard/api/models"
+
 	"github.com/labstack/echo"
-	"github.com/ymmt3-lab/koolhaas/backend/api/models"
 )
 
 // FetchTaskInfo : Fetch task info by task id

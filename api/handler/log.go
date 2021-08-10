@@ -3,8 +3,9 @@ package handler
 import (
 	"net/http"
 
+	"baltard/api/models"
+
 	"github.com/labstack/echo"
-	"github.com/ymmt3-lab/koolhaas/backend/api/models"
 )
 
 // CreateTaskTimeLog : Create task time log. Table name is `behacior_logs`.
