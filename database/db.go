@@ -31,9 +31,9 @@ func NewMySQLConnectionEnv() *MySQLConnectionEnv {
 	return &MySQLConnectionEnv{
 		Host:           getEnv("MYSQL_HOST", "0.0.0.0"),
 		Port:           getEnv("MYSQL_PORT", "3366"),
-		User:           getEnv("MYSQL_USER", "koolhaas"),
-		DBName:         getEnv("MYSQL_DBNAME", "koolhaas"),
-		Password:       getEnv("MYSQL_PASS", "koolhaas"),
+		User:           getEnv("MYSQL_USER", "baltard"),
+		DBName:         getEnv("MYSQL_DBNAME", "baltard"),
+		Password:       getEnv("MYSQL_PASS", "baltard"),
 		ConnectionName: getEnv("CONNECTION_NAME", "default"),
 	}
 }
@@ -68,7 +68,7 @@ func New() *sqlx.DB {
 	}
 
 	// DB指定
-	db.Exec("USE koolhaas")
+	db.Exec("USE baltard")
 
 	db.SetMaxOpenConns(25500)
 	db.SetMaxIdleConns(25500)

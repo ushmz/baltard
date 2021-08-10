@@ -95,7 +95,7 @@ func (u UserImpl) InsertCompletionCode(userId, code int) error {
 	_, err := u.DB.Exec(`
 		INSERT INTO 
 			completion_codes (
-				uid, 
+				user_id, 
 				completion_code
 			)
 		VALUES (?, ?)`,
@@ -115,12 +115,8 @@ func (u UserImpl) GetCompletionCodeById(userId int) (int, error) {
 			completion_code
 		FROM
 			completion_codes
-		RIGHT JOIN
-			users
-		ON
-			completion_codes.uid = users.id
 		WHERE
-			users.id = ?
+			user_id = ?
 	`, userId)
 
 	if err := row.Scan(&code); err != nil {

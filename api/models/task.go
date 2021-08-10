@@ -27,17 +27,14 @@ type TaskAnswer struct {
 	// Id : The ID of user.
 	Id int `db:"id" json:"id"`
 
-	// Uid : Means external Id.
-	Uid string `db:"uid" json:"uid"`
+	// UserId : Means external Id.
+	UserId int `db:"user_id" json:"user"`
 
 	// TaskId : The identity of task.
 	TaskId int `db:"task_id" json:"task"`
 
 	// ConditionId : This point out which kind of task did user take.
 	ConditionId int `db:"condition_id" json:"condition"`
-
-	// AuthorId : The identity of task author
-	AuthorId int `db:"author_id" json:"authorId"`
 
 	// Answer : The Url of evidence of users' decision.
 	Answer string `db:"answer" json:"answer"`

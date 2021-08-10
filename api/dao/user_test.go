@@ -57,39 +57,24 @@ func TestFindByUid(t *testing.T) {
 	}
 }
 
-func TestInsertCompletionCode(t *testing.T) {
-	// [TODO] Insert test data
+func TestCompletionCodeIO(t *testing.T) {
 	tests := []struct {
 		userId   int
 		code     int
-		expected error
+		expected int
 	}{
-		// {userId: 150, code: 42, expected: nil},
+		{userId: 9999, code: 42, expected: 42},
+		{userId: 99999, code: 4242, expected: 4242},
+		{userId: 999999, code: 4422, expected: 4422},
+		{userId: 444422, code: 44422, expected: 44422},
 	}
 
 	for idx, test := range tests {
 		err := userDao.InsertCompletionCode(test.userId, test.code)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-		assert.Equal(
-			t,
-			test.expected,
-			err,
-			fmt.Sprintf("Testcase index %d", idx),
-		)
-	}
-
-}
-
-func TestGetCompletionCodeById(t *testing.T) {
-	// [TODO] Insert test data
-	tests := []struct {
-		userId   int
-		expected models.ExistUser
-	}{
-		// {userId: 150, expected: models.ExistUser{}},
-	}
-
-	for idx, test := range tests {
 		code, err := userDao.GetCompletionCodeById(test.userId)
 		if err != nil {
 			t.Fatal(err)
