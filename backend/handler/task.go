@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"net/http"
 
+	"koolhaas/backend/models"
+
 	"github.com/labstack/echo"
-	"github.com/ymmt3-lab/koolhaas/backend/models"
 )
 
 // FetchTaskInfo : Fetch task info by task id

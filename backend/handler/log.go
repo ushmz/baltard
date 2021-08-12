@@ -3,8 +3,9 @@ package handler
 import (
 	"net/http"
 
+	"koolhaas/backend/models"
+
 	"github.com/labstack/echo"
-	"github.com/ymmt3-lab/koolhaas/backend/models"
 )
 
 // CreateTaskTimeLog : Create task time log. Table name is `behacior_logs`.
@@ -18,7 +19,7 @@ func (h *Handler) CreateTaskTimeLog(c echo.Context) error {
 		msg := models.ErrorMessage{
 			Message: "Database Execution error.",
 		}
-		return c.JSON(http.StatusInternalServerError, msg)
+		return c.JSON(http.StatusBadRequest, msg)
 	}
 
 	// query : Task log insert query with format characters.

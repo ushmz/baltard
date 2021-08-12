@@ -8,9 +8,10 @@ import (
 	"strconv"
 	"time"
 
+	"koolhaas/backend/models"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo"
-	"github.com/ymmt3-lab/koolhaas/backend/models"
 )
 
 // FetchSerp : Wrapper function
