@@ -1,6 +1,5 @@
 .DS_Store
 .env
-backup/
 
 koolhaas-api-firebase.json
 key.json

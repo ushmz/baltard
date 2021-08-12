@@ -16,7 +16,7 @@ func TestSubmitTaskAnswer(t *testing.T) {
 	}{
 		{
 			ans: models.TaskAnswer{
-				Uid:         "otameshidesu",
+				UserId:      44422,
 				TaskId:      5,
 				ConditionId: 5,
 				Answer:      "otameshi answer",
@@ -25,7 +25,7 @@ func TestSubmitTaskAnswer(t *testing.T) {
 			expected: nil},
 		{
 			ans: models.TaskAnswer{
-				Uid:         "otameshidesu",
+				UserId:      4422,
 				TaskId:      5,
 				ConditionId: 5,
 				Answer:      "お試し アンサー",
@@ -34,7 +34,7 @@ func TestSubmitTaskAnswer(t *testing.T) {
 			expected: nil},
 		{
 			ans: models.TaskAnswer{
-				Uid:         "akaaaann",
+				UserId:      4423,
 				TaskId:      6,
 				ConditionId: 5,
 				Answer:      "akaaaan answer",

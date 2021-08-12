@@ -22,18 +22,16 @@ func (a AnswerImpl) SubmitTaskAnswer(answer *models.TaskAnswer) error {
 	_, err := a.DB.NamedExec(`
 		INSERT INTO
 			answers (
-				uid,
+				user_id,
 				task_id,
 				condition_id,
-				author_id,
 				answer,
 				reason
 			)
 		VALUES (
-			:uid,
+			:user_id,
 			:task_id,
 			:condition_id,
-			2,
 			:answer,
 			:reason
 		)`, answer)
