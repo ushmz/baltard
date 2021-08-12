@@ -1,12 +1,13 @@
 package main
 
 import (
+	"koolhaas/backend/database"
+	"koolhaas/backend/handler"
+	mw "koolhaas/backend/middleware"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"github.com/ymmt3-lab/koolhaas/backend/database"
-	"github.com/ymmt3-lab/koolhaas/backend/handler"
-	mw "github.com/ymmt3-lab/koolhaas/backend/middleware"
 )
 
 func main() {
