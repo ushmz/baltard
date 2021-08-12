@@ -8,8 +8,9 @@ import (
 	"net/http"
 	"time"
 
+	"koolhaas/backend/models"
+
 	"github.com/labstack/echo"
-	"github.com/ymmt3-lab/koolhaas/backend/models"
 )
 
 // generateRandomPasswd : Generate random password its length equal to argument.
@@ -189,11 +190,11 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		_, err = h.DB.Exec(`
 		INSERT INTO 
 			completion_codes (
-				uid, 
+				user_id, 
 				completion_code
 			)
 		VALUES (?, ?)`,
-			u.Uid,
+			insertedId,
 			randomNumber,
 		)
 		if err != nil {
@@ -260,12 +261,8 @@ func (h *Handler) GetCompletionCode(c echo.Context) error {
 		completion_code
 	FROM
 		completion_codes
-	RIGHT JOIN
-		users
-	ON
-		completion_codes.uid = users.uid
 	WHERE
-		users.id = ?`
+		user_id = ?`
 	err = h.DB.Get(&completionCode, query, id)
 	if err != nil {
 		// If given uid not found in DB
