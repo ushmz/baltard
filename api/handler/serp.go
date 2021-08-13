@@ -74,14 +74,14 @@ func (h *Handler) FetchSerpWithDistributionByID(c echo.Context) error {
 				Url:          v.Url,
 				Snippet:      v.Snippet,
 				Total:        v.SimilarwebCount,
-				Distribution: []models.SimilarwebDistribution{},
+				Distribution: []models.CategoryDistribution{},
 			}
 		}
 
 		if v.Category != "" {
 			if v.CategoryRank <= top {
 				tempSerp := serpMap[v.PageId]
-				tempSerp.Distribution = append(tempSerp.Distribution, models.SimilarwebDistribution{
+				tempSerp.Distribution = append(tempSerp.Distribution, models.CategoryDistribution{
 					Category:   v.Category,
 					Count:      v.CategoryCount,
 					Percentage: v.CategoryDistribution,

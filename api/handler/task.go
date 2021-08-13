@@ -41,7 +41,7 @@ func (h *Handler) FetchTaskInfo(c echo.Context) error {
 // SubmitTaskAnswer : Submit task answer
 func (h *Handler) SubmitTaskAnswer(c echo.Context) error {
 	// answer : Bind request body to struct
-	answer := new(models.TaskAnswer)
+	answer := new(models.Answer)
 	if err := c.Bind(answer); err != nil {
 		c.Echo().Logger.Errorf("Error. Invalid request body : %v", err)
 		return c.NoContent(http.StatusBadRequest)

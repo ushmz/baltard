@@ -7,7 +7,7 @@ import (
 )
 
 type Answer interface {
-	SubmitTaskAnswer(*models.TaskAnswer) error
+	SubmitTaskAnswer(*models.Answer) error
 }
 
 type AnswerImpl struct {
@@ -18,7 +18,7 @@ func NewAnswer(db *sqlx.DB) Answer {
 	return &AnswerImpl{DB: db}
 }
 
-func (a AnswerImpl) SubmitTaskAnswer(answer *models.TaskAnswer) error {
+func (a AnswerImpl) SubmitTaskAnswer(answer *models.Answer) error {
 	_, err := a.DB.NamedExec(`
 		INSERT INTO
 			answers (

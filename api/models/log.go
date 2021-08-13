@@ -15,30 +15,6 @@ type TaskTimeLogParam struct {
 	ConditionId int `db:"condition_id" json:"condition"`
 }
 
-// SearchPageClickLogParam : Create page click log. Table name is `behavior_logs_click`.
-type SearchPageClickLogParamWithoutVisible struct {
-	// Id : The ID of each log record.
-	Id string `db:"id" json:"id"`
-
-	// Uid : The ID of user (worker)
-	Uid string `db:"uid" json:"uid"`
-
-	// TaskId : The Id of task that user working.
-	TaskId int `db:"task_id" json:"taskId"`
-
-	// ConditionId : User's condition Id that means group and task category.
-	ConditionId int `db:"condition_id" json:"conditionId"`
-
-	// Time : User's page viewing time.
-	Time int `db:"time_on_page" json:"time"`
-
-	// Page : The Id of page that user clicked.
-	Page int `db:"serp_page" json:"page"`
-
-	// Rank : Search result rank that user clicked.
-	Rank int `db:"serp_rank" json:"rank"`
-}
-
 // SearchPageClickLogParamWithVisible : Create page click log. Table name is `behavior_logs_click`.
 type SearchPageClickLogParam struct {
 	// Id : The ID of each log record.
