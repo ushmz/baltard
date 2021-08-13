@@ -11,11 +11,11 @@ import (
 
 func TestSubmitTaskAnswer(t *testing.T) {
 	tests := []struct {
-		ans      models.TaskAnswer
+		ans      models.Answer
 		expected error
 	}{
 		{
-			ans: models.TaskAnswer{
+			ans: models.Answer{
 				UserId:      44422,
 				TaskId:      5,
 				ConditionId: 5,
@@ -24,7 +24,7 @@ func TestSubmitTaskAnswer(t *testing.T) {
 			},
 			expected: nil},
 		{
-			ans: models.TaskAnswer{
+			ans: models.Answer{
 				UserId:      4422,
 				TaskId:      5,
 				ConditionId: 5,
@@ -33,7 +33,7 @@ func TestSubmitTaskAnswer(t *testing.T) {
 			},
 			expected: nil},
 		{
-			ans: models.TaskAnswer{
+			ans: models.Answer{
 				UserId:      4423,
 				TaskId:      6,
 				ConditionId: 5,

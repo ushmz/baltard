@@ -40,7 +40,7 @@ func (h *Handler) CreateUser(c echo.Context) error {
 	// exist : Given uid is already exist or not
 	exist := true
 	// Verbose
-	var user models.ExistUser
+	var user models.User
 
 	eu, err := h.User.FindByUid(u.Uid)
 	if err != nil {
@@ -56,7 +56,7 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		// randomstr : Used as password (not necessary)
 		randstr := generateRandomPasswd(12)
 
-		cu, err := h.User.Create(&models.User{Uid: u.Uid, Secret: randstr})
+		cu, err := h.User.Create(u.Uid, randstr)
 		if err != nil {
 			c.Echo().Logger.Errorf("Database Execution error : %v", err)
 			return c.NoContent(http.StatusInternalServerError)
@@ -127,7 +127,6 @@ func (h *Handler) GetCompletionCode(c echo.Context) error {
 	if err != nil {
 		// If given uid not found in DB
 		if err == sql.ErrNoRows {
-			c.Echo().Logger.Infof("uid %v not found", id)
 			return c.NoContent(http.StatusNotFound)
 		}
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)

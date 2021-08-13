@@ -9,9 +9,9 @@ import (
 )
 
 type User interface {
-	Create(user *models.User) (*models.ExistUser, error)
-	FindById(UserId int) (*models.ExistUser, error)
-	FindByUid(uid string) (*models.ExistUser, error)
+	Create(uid, secret string) (*models.User, error)
+	FindById(UserId int) (*models.User, error)
+	FindByUid(uid string) (*models.User, error)
 	InsertCompletionCode(userId, code int) error
 	GetCompletionCodeById(userId int) (int, error)
 }
@@ -24,7 +24,7 @@ func NewUser(db *sqlx.DB) User {
 	return &UserImpl{DB: db}
 }
 
-func (u UserImpl) Create(user *models.User) (*models.ExistUser, error) {
+func (u UserImpl) Create(uid, secret string) (*models.User, error) {
 	rows, err := u.DB.Exec(`
 		INSERT INTO
 			users (
@@ -33,8 +33,8 @@ func (u UserImpl) Create(user *models.User) (*models.ExistUser, error) {
 			)
 		VALUES (?, ?)
 	`,
-		user.Uid,
-		user.Secret,
+		uid,
+		secret,
 	)
 	if err != nil {
 		return nil, err
@@ -45,17 +45,16 @@ func (u UserImpl) Create(user *models.User) (*models.ExistUser, error) {
 		return nil, err
 	}
 
-	eu := models.ExistUser{
+	eu := models.User{
 		Id:     int(insertedId),
-		Uid:    user.Uid,
-		Secret: user.Secret,
+		Uid:    uid,
+		Secret: secret,
 	}
 	return &eu, nil
 }
 
-func (u UserImpl) FindById(userId int) (*models.ExistUser, error) {
-	// [TODO] `ExistUser` might be verbose struct
-	user := models.ExistUser{}
+func (u UserImpl) FindById(userId int) (*models.User, error) {
+	user := models.User{}
 	row := u.DB.QueryRowx(`
 		SELECT
 			id,
@@ -72,9 +71,8 @@ func (u UserImpl) FindById(userId int) (*models.ExistUser, error) {
 	return &user, nil
 }
 
-func (u UserImpl) FindByUid(uid string) (*models.ExistUser, error) {
-	// [TODO] `ExistUser` might be verbose struct
-	user := models.ExistUser{}
+func (u UserImpl) FindByUid(uid string) (*models.User, error) {
+	user := models.User{}
 	row := u.DB.QueryRowx(`
 		SELECT
 			id,
@@ -120,13 +118,9 @@ func (u UserImpl) GetCompletionCodeById(userId int) (int, error) {
 	`, userId)
 
 	if err := row.Scan(&code); err != nil {
-		// [TODO] If there is no row in result, that case does not cause `sql.ErrNoRows`
-		// 1. `completion_code` -> `IF(completion_code IS NULL, 42, completion_code)`
-		// 2. Use `sql.NullInt64`
 		return 0, err
 	}
 
-	// [TODO] Need improvement
 	if code.Valid {
 		return int(code.Int64), nil
 	} else {

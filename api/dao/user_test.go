@@ -13,7 +13,7 @@ func TestFindById(t *testing.T) {
 	// [TODO] Insert test data
 	tests := []struct {
 		userId   int
-		expected models.ExistUser
+		expected models.User
 	}{
 		// {userId: 150, expected: models.ExistUser{}},
 	}
@@ -37,7 +37,7 @@ func TestFindByUid(t *testing.T) {
 	// [TODO] Insert test data
 	tests := []struct {
 		uid      string
-		expected models.ExistUser
+		expected models.User
 	}{
 		// {uid: "", expected: models.ExistUser{}},
 	}
