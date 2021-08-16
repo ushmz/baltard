@@ -1,4 +1,4 @@
-package models
+package model
 
 // UserParam : Struct for request of `/signup` endpoint
 type UserParam struct {

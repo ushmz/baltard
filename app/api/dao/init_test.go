@@ -10,12 +10,10 @@ import (
 )
 
 var (
-	answerDao    Answer
-	conditionDao Condition
-	logDao       Log
-	serpDao      Serp
-	taskDao      Task
-	userDao      User
+	logDao  Log
+	serpDao Serp
+	taskDao Task
+	userDao User
 )
 
 func TestMain(m *testing.M) {
@@ -25,8 +23,6 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	answerDao = NewAnswer(db)
-	conditionDao = NewCondition(db)
 	logDao = NewLog(db)
 	serpDao = NewSerp(db)
 	taskDao = NewTask(db)

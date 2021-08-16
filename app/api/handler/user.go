@@ -2,128 +2,90 @@ package handler
 
 import (
 	"database/sql"
-	"math/rand"
 	"net/http"
 	"strconv"
-	"time"
 
-	"baltard/api/models"
+	"baltard/api/model"
+	"baltard/api/service"
 
 	"github.com/labstack/echo"
 )
 
-// generateRandomPasswd : Generate random password its length equal to argument.
-func generateRandomPasswd(l int) string {
-	// Generate seed value.
-	rand.Seed(time.Now().UnixNano())
-	// letters : These letters are used for random password.
-	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-	// b : Generate random char in `l - 3` length.
-	b := make([]rune, l-3)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
-	}
-	// To satisfy password policy, add some chars.
-	return string(b) + "k2F"
+type User struct {
+	service service.User
+}
+
+func NewUserHandler(userService service.User) *User {
+	return &User{service: userService}
 }
 
 // CreateUser : Register new user with crowd-sourcing service ID
-func (h *Handler) CreateUser(c echo.Context) error {
+func (u *User) CreateUser(c echo.Context) error {
 	// u : Request body struct
-	u := new(models.UserParam)
+	param := new(model.UserParam)
 	// Bind request body parameters to struct
-	if err := c.Bind(u); err != nil {
+	if err := c.Bind(param); err != nil {
 		c.Echo().Logger.Errorf("Error. Invalid request body. : %v", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	// exist : Given uid is already exist or not
-	exist := true
 	// Verbose
-	var user models.User
+	var user model.User
 
-	eu, err := h.User.FindByUid(u.Uid)
+	// exist : Given uid is already exist or not
+	eu, exist, err := u.service.FindByUid(param.Uid)
 	if err != nil {
-		if err != sql.ErrNoRows {
-			c.Echo().Logger.Errorf("Cannot detect user existence. : %v", err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		exist = false
+		c.Echo().Logger.Errorf("Failed to detect user existence : %v", err)
+		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
+			Message: err.Error(),
+		})
+	}
 
-		rand.Seed(time.Now().UnixNano())
-		// randomNumber : Used as completion code
-		randomNumber := rand.Intn(100000)
-		// randomstr : Used as password (not necessary)
-		randstr := generateRandomPasswd(12)
-
-		cu, err := h.User.Create(u.Uid, randstr)
+	if exist {
+		user = *eu
+	} else {
+		nu, err := u.service.CreateUser(param.Uid)
 		if err != nil {
-			c.Echo().Logger.Errorf("Database Execution error : %v", err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-
-		// Insert completion code
-		h.User.InsertCompletionCode(cu.Id, randomNumber)
-		if err != nil {
-			c.Echo().Logger.Errorf("Database Execution error : %v", err)
-			return c.JSON(http.StatusInternalServerError, models.ErrorMessage{
+			c.Echo().Logger.Errorf("Failed to create new user : %v", err)
+			return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
 				Message: err.Error(),
 			})
 		}
-		user = *cu
-	} else {
-		user = *eu
+		user = *nu
 	}
 
-	// groupId : Allocated group ID (consists of task IDs and condition ID)
-	groupId, err := h.Task.AllocateTask()
+	info, err := u.service.AllocateTask()
 	if err != nil {
 		c.Echo().Logger.Errorf("Failed to allocate task  : %v", err)
-		return c.JSON(http.StatusInternalServerError, models.ErrorMessage{
-			Message: err.Error(),
-		})
-	}
-	// taskIds : Allocated task IDs
-	taskIds, err := h.Task.FetchTaskIdsByGroupId(groupId)
-	if err != nil {
-		c.Echo().Logger.Errorf("Failed to fetch task Ids : %v", err)
-		return c.JSON(http.StatusInternalServerError, models.ErrorMessage{
-			Message: err.Error(),
-		})
-	}
-	// conditionId : Allocated condition ID
-	conditionId, err := h.Condition.FetchConditionIdByGroupId(groupId)
-	if err != nil {
-		c.Echo().Logger.Errorf("Failed to fetch condition : %v", err)
-		return c.JSON(http.StatusInternalServerError, models.ErrorMessage{
+		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
 			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, models.UserResponse{
+	return c.JSON(http.StatusOK, model.UserResponse{
 		Exist:       exist,
 		UserId:      user.Id,
 		Secret:      user.Secret,
-		TaskIds:     taskIds,
-		ConditionId: conditionId,
-		GroupId:     groupId,
+		TaskIds:     info.TaskIds,
+		ConditionId: info.ConditionId,
+		GroupId:     info.GroupId,
 	})
 }
 
 // GetCompletionCode : Get users task completion code.
-func (h *Handler) GetCompletionCode(c echo.Context) error {
+func (u *User) GetCompletionCode(c echo.Context) error {
 	// id : Get id from path parameter
 	id := c.Param("id")
 	userId, err := strconv.Atoi(id)
 	if err != nil {
-		msg := models.ErrorMessage{
+		msg := model.ErrorMessage{
 			Message: "Parameter `userId` must be number",
 		}
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
 	// Fetch completion code by uid from DB
-	code, err := h.User.GetCompletionCodeById(userId)
+	code, err := u.service.GetCompletionCode(userId)
 	if err != nil {
 		// If given uid not found in DB
 		if err == sql.ErrNoRows {

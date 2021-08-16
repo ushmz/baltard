@@ -1,15 +1,15 @@
 package dao
 
 import (
-	"baltard/api/models"
+	"baltard/api/model"
 
 	"github.com/jmoiron/sqlx"
 )
 
 type Serp interface {
-	FetchSerpByID(taskId, offset int) ([]models.SearchPage, error)
-	FetchSerpWithIconByID(taskId, offset, top int) ([]models.SerpWithIconQueryResult, error)
-	FetchSerpWithDistributionByID(taskId, offset, top int) ([]models.SerpWithDistributionQueryResult, error)
+	FetchSerpByTaskID(taskId, offset int) ([]model.SearchPage, error)
+	FetchSerpWithIconByTaskID(taskId, offset, top int) ([]model.SerpWithIconQueryResult, error)
+	FetchSerpWithRatioByTaskID(taskId, offset, top int) ([]model.SerpWithRatioQueryResult, error)
 }
 
 type SerpImpl struct {
@@ -20,8 +20,8 @@ func NewSerp(db *sqlx.DB) Serp {
 	return &SerpImpl{DB: db}
 }
 
-func (s SerpImpl) FetchSerpByID(taskId, offset int) ([]models.SearchPage, error) {
-	srp := []models.SearchPage{}
+func (s SerpImpl) FetchSerpByTaskID(taskId, offset int) ([]model.SearchPage, error) {
+	srp := []model.SearchPage{}
 	err := s.DB.Select(&srp, `
 		SELECT
 			search_pages.id,
@@ -41,8 +41,8 @@ func (s SerpImpl) FetchSerpByID(taskId, offset int) ([]models.SearchPage, error)
 	return srp, nil
 }
 
-func (s SerpImpl) FetchSerpWithIconByID(taskId, offset, top int) ([]models.SerpWithIconQueryResult, error) {
-	swi := []models.SerpWithIconQueryResult{}
+func (s SerpImpl) FetchSerpWithIconByTaskID(taskId, offset, top int) ([]model.SerpWithIconQueryResult, error) {
+	swi := []model.SerpWithIconQueryResult{}
 	err := s.DB.Select(&swi, `
 		SELECT
 			search_pages.id,
@@ -143,9 +143,9 @@ func (s SerpImpl) FetchSerpWithIconByID(taskId, offset, top int) ([]models.SerpW
 	return swi, nil
 }
 
-func (s SerpImpl) FetchSerpWithDistributionByID(taskId, offset, top int) ([]models.SerpWithDistributionQueryResult, error) {
-	swd := []models.SerpWithDistributionQueryResult{}
-	err := s.DB.Select(&swd, `
+func (s SerpImpl) FetchSerpWithRatioByTaskID(taskId, offset, top int) ([]model.SerpWithRatioQueryResult, error) {
+	swr := []model.SerpWithRatioQueryResult{}
+	err := s.DB.Select(&swr, `
 		SELECT
 			relation_count.id,
 			relation_count.title,
@@ -210,5 +210,5 @@ func (s SerpImpl) FetchSerpWithDistributionByID(taskId, offset, top int) ([]mode
 		return nil, err
 	}
 
-	return swd, nil
+	return swr, nil
 }

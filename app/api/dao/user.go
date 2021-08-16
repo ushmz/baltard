@@ -3,15 +3,15 @@ package dao
 import (
 	"database/sql"
 
-	"baltard/api/models"
+	"baltard/api/model"
 
 	"github.com/jmoiron/sqlx"
 )
 
 type User interface {
-	Create(uid, secret string) (*models.User, error)
-	FindById(UserId int) (*models.User, error)
-	FindByUid(uid string) (*models.User, error)
+	Create(uid, secret string) (*model.User, error)
+	FindById(UserId int) (*model.User, error)
+	FindByUid(uid string) (*model.User, error)
 	InsertCompletionCode(userId, code int) error
 	GetCompletionCodeById(userId int) (int, error)
 }
@@ -24,7 +24,7 @@ func NewUser(db *sqlx.DB) User {
 	return &UserImpl{DB: db}
 }
 
-func (u UserImpl) Create(uid, secret string) (*models.User, error) {
+func (u UserImpl) Create(uid, secret string) (*model.User, error) {
 	rows, err := u.DB.Exec(`
 		INSERT INTO
 			users (
@@ -45,7 +45,7 @@ func (u UserImpl) Create(uid, secret string) (*models.User, error) {
 		return nil, err
 	}
 
-	eu := models.User{
+	eu := model.User{
 		Id:     int(insertedId),
 		Uid:    uid,
 		Secret: secret,
@@ -53,8 +53,8 @@ func (u UserImpl) Create(uid, secret string) (*models.User, error) {
 	return &eu, nil
 }
 
-func (u UserImpl) FindById(userId int) (*models.User, error) {
-	user := models.User{}
+func (u UserImpl) FindById(userId int) (*model.User, error) {
+	user := model.User{}
 	row := u.DB.QueryRowx(`
 		SELECT
 			id,
@@ -71,8 +71,8 @@ func (u UserImpl) FindById(userId int) (*models.User, error) {
 	return &user, nil
 }
 
-func (u UserImpl) FindByUid(uid string) (*models.User, error) {
-	user := models.User{}
+func (u UserImpl) FindByUid(uid string) (*model.User, error) {
+	user := model.User{}
 	row := u.DB.QueryRowx(`
 		SELECT
 			id,

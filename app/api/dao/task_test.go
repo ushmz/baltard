@@ -4,34 +4,34 @@ import (
 	"fmt"
 	"testing"
 
-	"baltard/api/models"
+	"baltard/api/model"
 
 	"github.com/stretchr/testify/assert"
 )
 
 var (
-	expected5 = &models.Task{
+	expected5 = &model.Task{
 		Id:          5,
 		Query:       "ウェブカメラ おすすめ",
 		Title:       "購入するウェブカメラのメーカー探し",
 		Description: "あなたは今「リモートでのやり取りが増えたため、ウェブカメラを購入しようと考えており、ウェブ検索をして情報を集めようとしている」とします。このページの下にある「検索結果リストを表示する」ボタンをクリックしてウェブ検索を開始してください。表示されたリストに含まれる情報を参考にして、購入したいウェブカメラのメーカーを1つ決めてください。メーカーが決まったらウェブ検索を終了し、このページの末尾にあるタスク回答欄にあなたの回答を入力して下さい。その際、回答の理由も添えてください。回答が終了したら、ページ末尾の「回答を提出する」ボタンをクリックし、次のタスクに進んでください。",
 		SearchUrl:   "webcam",
 	}
-	expected6 = &models.Task{
+	expected6 = &model.Task{
 		Id:          6,
 		Query:       "糖尿病 症状",
 		Title:       "糖尿病の症状",
 		Description: "あなたは今「『糖尿病』について知りたいと思い、ウェブ検索をして調べようとしている」とします。このページの下にある「検索結果リストを表示する」ボタンをクリックしてウェブ検索を開始してください。表示されたリストに含まれる情報を参考にして、メニエール病とはどのような症状があるのかを調べてください。納得する結論が得られたらウェブ検索を終了し、このページの末尾にあるタスク回答欄にあなたの回答を入力して下さい。その際、回答の理由も添えてください。回答が終了したら、ページ末尾の「回答を提出する」ボタンをクリックし、次のタスクに進んでください。",
 		SearchUrl:   "diabetes",
 	}
-	expected7 = &models.Task{
+	expected7 = &model.Task{
 		Id:          7,
 		Query:       "イヤホン おすすめ",
 		Title:       "購入するイヤホンのメーカー探し",
 		Description: "あなたは今「イヤホンを購入しようと考えており、ウェブ検索をして情報を集めようとしている」とします。このページの下にある「検索結果リストを表示する」ボタンをクリックしてウェブ検索を開始してください。表示されたリストに含まれる情報を参考にして、購入したいイヤホンのメーカーを1つ決めてください。メーカーが決まったらウェブ検索を終了し、このページの末尾にあるタスク回答欄にあなたの回答を入力して下さい。その際，回答の理由も添えてください。回答が終了したら、ページ末尾の「回答を提出する」ボタンをクリックし、次のタスクに進んでください。",
 		SearchUrl:   "earphone",
 	}
-	expected8 = &models.Task{
+	expected8 = &model.Task{
 		Id:          8,
 		Query:       "メニエール病 症状",
 		Title:       "メニエール病の症状",
@@ -75,7 +75,7 @@ func TestFetchTaskIdsByGroupId(t *testing.T) {
 func TestFetchTaskInfo(t *testing.T) {
 	tests := []struct {
 		taskId   int
-		expected *models.Task
+		expected *model.Task
 	}{
 
 		{taskId: 5, expected: expected5},

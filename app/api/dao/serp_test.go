@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"baltard/api/models"
+	"baltard/api/model"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -13,17 +13,17 @@ func TestFetchSerpByID(t *testing.T) {
 	tests := []struct {
 		taskId   int
 		offset   int
-		expected []models.SearchPage
+		expected []model.SearchPage
 	}{
 		// [TODO] Write test case
-		// {taskId: 5, offset: 0, expected: []models.SearchPage{}},
-		// {taskId: 5, offset: 2, expected: []models.SearchPage{}},
-		// {taskId: 6, offset: 4, expected: []models.SearchPage{}},
-		// {taskId: 6, offset: 6, expected: []models.SearchPage{}},
-		// {taskId: 7, offset: 8, expected: []models.SearchPage{}},
-		// {taskId: 7, offset: 10, expected: []models.SearchPage{}},
-		// {taskId: 8, offset: 12, expected: []models.SearchPage{}},
-		// {taskId: 8, offset: 14, expected: []models.SearchPage{}},
+		// {taskId: 5, offset: 0, expected: []model.SearchPage{}},
+		// {taskId: 5, offset: 2, expected: []model.SearchPage{}},
+		// {taskId: 6, offset: 4, expected: []model.SearchPage{}},
+		// {taskId: 6, offset: 6, expected: []model.SearchPage{}},
+		// {taskId: 7, offset: 8, expected: []model.SearchPage{}},
+		// {taskId: 7, offset: 10, expected: []model.SearchPage{}},
+		// {taskId: 8, offset: 12, expected: []model.SearchPage{}},
+		// {taskId: 8, offset: 14, expected: []model.SearchPage{}},
 	}
 
 	for idx, test := range tests {
@@ -46,17 +46,17 @@ func TestFetchSerpWithIconByID(t *testing.T) {
 		taskId   int
 		offset   int
 		top      int
-		expected []models.SearchPage
+		expected []model.SearchPage
 	}{
 		// [TODO] Write test case
-		// {taskId: 5, offset: 0, top: 10, expected: []models.SearchPage{}},
-		// {taskId: 5, offset: 2, top: 10, expected: []models.SearchPage{}},
-		// {taskId: 6, offset: 4, top: 10, expected: []models.SearchPage{}},
-		// {taskId: 6, offset: 6, top: 10, expected: []models.SearchPage{}},
-		// {taskId: 7, offset: 8, top: 10, expected: []models.SearchPage{}},
-		// {taskId: 7, offset: 10, top: 0, expected: []models.SearchPage{}},
-		// {taskId: 8, offset: 12, top: 0, expected: []models.SearchPage{}},
-		// {taskId: 8, offset: 14, top: 0, expected: []models.SearchPage{}},
+		// {taskId: 5, offset: 0, top: 10, expected: []model.SearchPage{}},
+		// {taskId: 5, offset: 2, top: 10, expected: []model.SearchPage{}},
+		// {taskId: 6, offset: 4, top: 10, expected: []model.SearchPage{}},
+		// {taskId: 6, offset: 6, top: 10, expected: []model.SearchPage{}},
+		// {taskId: 7, offset: 8, top: 10, expected: []model.SearchPage{}},
+		// {taskId: 7, offset: 10, top: 0, expected: []model.SearchPage{}},
+		// {taskId: 8, offset: 12, top: 0, expected: []model.SearchPage{}},
+		// {taskId: 8, offset: 14, top: 0, expected: []model.SearchPage{}},
 	}
 
 	for idx, test := range tests {
@@ -78,17 +78,17 @@ func TestFetchSerpWithDistributionByID(t *testing.T) {
 		taskId   int
 		offset   int
 		top      int
-		expected []models.SearchPage
+		expected []model.SearchPage
 	}{
 		// [TODO] Write test case
-		// {taskId: 5, offset: 0, top: 10, expected: []models.SearchPage{}},
-		// {taskId: 5, offset: 2, top: 10, expected: []models.SearchPage{}},
-		// {taskId: 6, offset: 4, top: 10, expected: []models.SearchPage{}},
-		// {taskId: 6, offset: 6, top: 10, expected: []models.SearchPage{}},
-		// {taskId: 7, offset: 8, top: 10, expected: []models.SearchPage{}},
-		// {taskId: 7, offset: 10, top: 0, expected: []models.SearchPage{}},
-		// {taskId: 8, offset: 12, top: 0, expected: []models.SearchPage{}},
-		// {taskId: 8, offset: 14, top: 0, expected: []models.SearchPage{}},
+		// {taskId: 5, offset: 0, top: 10, expected: []model.SearchPage{}},
+		// {taskId: 5, offset: 2, top: 10, expected: []model.SearchPage{}},
+		// {taskId: 6, offset: 4, top: 10, expected: []model.SearchPage{}},
+		// {taskId: 6, offset: 6, top: 10, expected: []model.SearchPage{}},
+		// {taskId: 7, offset: 8, top: 10, expected: []model.SearchPage{}},
+		// {taskId: 7, offset: 10, top: 0, expected: []model.SearchPage{}},
+		// {taskId: 8, offset: 12, top: 0, expected: []model.SearchPage{}},
+		// {taskId: 8, offset: 14, top: 0, expected: []model.SearchPage{}},
 	}
 
 	for idx, test := range tests {

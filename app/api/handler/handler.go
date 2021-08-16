@@ -2,33 +2,33 @@ package handler
 
 import (
 	"baltard/api/dao"
+	"baltard/api/service"
 
 	"github.com/jmoiron/sqlx"
 )
 
 type Handler struct {
-	Answer    dao.Answer
-	Condition dao.Condition
-	Log       dao.Log
-	Serp      dao.Serp
-	Task      dao.Task
-	User      dao.User
+	Log  *Log
+	Serp *Serp
+	Task *Task
+	User *User
 }
 
 func NewHandler(db *sqlx.DB) *Handler {
-	answer := dao.NewAnswer(db)
-	condition := dao.NewCondition(db)
 	log := dao.NewLog(db)
 	serp := dao.NewSerp(db)
 	task := dao.NewTask(db)
 	user := dao.NewUser(db)
 
+	logService := service.NewLogService(log)
+	serpService := service.NewSerpService(serp)
+	taskService := service.NewTaskService(task)
+	userService := service.NewUserService(user, task)
+
 	return &Handler{
-		Answer:    answer,
-		Condition: condition,
-		Log:       log,
-		Serp:      serp,
-		Task:      task,
-		User:      user,
+		Log:  NewLogHandler(logService),
+		Serp: NewSerpHandler(serpService),
+		Task: NewTaskHandler(taskService),
+		User: NewUserHandler(userService),
 	}
 }
