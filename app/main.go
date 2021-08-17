@@ -38,21 +38,21 @@ func NewRouter(d *sqlx.DB) *echo.Echo {
 	// v1.Use(mw.Auth())
 
 	// users
-	e.POST("/users", h.CreateUser)
-	v1.GET("/users/code/:id", h.GetCompletionCode)
+	e.POST("/users", h.User.CreateUser)
+	v1.GET("/users/code/:id", h.User.GetCompletionCode)
 
 	// task
-	v1.GET("/task/:id", h.FetchTaskInfo)
-	v1.GET("/serp/:id", h.FetchSerpByID)
-	v1.GET("/serp/:id/icon", h.FetchSerpWithIconByID)
-	v1.GET("/serp/:id/pct", h.FetchSerpWithDistributionByID)
-	v1.POST("/task/answer", h.SubmitTaskAnswer)
+	v1.GET("/task/:id", h.Task.FetchTaskInfo)
+	v1.GET("/serp/:id", h.Serp.FetchSerpByID)
+	v1.GET("/serp/:id/icon", h.Serp.FetchSerpWithIconByID)
+	v1.GET("/serp/:id/pct", h.Serp.FetchSerpWithDistributionByID)
+	v1.POST("/task/answer", h.Task.SubmitTaskAnswer)
 
 	// logs
 	// v1.POST("/users/:userId/logs", h.CreateLog)
-	v1.POST("/users/logs/time", h.CreateTaskTimeLog)
-	v1.POST("/users/logs/click", h.CreateSerpClickLog)
-	v1.POST("/task/session", h.StoreSearchSeeion)
+	v1.POST("/users/logs/time", h.Log.CreateTaskTimeLog)
+	v1.POST("/users/logs/click", h.Log.CreateSerpClickLog)
+	v1.POST("/task/session", h.Log.StoreSearchSeeion)
 
 	return e
 }

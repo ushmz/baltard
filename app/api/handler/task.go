@@ -5,26 +5,35 @@ import (
 	"net/http"
 	"strconv"
 
-	"baltard/api/models"
+	"baltard/api/model"
+	"baltard/api/service"
 
 	"github.com/labstack/echo"
 )
 
+type Task struct {
+	service service.Task
+}
+
+func NewTaskHandler(taskService service.Task) *Task {
+	return &Task{service: taskService}
+}
+
 // FetchTaskInfo : Fetch task info by task id
-func (h *Handler) FetchTaskInfo(c echo.Context) error {
+func (t *Task) FetchTaskInfo(c echo.Context) error {
 
 	// taskId : Get task Id from path parameter.
 	taskId := c.Param("id")
 	task, err := strconv.Atoi(taskId)
 	if err != nil {
-		msg := models.ErrorMessage{
+		msg := model.ErrorMessage{
 			Message: "Parameter `taskId` must be number",
 		}
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
 	// Fetch task information by task Id
-	ti, err := h.Task.FetchTaskInfo(task)
+	ti, err := t.service.FetchTaskInfo(task)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// Unreachable code block
@@ -39,19 +48,19 @@ func (h *Handler) FetchTaskInfo(c echo.Context) error {
 }
 
 // SubmitTaskAnswer : Submit task answer
-func (h *Handler) SubmitTaskAnswer(c echo.Context) error {
+func (t *Task) SubmitTaskAnswer(c echo.Context) error {
 	// answer : Bind request body to struct
-	answer := new(models.Answer)
+	answer := new(model.Answer)
 	if err := c.Bind(answer); err != nil {
 		c.Echo().Logger.Errorf("Error. Invalid request body : %v", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	err := h.Answer.SubmitTaskAnswer(answer)
+	err := t.service.SubmitTaskAnswer(answer)
 	// Execute query.
 	if err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
-		return c.JSON(http.StatusInternalServerError, models.ErrorMessage{
+		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
 			Message: "Failed to submit answer.",
 		})
 	}

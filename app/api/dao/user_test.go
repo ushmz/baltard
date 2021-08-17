@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"baltard/api/models"
+	"baltard/api/model"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -13,9 +13,9 @@ func TestFindById(t *testing.T) {
 	// [TODO] Insert test data
 	tests := []struct {
 		userId   int
-		expected models.User
+		expected model.User
 	}{
-		// {userId: 150, expected: models.ExistUser{}},
+		// {userId: 150, expected: model.ExistUser{}},
 	}
 
 	for idx, test := range tests {
@@ -37,9 +37,9 @@ func TestFindByUid(t *testing.T) {
 	// [TODO] Insert test data
 	tests := []struct {
 		uid      string
-		expected models.User
+		expected model.User
 	}{
-		// {uid: "", expected: models.ExistUser{}},
+		// {uid: "", expected: model.ExistUser{}},
 	}
 
 	for idx, test := range tests {

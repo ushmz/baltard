@@ -1,15 +1,15 @@
 package dao
 
 import (
-	"baltard/api/models"
+	"baltard/api/model"
 
 	"github.com/jmoiron/sqlx"
 )
 
 type Log interface {
-	CreateTaskTimeLog(*models.TaskTimeLogParam) error
-	CreateSerpClickLog(*models.SearchPageClickLogParam) error
-	StoreSearchSeeion(*models.SearchSession) error
+	CreateTaskTimeLog(*model.TaskTimeLogParam) error
+	CreateSerpClickLog(*model.SearchPageClickLogParam) error
+	StoreSearchSeeion(*model.SearchSession) error
 }
 
 type LogImpl struct {
@@ -20,7 +20,7 @@ func NewLog(db *sqlx.DB) Log {
 	return &LogImpl{DB: db}
 }
 
-func (l LogImpl) CreateTaskTimeLog(p *models.TaskTimeLogParam) error {
+func (l LogImpl) CreateTaskTimeLog(p *model.TaskTimeLogParam) error {
 	_, err := l.DB.NamedExec(`
 		INSERT INTO
 			behavior_logs (
@@ -46,7 +46,7 @@ func (l LogImpl) CreateTaskTimeLog(p *models.TaskTimeLogParam) error {
 	return nil
 }
 
-func (l LogImpl) CreateSerpClickLog(p *models.SearchPageClickLogParam) error {
+func (l LogImpl) CreateSerpClickLog(p *model.SearchPageClickLogParam) error {
 	_, err := l.DB.NamedExec(`
 		INSERT INTO
 			behavior_logs_click (
@@ -73,7 +73,7 @@ func (l LogImpl) CreateSerpClickLog(p *models.SearchPageClickLogParam) error {
 	return nil
 }
 
-func (l LogImpl) StoreSearchSeeion(s *models.SearchSession) error {
+func (l LogImpl) StoreSearchSeeion(s *model.SearchSession) error {
 	_, err := l.DB.NamedExec(`
 		INSERT INTO
 			search_session(

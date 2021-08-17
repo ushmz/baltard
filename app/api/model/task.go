@@ -1,4 +1,4 @@
-package models
+package model
 
 type Task struct {
 	// Id : The ID of task
@@ -21,4 +21,10 @@ type Task struct {
 type GroupCounts struct {
 	GroupId int `db:"group_id" json:"groupId"`
 	Count   int `db:"count" json:"count"`
+}
+
+type TaskInfo struct {
+	GroupId     int
+	ConditionId int
+	TaskIds     []int
 }

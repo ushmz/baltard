@@ -3,11 +3,10 @@ package handler
 import (
 	"testing"
 
-	"baltard/database"
+	"github.com/golang/mock/gomock"
 )
 
 var (
-	mockDB  = database.New()
 	timeLog = `{
 		"user": 999,
 		"time": 999,
@@ -26,6 +25,10 @@ var (
 )
 
 func TestCreateTaskTimeLog(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	// logDaoMock := dao.NewMockLog(ctrl)
 	// e := echo.New()
 	// req := httptest.NewRequest(http.MethodPost, "/v1/users/log/time", strings.NewReader(timeLog))
 

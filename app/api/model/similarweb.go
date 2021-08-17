@@ -1,4 +1,4 @@
-package models
+package model
 
 // SimilarwebPage : Similarweb 2000 information with icon URL.
 type SimilarwebPage struct {

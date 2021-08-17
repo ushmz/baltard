@@ -1,4 +1,4 @@
-package models
+package model
 
 type Answer struct {
 	// Id : The ID of user.

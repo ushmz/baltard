@@ -1,4 +1,4 @@
-package models
+package model
 
 // SearchPage : Each of search result pages.
 type SearchPage struct {
@@ -63,8 +63,8 @@ type SerpWithIconQueryResult struct {
 	SimilarwebCategory string `db:"similarweb_category"`
 }
 
-// CategoryDistribution : Distribution information for each categories.
-type CategoryDistribution struct {
+// CategoryCount : Distribution information for each categories.
+type CategoryCount struct {
 	// Category : Category name.
 	Category string `json:"category"`
 	// Count : Total number of pages.
@@ -73,8 +73,8 @@ type CategoryDistribution struct {
 	Percentage float64 `json:"pct"`
 }
 
-// SerpWithDistribution : The list of this type struct will be returned as a response of `serp` endpoint.
-type SerpWithDistribution struct {
+// SerpWithRatio : The list of this type struct will be returned as a response of `serp` endpoint.
+type SerpWithRatio struct {
 	// PageId : ID of search page.
 	PageId int `json:"id"`
 
@@ -91,11 +91,11 @@ type SerpWithDistribution struct {
 	Total int `json:"total"`
 
 	// Distribution : Distribution information for each categories.
-	Distribution []CategoryDistribution `json:"distribution"`
+	Distribution []CategoryCount `json:"distribution"`
 }
 
-// SerpWithDistributionQueryResult : Database select result struct
-type SerpWithDistributionQueryResult struct {
+// SerpWithRatioQueryResult : Database select result struct
+type SerpWithRatioQueryResult struct {
 	// PageId : ID of search page.
 	PageId int `db:"id"`
 

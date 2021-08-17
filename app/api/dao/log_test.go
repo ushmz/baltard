@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"testing"
 
-	"baltard/api/models"
+	"baltard/api/model"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateTaskTimeLog(t *testing.T) {
 	tests := []struct {
-		log      models.TaskTimeLogParam
+		log      model.TaskTimeLogParam
 		expected error
 	}{
 		{
-			log: models.TaskTimeLogParam{
+			log: model.TaskTimeLogParam{
 				UserId:      999,
 				TimeOnPage:  999,
 				TaskId:      5,
@@ -24,7 +24,7 @@ func TestCreateTaskTimeLog(t *testing.T) {
 			expected: nil,
 		},
 		{
-			log: models.TaskTimeLogParam{
+			log: model.TaskTimeLogParam{
 				UserId:      999,
 				TimeOnPage:  -999,
 				TaskId:      5,
@@ -34,7 +34,7 @@ func TestCreateTaskTimeLog(t *testing.T) {
 		},
 
 		{
-			log: models.TaskTimeLogParam{
+			log: model.TaskTimeLogParam{
 				UserId:      999,
 				TimeOnPage:  999,
 				TaskId:      -5,
@@ -43,7 +43,7 @@ func TestCreateTaskTimeLog(t *testing.T) {
 			expected: nil,
 		},
 		{
-			log: models.TaskTimeLogParam{
+			log: model.TaskTimeLogParam{
 				UserId:      999,
 				TimeOnPage:  999,
 				TaskId:      5,

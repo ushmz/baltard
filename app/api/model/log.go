@@ -1,4 +1,4 @@
-package models
+package model
 
 // TaskTimeLogParam : Struct for task viewing time log request body
 type TaskTimeLogParam struct {

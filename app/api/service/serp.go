@@ -1,0 +1,116 @@
+package service
+
+import (
+	"baltard/api/dao"
+	"baltard/api/model"
+	"math/rand"
+	"time"
+)
+
+type Serp interface {
+	FetchSerp(taskId, offset int) ([]model.SearchPage, error)
+	FetchSerpWithIcon(taskId, offset, top int) ([]model.SerpWithIcon, error)
+	FetchSerpWithRatio(taskId, offset, top int) ([]model.SerpWithRatio, error)
+}
+
+type SerpImpl struct {
+	serpDao dao.Serp
+}
+
+func NewSerpService(serpDao dao.Serp) Serp {
+	return &SerpImpl{serpDao: serpDao}
+}
+
+func (s *SerpImpl) FetchSerp(taskId, offset int) ([]model.SearchPage, error) {
+	return s.serpDao.FetchSerpByTaskID(taskId, offset)
+}
+
+func (s *SerpImpl) FetchSerpWithIcon(taskId, offset, top int) ([]model.SerpWithIcon, error) {
+	swi, err := s.serpDao.FetchSerpWithIconByTaskID(taskId, offset, top)
+	if err != nil {
+		return []model.SerpWithIcon{}, err
+	}
+
+	// serpMap : Map object to format SQL result to return struct.
+	serpMap := map[int]model.SerpWithIcon{}
+
+	// serp : Return struct of this method
+	serp := []model.SerpWithIcon{}
+
+	for _, v := range swi {
+		if _, ok := serpMap[v.PageId]; !ok {
+			serpMap[v.PageId] = model.SerpWithIcon{
+				PageId:  v.PageId,
+				Title:   v.Title,
+				Url:     v.Url,
+				Snippet: v.Snippet,
+				Leaks:   []model.SimilarwebPage{},
+			}
+		}
+
+		if v.SimilarwebId != 0 {
+			tempSerp := serpMap[v.PageId]
+			tempSerp.Leaks = append(tempSerp.Leaks, model.SimilarwebPage{
+				Id:       v.SimilarwebId,
+				Title:    v.SimilarwebTitle,
+				Url:      v.SimilarwebUrl,
+				Icon:     v.SimilarwebIcon,
+				Category: v.SimilarwebCategory,
+			})
+			serpMap[v.PageId] = tempSerp
+		}
+	}
+
+	for _, v := range serpMap {
+		rand.Seed(time.Now().UnixNano())
+		rand.Shuffle(len(v.Leaks), func(i, j int) { v.Leaks[i], v.Leaks[j] = v.Leaks[j], v.Leaks[i] })
+
+		serp = append(serp, v)
+	}
+
+	return serp, nil
+}
+
+func (s *SerpImpl) FetchSerpWithRatio(taskId, offset, top int) ([]model.SerpWithRatio, error) {
+	swr, err := s.serpDao.FetchSerpWithRatioByTaskID(taskId, offset, top)
+	if err != nil {
+		return []model.SerpWithRatio{}, err
+	}
+
+	// serpMap : Map object to format SQL result to return struct.
+	serpMap := map[int]model.SerpWithRatio{}
+
+	// serp : Return struct of this method
+	serp := []model.SerpWithRatio{}
+
+	for _, v := range swr {
+		if _, ok := serpMap[v.PageId]; !ok {
+			serpMap[v.PageId] = model.SerpWithRatio{
+				PageId:       v.PageId,
+				Title:        v.Title,
+				Url:          v.Url,
+				Snippet:      v.Snippet,
+				Total:        v.SimilarwebCount,
+				Distribution: []model.CategoryCount{},
+			}
+		}
+
+		if v.Category != "" {
+			if v.CategoryRank <= top {
+				tempSerp := serpMap[v.PageId]
+				tempSerp.Distribution = append(tempSerp.Distribution, model.CategoryCount{
+					Category:   v.Category,
+					Count:      v.CategoryCount,
+					Percentage: v.CategoryDistribution,
+				})
+				serpMap[v.PageId] = tempSerp
+			}
+		}
+	}
+
+	for _, v := range serpMap {
+		serp = append(serp, v)
+	}
+
+	return serp, nil
+}
