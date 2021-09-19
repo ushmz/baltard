@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"fmt"
@@ -67,7 +67,6 @@ func New() *sqlx.DB {
 		log.Printf("Applied %v migrations", appliedCount)
 	}
 
-	// DB指定
 	db.Exec("USE baltard")
 
 	db.SetMaxOpenConns(25500)

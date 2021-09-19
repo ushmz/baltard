@@ -5,18 +5,18 @@ import (
 	"net/http"
 	"strconv"
 
-	"baltard/api/model"
-	"baltard/api/service"
+	"baltard/internal/domain/model"
+	"baltard/internal/usecase"
 
 	"github.com/labstack/echo"
 )
 
 type Serp struct {
-	service service.Serp
+	usecase usecase.Serp
 }
 
-func NewSerpHandler(serpService service.Serp) *Serp {
-	return &Serp{service: serpService}
+func NewSerpHandler(serp usecase.Serp) *Serp {
+	return &Serp{usecase: serp}
 }
 
 // FetchSerpWithDistributionByID : Return search result pages with similarweb information (such as icon)
@@ -56,7 +56,7 @@ func (s *Serp) FetchSerpWithDistributionByID(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	serp, err := s.service.FetchSerpWithRatio(task, offset, top)
+	serp, err := s.usecase.FetchSerpWithRatio(task, offset, top)
 	if err != nil {
 		msg := model.ErrorMessage{
 			Message: "Database execution error: Failed to fetch relations: " + err.Error(),
@@ -107,7 +107,7 @@ func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	serp, err := s.service.FetchSerpWithIcon(task, offset, top)
+	serp, err := s.usecase.FetchSerpWithIcon(task, offset, top)
 	if err != nil {
 		msg := model.ErrorMessage{
 			Message: "Database execution error: Failed to fetch relations : " + err.Error(),
@@ -140,7 +140,7 @@ func (s *Serp) FetchSerpByID(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	serp, err := s.service.FetchSerp(task, offset)
+	serp, err := s.usecase.FetchSerp(task, offset)
 
 	return c.JSON(http.StatusOK, serp)
 }

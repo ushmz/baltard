@@ -1,26 +1,21 @@
-package dao
+package db
 
 import (
-	"baltard/api/model"
+	"baltard/internal/domain/model"
+	repo "baltard/internal/domain/repository"
 
 	"github.com/jmoiron/sqlx"
 )
 
-type Serp interface {
-	FetchSerpByTaskID(taskId, offset int) ([]model.SearchPage, error)
-	FetchSerpWithIconByTaskID(taskId, offset, top int) ([]model.SerpWithIconQueryResult, error)
-	FetchSerpWithRatioByTaskID(taskId, offset, top int) ([]model.SerpWithRatioQueryResult, error)
-}
-
-type SerpImpl struct {
+type SerpReporitoryImpl struct {
 	DB *sqlx.DB
 }
 
-func NewSerp(db *sqlx.DB) Serp {
-	return &SerpImpl{DB: db}
+func NewSerpRepository(db *sqlx.DB) repo.SerpRepository {
+	return &SerpReporitoryImpl{DB: db}
 }
 
-func (s SerpImpl) FetchSerpByTaskID(taskId, offset int) ([]model.SearchPage, error) {
+func (s SerpReporitoryImpl) FetchSerpByTaskID(taskId, offset int) ([]model.SearchPage, error) {
 	srp := []model.SearchPage{}
 	err := s.DB.Select(&srp, `
 		SELECT
@@ -41,7 +36,7 @@ func (s SerpImpl) FetchSerpByTaskID(taskId, offset int) ([]model.SearchPage, err
 	return srp, nil
 }
 
-func (s SerpImpl) FetchSerpWithIconByTaskID(taskId, offset, top int) ([]model.SerpWithIconQueryResult, error) {
+func (s SerpReporitoryImpl) FetchSerpWithIconByTaskID(taskId, offset, top int) ([]model.SerpWithIconQueryResult, error) {
 	swi := []model.SerpWithIconQueryResult{}
 	err := s.DB.Select(&swi, `
 		SELECT
@@ -143,7 +138,7 @@ func (s SerpImpl) FetchSerpWithIconByTaskID(taskId, offset, top int) ([]model.Se
 	return swi, nil
 }
 
-func (s SerpImpl) FetchSerpWithRatioByTaskID(taskId, offset, top int) ([]model.SerpWithRatioQueryResult, error) {
+func (s SerpReporitoryImpl) FetchSerpWithRatioByTaskID(taskId, offset, top int) ([]model.SerpWithRatioQueryResult, error) {
 	swr := []model.SerpWithRatioQueryResult{}
 	err := s.DB.Select(&swr, `
 		SELECT

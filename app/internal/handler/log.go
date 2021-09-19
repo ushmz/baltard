@@ -3,18 +3,18 @@ package handler
 import (
 	"net/http"
 
-	"baltard/api/model"
-	"baltard/api/service"
+	"baltard/internal/domain/model"
+	"baltard/internal/usecase"
 
 	"github.com/labstack/echo"
 )
 
 type Log struct {
-	service service.Log
+	usecase usecase.Log
 }
 
-func NewLogHandler(logService service.Log) *Log {
-	return &Log{service: logService}
+func NewLogHandler(log usecase.Log) *Log {
+	return &Log{usecase: log}
 }
 
 // CreateTaskTimeLog : Create task time log. Table name is `behacior_logs`.
@@ -30,7 +30,7 @@ func (l *Log) CreateTaskTimeLog(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, msg)
 	}
 
-	err := l.service.CreateTaskTimeLog(param)
+	err := l.usecase.StoreTaskTimeLog(param)
 	if err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		msg := model.ErrorMessage{
@@ -53,7 +53,7 @@ func (l *Log) CreateSerpClickLog(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	err := l.service.CreateSerpClickLog(param)
+	err := l.usecase.StoreSerpClickLog(param)
 	if err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		msg := model.ErrorMessage{
@@ -75,7 +75,7 @@ func (l *Log) StoreSearchSeeion(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, msg)
 	}
 
-	err := l.service.StoreSearchSeeion(s)
+	err := l.usecase.StoreSearchSeeion(s)
 	if err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		msg := model.ErrorMessage{

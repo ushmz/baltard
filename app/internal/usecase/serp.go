@@ -1,10 +1,11 @@
-package service
+package usecase
 
 import (
-	"baltard/api/dao"
-	"baltard/api/model"
 	"math/rand"
 	"time"
+
+	"baltard/internal/domain/model"
+	repo "baltard/internal/domain/repository"
 )
 
 type Serp interface {
@@ -14,19 +15,19 @@ type Serp interface {
 }
 
 type SerpImpl struct {
-	serpDao dao.Serp
+	repository repo.SerpRepository
 }
 
-func NewSerpService(serpDao dao.Serp) Serp {
-	return &SerpImpl{serpDao: serpDao}
+func NewSerpUsecase(serpRepository repo.SerpRepository) Serp {
+	return &SerpImpl{repository: serpRepository}
 }
 
 func (s *SerpImpl) FetchSerp(taskId, offset int) ([]model.SearchPage, error) {
-	return s.serpDao.FetchSerpByTaskID(taskId, offset)
+	return s.repository.FetchSerpByTaskID(taskId, offset)
 }
 
 func (s *SerpImpl) FetchSerpWithIcon(taskId, offset, top int) ([]model.SerpWithIcon, error) {
-	swi, err := s.serpDao.FetchSerpWithIconByTaskID(taskId, offset, top)
+	swi, err := s.repository.FetchSerpWithIconByTaskID(taskId, offset, top)
 	if err != nil {
 		return []model.SerpWithIcon{}, err
 	}
@@ -72,7 +73,7 @@ func (s *SerpImpl) FetchSerpWithIcon(taskId, offset, top int) ([]model.SerpWithI
 }
 
 func (s *SerpImpl) FetchSerpWithRatio(taskId, offset, top int) ([]model.SerpWithRatio, error) {
-	swr, err := s.serpDao.FetchSerpWithRatioByTaskID(taskId, offset, top)
+	swr, err := s.repository.FetchSerpWithRatioByTaskID(taskId, offset, top)
 	if err != nil {
 		return []model.SerpWithRatio{}, err
 	}

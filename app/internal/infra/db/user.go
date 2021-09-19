@@ -1,30 +1,23 @@
-package dao
+package db
 
 import (
 	"database/sql"
 
-	"baltard/api/model"
+	"baltard/internal/domain/model"
+	repo "baltard/internal/domain/repository"
 
 	"github.com/jmoiron/sqlx"
 )
 
-type User interface {
-	Create(uid, secret string) (*model.User, error)
-	FindById(UserId int) (*model.User, error)
-	FindByUid(uid string) (*model.User, error)
-	InsertCompletionCode(userId, code int) error
-	GetCompletionCodeById(userId int) (int, error)
-}
-
-type UserImpl struct {
+type UserRepositoryImpl struct {
 	DB *sqlx.DB
 }
 
-func NewUser(db *sqlx.DB) User {
-	return &UserImpl{DB: db}
+func NewUserRepository(db *sqlx.DB) repo.UserRepository {
+	return &UserRepositoryImpl{DB: db}
 }
 
-func (u UserImpl) Create(uid, secret string) (*model.User, error) {
+func (u UserRepositoryImpl) Create(uid, secret string) (*model.User, error) {
 	rows, err := u.DB.Exec(`
 		INSERT INTO
 			users (
@@ -53,7 +46,7 @@ func (u UserImpl) Create(uid, secret string) (*model.User, error) {
 	return &eu, nil
 }
 
-func (u UserImpl) FindById(userId int) (*model.User, error) {
+func (u UserRepositoryImpl) FindById(userId int) (*model.User, error) {
 	user := model.User{}
 	row := u.DB.QueryRowx(`
 		SELECT
@@ -71,7 +64,7 @@ func (u UserImpl) FindById(userId int) (*model.User, error) {
 	return &user, nil
 }
 
-func (u UserImpl) FindByUid(uid string) (*model.User, error) {
+func (u UserRepositoryImpl) FindByUid(uid string) (*model.User, error) {
 	user := model.User{}
 	row := u.DB.QueryRowx(`
 		SELECT
@@ -89,7 +82,7 @@ func (u UserImpl) FindByUid(uid string) (*model.User, error) {
 	return &user, nil
 }
 
-func (u UserImpl) InsertCompletionCode(userId, code int) error {
+func (u UserRepositoryImpl) AddCompletionCode(userId, code int) error {
 	_, err := u.DB.Exec(`
 		INSERT INTO 
 			completion_codes (
@@ -106,7 +99,7 @@ func (u UserImpl) InsertCompletionCode(userId, code int) error {
 	return nil
 }
 
-func (u UserImpl) GetCompletionCodeById(userId int) (int, error) {
+func (u UserRepositoryImpl) GetCompletionCodeById(userId int) (int, error) {
 	var code sql.NullInt64
 	row := u.DB.QueryRow(`
 		SELECT

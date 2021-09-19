@@ -41,6 +41,3 @@ services:
       MYSQL_USER: baltard
       MYSQL_PASSWORD: baltard
       TZ: Asia/Tokyo
-
-volumes:
-  data:
