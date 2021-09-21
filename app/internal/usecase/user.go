@@ -1,12 +1,12 @@
-package service
+package usecase
 
 import (
-	"baltard/api/dao"
-	"baltard/api/model"
-
 	"database/sql"
 	"math/rand"
 	"time"
+
+	"baltard/internal/domain/model"
+	repo "baltard/internal/domain/repository"
 )
 
 type User interface {
@@ -18,12 +18,12 @@ type User interface {
 }
 
 type UserImpl struct {
-	userDao dao.User
-	taskDao dao.Task
+	userRepository repo.UserRepository
+	taskRepository repo.TaskRepository
 }
 
-func NewUserService(userDao dao.User, taskDao dao.Task) User {
-	return &UserImpl{userDao: userDao, taskDao: taskDao}
+func NewUserUsecase(userRepository repo.UserRepository, taskRepository repo.TaskRepository) User {
+	return &UserImpl{userRepository: userRepository, taskRepository: taskRepository}
 }
 
 // generateRandomPasswd : Generate random password its length equal to argument.
@@ -42,7 +42,7 @@ func (u *UserImpl) GenerateRandomPasswd(l int) string {
 }
 
 func (u *UserImpl) FindByUid(uid string) (*model.User, bool, error) {
-	user, err := u.userDao.FindByUid(uid)
+	user, err := u.userRepository.FindByUid(uid)
 	if err != nil {
 		if err != sql.ErrNoRows {
 			return &model.User{}, false, err
@@ -61,13 +61,13 @@ func (u *UserImpl) CreateUser(uid string) (*model.User, error) {
 	// randomstr : Used as password (not necessary)
 	randstr := u.GenerateRandomPasswd(12)
 
-	cu, err := u.userDao.Create(uid, randstr)
+	cu, err := u.userRepository.Create(uid, randstr)
 	if err != nil {
 		return &model.User{}, err
 	}
 
 	// Insert completion code
-	u.userDao.InsertCompletionCode(cu.Id, randomNumber)
+	u.userRepository.AddCompletionCode(cu.Id, randomNumber)
 	if err != nil {
 		return &model.User{}, err
 	}
@@ -76,19 +76,19 @@ func (u *UserImpl) CreateUser(uid string) (*model.User, error) {
 
 func (u *UserImpl) AllocateTask() (model.TaskInfo, error) {
 	// groupId : Allocated group ID (consists of task IDs and condition ID)
-	groupId, err := u.taskDao.AllocateTask()
+	groupId, err := u.taskRepository.UpdateTaskAllocation()
 	if err != nil {
 		return model.TaskInfo{}, err
 	}
 
 	// taskIds : Allocated task IDs
-	taskIds, err := u.taskDao.FetchTaskIdsByGroupId(groupId)
+	taskIds, err := u.taskRepository.GetTaskIdsByGroupId(groupId)
 	if err != nil {
 		return model.TaskInfo{}, err
 	}
 
 	// conditionId : Allocated condition ID
-	conditionId, err := u.taskDao.FetchConditionIdByGroupId(groupId)
+	conditionId, err := u.taskRepository.GetConditionIdByGroupId(groupId)
 	if err != nil {
 		return model.TaskInfo{}, err
 	}
@@ -97,5 +97,5 @@ func (u *UserImpl) AllocateTask() (model.TaskInfo, error) {
 }
 
 func (u *UserImpl) GetCompletionCode(userId int) (int, error) {
-	return u.userDao.GetCompletionCodeById(userId)
+	return u.userRepository.GetCompletionCodeById(userId)
 }

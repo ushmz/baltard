@@ -1,10 +1,16 @@
 package main
 
 import (
-	"baltard/api/handler"
+	"context"
+	"net/http"
+	"os"
+	"os/signal"
+	"time"
 
-	"baltard/database"
-	// mw "baltard/middleware"
+	"baltard/internal/handler"
+	"baltard/internal/infra/db"
+
+	mw "baltard/internal/middleware"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -13,10 +19,24 @@ import (
 )
 
 func main() {
-	d := database.New()
+	d := db.New()
 	defer d.Close()
 	r := NewRouter(d)
-	r.Logger.Fatal(r.Start(":8080"))
+	go func() {
+		if err := r.Start(":8080"); err != nil && err != http.ErrServerClosed {
+			r.Logger.Fatal("Shutting down the server")
+		}
+	}()
+
+	// Gracefully shutdown the server with a timeout (10 seconds.)
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := r.Shutdown(ctx); err != nil {
+		r.Logger.Fatal(err)
+	}
 }
 
 func NewRouter(d *sqlx.DB) *echo.Echo {
@@ -25,7 +45,7 @@ func NewRouter(d *sqlx.DB) *echo.Echo {
 	e.HidePort = true
 
 	e.Use(middleware.Recover())
-	// e.Use(mw.Logger())
+	e.Use(mw.Logger())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},

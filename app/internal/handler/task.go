@@ -5,18 +5,18 @@ import (
 	"net/http"
 	"strconv"
 
-	"baltard/api/model"
-	"baltard/api/service"
+	"baltard/internal/domain/model"
+	"baltard/internal/usecase"
 
 	"github.com/labstack/echo"
 )
 
 type Task struct {
-	service service.Task
+	usecase usecase.Task
 }
 
-func NewTaskHandler(taskService service.Task) *Task {
-	return &Task{service: taskService}
+func NewTaskHandler(task usecase.Task) *Task {
+	return &Task{usecase: task}
 }
 
 // FetchTaskInfo : Fetch task info by task id
@@ -33,7 +33,7 @@ func (t *Task) FetchTaskInfo(c echo.Context) error {
 	}
 
 	// Fetch task information by task Id
-	ti, err := t.service.FetchTaskInfo(task)
+	ti, err := t.usecase.FetchTaskInfo(task)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// Unreachable code block
@@ -56,7 +56,7 @@ func (t *Task) SubmitTaskAnswer(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	err := t.service.SubmitTaskAnswer(answer)
+	err := t.usecase.CreateTaskAnswer(answer)
 	// Execute query.
 	if err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)

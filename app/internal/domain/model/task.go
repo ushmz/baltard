@@ -1,5 +1,6 @@
 package model
 
+// Task : Struct for Task information.
 type Task struct {
 	// Id : The ID of task
 	Id int `db:"id" json:"id"`
@@ -23,6 +24,7 @@ type GroupCounts struct {
 	Count   int `db:"count" json:"count"`
 }
 
+// TaskInfo : Struct for response of which task is allocated.
 type TaskInfo struct {
 	GroupId     int
 	ConditionId int

@@ -15,7 +15,7 @@ type TaskTimeLogParam struct {
 	ConditionId int `db:"condition_id" json:"condition"`
 }
 
-// SearchPageClickLogParamWithVisible : Create page click log. Table name is `behavior_logs_click`.
+// SearchPageClickLogParamWithVisible : Struct for page click log request body.
 type SearchPageClickLogParam struct {
 	// Id : The ID of each log record.
 	Id string `db:"id" json:"id"`
@@ -42,6 +42,7 @@ type SearchPageClickLogParam struct {
 	IsVisible bool `db:"is_visible" json:"visible"`
 }
 
+// SearchSession : Struct fot search session request body.
 type SearchSession struct {
 	// UserId : Allocated ID of user (worker)
 	UserId int `db:"user_id" json:"user"`

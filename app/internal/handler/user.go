@@ -5,18 +5,18 @@ import (
 	"net/http"
 	"strconv"
 
-	"baltard/api/model"
-	"baltard/api/service"
+	"baltard/internal/domain/model"
+	"baltard/internal/usecase"
 
 	"github.com/labstack/echo"
 )
 
 type User struct {
-	service service.User
+	usecase usecase.User
 }
 
-func NewUserHandler(userService service.User) *User {
-	return &User{service: userService}
+func NewUserHandler(user usecase.User) *User {
+	return &User{usecase: user}
 }
 
 // CreateUser : Register new user with crowd-sourcing service ID
@@ -33,7 +33,7 @@ func (u *User) CreateUser(c echo.Context) error {
 	var user model.User
 
 	// exist : Given uid is already exist or not
-	eu, exist, err := u.service.FindByUid(param.Uid)
+	eu, exist, err := u.usecase.FindByUid(param.Uid)
 	if err != nil {
 		c.Echo().Logger.Errorf("Failed to detect user existence : %v", err)
 		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
@@ -44,7 +44,7 @@ func (u *User) CreateUser(c echo.Context) error {
 	if exist {
 		user = *eu
 	} else {
-		nu, err := u.service.CreateUser(param.Uid)
+		nu, err := u.usecase.CreateUser(param.Uid)
 		if err != nil {
 			c.Echo().Logger.Errorf("Failed to create new user : %v", err)
 			return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
@@ -54,7 +54,7 @@ func (u *User) CreateUser(c echo.Context) error {
 		user = *nu
 	}
 
-	info, err := u.service.AllocateTask()
+	info, err := u.usecase.AllocateTask()
 	if err != nil {
 		c.Echo().Logger.Errorf("Failed to allocate task  : %v", err)
 		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
@@ -85,7 +85,7 @@ func (u *User) GetCompletionCode(c echo.Context) error {
 	}
 
 	// Fetch completion code by uid from DB
-	code, err := u.service.GetCompletionCode(userId)
+	code, err := u.usecase.GetCompletionCode(userId)
 	if err != nil {
 		// If given uid not found in DB
 		if err == sql.ErrNoRows {

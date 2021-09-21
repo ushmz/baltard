@@ -1,29 +1,22 @@
-package dao
+package db
 
 import (
-	"baltard/api/model"
+	"baltard/internal/domain/model"
+	repo "baltard/internal/domain/repository"
 
 	"github.com/jmoiron/sqlx"
 )
 
-type Task interface {
-	FetchTaskInfo(taskId int) (*model.Task, error)
-	AllocateTask() (int, error)
-	FetchTaskIdsByGroupId(groupId int) ([]int, error)
-	FetchConditionIdByGroupId(groupId int) (int, error)
-	SubmitTaskAnswer(*model.Answer) error
-}
-
-type TaskImpl struct {
+type TaskRepositoryImpl struct {
 	DB *sqlx.DB
 }
 
-func NewTask(db *sqlx.DB) Task {
-	return &TaskImpl{DB: db}
+func NewTaskRepository(db *sqlx.DB) repo.TaskRepository {
+	return &TaskRepositoryImpl{DB: db}
 }
 
 // FetchTaskInfo : Fetch task info by task id
-func (t TaskImpl) FetchTaskInfo(taskId int) (*model.Task, error) {
+func (t TaskRepositoryImpl) FetchTaskInfo(taskId int) (*model.Task, error) {
 	task := model.Task{}
 	row := t.DB.QueryRowx(`
 		SELECT
@@ -45,7 +38,7 @@ func (t TaskImpl) FetchTaskInfo(taskId int) (*model.Task, error) {
 	return &task, nil
 }
 
-func (t TaskImpl) AllocateTask() (int, error) {
+func (t TaskRepositoryImpl) UpdateTaskAllocation() (int, error) {
 	tx := t.DB.MustBegin()
 	gc := model.GroupCounts{}
 	err := tx.Get(&gc, `
@@ -88,7 +81,7 @@ func (t TaskImpl) AllocateTask() (int, error) {
 	return gc.GroupId, nil
 }
 
-func (t TaskImpl) FetchTaskIdsByGroupId(groupId int) ([]int, error) {
+func (t TaskRepositoryImpl) GetTaskIdsByGroupId(groupId int) ([]int, error) {
 	taskIds := []int{}
 	err := t.DB.Select(&taskIds, `
 		SELECT
@@ -106,7 +99,7 @@ func (t TaskImpl) FetchTaskIdsByGroupId(groupId int) ([]int, error) {
 	return taskIds, nil
 }
 
-func (t TaskImpl) FetchConditionIdByGroupId(groupId int) (int, error) {
+func (t TaskRepositoryImpl) GetConditionIdByGroupId(groupId int) (int, error) {
 	var condition int
 	row := t.DB.QueryRow(`
 		SELECT
@@ -125,7 +118,7 @@ func (t TaskImpl) FetchConditionIdByGroupId(groupId int) (int, error) {
 	return condition, nil
 }
 
-func (a TaskImpl) SubmitTaskAnswer(answer *model.Answer) error {
+func (a TaskRepositoryImpl) CreateTaskAnswer(answer *model.Answer) error {
 	_, err := a.DB.NamedExec(`
 		INSERT INTO
 			answers (

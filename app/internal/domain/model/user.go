@@ -6,7 +6,7 @@ type UserParam struct {
 	Uid string `json:"uid"`
 }
 
-// User :
+// User : Struct for user information.
 type User struct {
 	// Id : The ID of user.
 	Id int `db:"id" json:"id"`
