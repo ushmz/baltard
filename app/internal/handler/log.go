@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"baltard/internal/domain/model"
@@ -20,14 +21,14 @@ func NewLogHandler(log usecase.Log) *Log {
 // CreateTaskTimeLog : Create task time log. Table name is `behacior_logs`.
 // Create log one record by user id, if its id is depulicated, update record instead create new record.
 func (l *Log) CreateTaskTimeLog(c echo.Context) error {
-	// l : Bind request body to struct.
+	// param : Bind request body to struct.
 	param := new(model.TaskTimeLogParam)
 	if err := c.Bind(param); err != nil {
-		c.Echo().Logger.Errorf("Database Execution error : %v", err)
+		c.Echo().Logger.Errorf("Cannot bind request body to struct : %v", err)
 		msg := model.ErrorMessage{
-			Message: "Database Execution error.",
+			Message: fmt.Sprintf("Cannot bind request body : %v", err),
 		}
-		return c.JSON(http.StatusInternalServerError, msg)
+		return c.JSON(http.StatusBadRequest, msg)
 	}
 
 	err := l.usecase.StoreTaskTimeLog(param)
@@ -43,12 +44,12 @@ func (l *Log) CreateTaskTimeLog(c echo.Context) error {
 }
 
 func (l *Log) CreateSerpClickLog(c echo.Context) error {
-	// p : Bind request body to struct.
+	// param : Bind request body to struct.
 	param := new(model.SearchPageClickLogParam)
 	if err := c.Bind(param); err != nil {
 		c.Echo().Logger.Errorf("Failed to bind request body : %v", err)
 		msg := model.ErrorMessage{
-			Message: "Failed to bind request body.",
+			Message: fmt.Sprintf("Cannot bind request body : %v", err),
 		}
 		return c.JSON(http.StatusBadRequest, msg)
 	}
@@ -72,7 +73,7 @@ func (l *Log) StoreSearchSeeion(c echo.Context) error {
 		msg := model.ErrorMessage{
 			Message: "Invalid request body.",
 		}
-		return c.JSON(http.StatusInternalServerError, msg)
+		return c.JSON(http.StatusBadRequest, msg)
 	}
 
 	err := l.usecase.StoreSearchSeeion(s)
