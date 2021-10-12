@@ -1,4 +1,4 @@
-module baltard
+module ratri
 
 go 1.16
 

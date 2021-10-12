@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"baltard/internal/domain/model"
-	repo "baltard/internal/domain/repository"
+	"ratri/internal/domain/model"
+	repo "ratri/internal/domain/repository"
 )
 
 type Log interface {

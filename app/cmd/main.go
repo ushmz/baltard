@@ -7,10 +7,10 @@ import (
 	"os/signal"
 	"time"
 
-	"baltard/internal/handler"
 	"baltard/internal/infra/db"
+	"ratri/internal/handler"
 
-	mw "baltard/internal/middleware"
+	mw "ratri/internal/middleware"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
