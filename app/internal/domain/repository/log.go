@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"baltard/internal/domain/model"
+	"ratri/internal/domain/model"
 )
 
 type LogRepository interface {

@@ -10,7 +10,7 @@ import (
 	"ratri/internal/handler"
 	db "ratri/internal/infra/mysql"
 
-	mw "baltard/internal/middleware"
+	mw "ratri/internal/middleware"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
