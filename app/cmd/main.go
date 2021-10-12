@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"time"
 
-	"baltard/internal/infra/db"
 	"ratri/internal/handler"
+	db "ratri/internal/infra/mysql"
 
 	mw "ratri/internal/middleware"
 

@@ -1,4 +1,4 @@
-package db
+package mysql
 
 import (
 	"fmt"
@@ -29,11 +29,11 @@ type MySQLConnectionEnv struct {
 
 func NewMySQLConnectionEnv() *MySQLConnectionEnv {
 	return &MySQLConnectionEnv{
-		Host:           getEnv("MYSQL_HOST", "baltard-mysql"),
+		Host:           getEnv("MYSQL_HOST", "ratri-mysql"),
 		Port:           getEnv("MYSQL_PORT", "3306"),
-		User:           getEnv("MYSQL_USER", "baltard"),
-		DBName:         getEnv("MYSQL_DBNAME", "baltard"),
-		Password:       getEnv("MYSQL_PASS", "baltard"),
+		User:           getEnv("MYSQL_USER", "ratri"),
+		DBName:         getEnv("MYSQL_DBNAME", "ratri"),
+		Password:       getEnv("MYSQL_PASS", "ratri"),
 		ConnectionName: getEnv("CONNECTION_NAME", "default"),
 	}
 }

@@ -1,10 +1,10 @@
-package db
+package mysql
 
 import (
 	"os"
 	"testing"
 
-	repo "baltard/internal/domain/repository"
+	repo "ratri/internal/domain/repository"
 
 	_ "github.com/go-sql-driver/mysql"
 )

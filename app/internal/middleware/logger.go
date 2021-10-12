@@ -35,7 +35,11 @@ func logFormat() string {
 func Logger() echo.MiddlewareFunc {
 
 	ts := time.Now().Format("2006-01-02--15-04-05")
-	fn := "./.logs/access/" + ts + ".log"
+	fn := "./logs/" + ts + ".log"
+
+	if err := os.MkdirAll("logs", os.ModePerm); err != nil {
+		panic(err)
+	}
 
 	logFile, err := os.OpenFile(fn, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
