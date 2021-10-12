@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"baltard/internal/infra/db"
-	"baltard/internal/usecase"
+	db "ratri/internal/infra/mysql"
+	"ratri/internal/usecase"
 
 	"github.com/jmoiron/sqlx"
 )

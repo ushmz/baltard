@@ -1,10 +1,10 @@
-package db
+package mysql
 
 import (
 	"database/sql"
 
-	"baltard/internal/domain/model"
-	repo "baltard/internal/domain/repository"
+	"ratri/internal/domain/model"
+	repo "ratri/internal/domain/repository"
 
 	"github.com/jmoiron/sqlx"
 )
