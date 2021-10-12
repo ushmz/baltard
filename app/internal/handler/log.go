@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"baltard/internal/domain/model"
-	"baltard/internal/usecase"
+	"ratri/internal/domain/model"
+	"ratri/internal/usecase"
 
 	"github.com/labstack/echo"
 )
