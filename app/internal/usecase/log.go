@@ -6,7 +6,8 @@ import (
 )
 
 type Log interface {
-	StoreTaskTimeLog(*model.TaskTimeLogParam) error
+	StoreTaskTimeLog(*model.TaskTimeLogParamWithTime) error
+	CumulateTaskTimeLog(*model.TaskTimeLogParam) error
 	StoreSerpClickLog(*model.SearchPageClickLogParam) error
 	StoreSearchSeeion(*model.SearchSession) error
 }
@@ -19,8 +20,12 @@ func NewLogUsecase(logRepository repo.LogRepository) Log {
 	return &LogImpl{repository: logRepository}
 }
 
-func (l *LogImpl) StoreTaskTimeLog(p *model.TaskTimeLogParam) error {
+func (l *LogImpl) StoreTaskTimeLog(p *model.TaskTimeLogParamWithTime) error {
 	return l.repository.StoreTaskTimeLog(p)
+}
+
+func (l *LogImpl) CumulateTaskTimeLog(p *model.TaskTimeLogParam) error {
+	return l.repository.CumulateTaskTimeLog(p)
 }
 
 func (l *LogImpl) StoreSerpClickLog(p *model.SearchPageClickLogParam) error {

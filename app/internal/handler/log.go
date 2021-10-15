@@ -22,7 +22,7 @@ func NewLogHandler(log usecase.Log) *Log {
 // Create log one record by user id, if its id is depulicated, update record instead create new record.
 func (l *Log) CreateTaskTimeLog(c echo.Context) error {
 	// param : Bind request body to struct.
-	param := new(model.TaskTimeLogParam)
+	param := new(model.TaskTimeLogParamWithTime)
 	if err := c.Bind(param); err != nil {
 		c.Echo().Logger.Errorf("Cannot bind request body to struct : %v", err)
 		msg := model.ErrorMessage{
@@ -32,6 +32,29 @@ func (l *Log) CreateTaskTimeLog(c echo.Context) error {
 	}
 
 	err := l.usecase.StoreTaskTimeLog(param)
+	if err != nil {
+		c.Echo().Logger.Errorf("Database Execution error : %v", err)
+		msg := model.ErrorMessage{
+			Message: "Database Execution error.",
+		}
+		return c.JSON(http.StatusInternalServerError, msg)
+	}
+
+	return c.NoContent(http.StatusCreated)
+}
+
+func (l *Log) CumulateTaskTimeLog(c echo.Context) error {
+	// param : Bind request body to struct.
+	param := new(model.TaskTimeLogParam)
+	if err := c.Bind(param); err != nil {
+		c.Echo().Logger.Errorf("Cannot bind request body to struct : %v", err)
+		msg := model.ErrorMessage{
+			Message: fmt.Sprintf("Cannot bind request body : %v", err),
+		}
+		return c.JSON(http.StatusBadRequest, msg)
+	}
+
+	err := l.usecase.CumulateTaskTimeLog(param)
 	if err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		msg := model.ErrorMessage{
