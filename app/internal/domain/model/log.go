@@ -1,12 +1,25 @@
 package model
 
-// TaskTimeLogParam : Struct for task viewing time log request body
-type TaskTimeLogParam struct {
+// TaskTimeLogParamWithTime : Struct for task viewing time log request body
+// This struct is deprecated on the same reason with `repository.StoreTaskTimeLog()`
+type TaskTimeLogParamWithTime struct {
 	// UserId : The ID of user (worker)
 	UserId int `db:"user_id" json:"user"`
 
 	// TimeOnPage : User's page viewing time.
 	TimeOnPage int `db:"time_on_page" json:"time"`
+
+	// TaskId : The Id of task that user working.
+	TaskId int `db:"task_id" json:"task"`
+
+	// ConditionId : User's condition Id that means group and task category.
+	ConditionId int `db:"condition_id" json:"condition"`
+}
+
+// TaskTimeLogParam : Struct for task viewing time log request body
+type TaskTimeLogParam struct {
+	// UserId : The ID of user (worker)
+	UserId int `db:"user_id" json:"user"`
 
 	// TaskId : The Id of task that user working.
 	TaskId int `db:"task_id" json:"task"`
