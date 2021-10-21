@@ -48,8 +48,20 @@ func NewRouter(d *sqlx.DB) *echo.Echo {
 	e.Use(mw.Logger())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
-		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
+		AllowHeaders: []string{
+			echo.HeaderOrigin,
+			echo.HeaderContentType,
+			echo.HeaderAccept,
+			echo.HeaderAuthorization,
+		},
+		AllowMethods: []string{
+			echo.GET,
+			echo.HEAD,
+			echo.PUT,
+			echo.PATCH,
+			echo.POST,
+			echo.DELETE,
+		},
 	}))
 
 	h := handler.NewHandler(d)
