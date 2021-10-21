@@ -1,13 +1,1 @@
-.DS_Store
 .env
-
-koolhaas-api-firebase.json
-key.json
-cloud_sql_proxy
-app.yaml
-
-# benchmark
-.vegeta
-
-# profile
-.pprof
