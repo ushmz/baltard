@@ -1,0 +1,16 @@
+# Config files
+koolhaas-api-firebase.json
+key.json
+app.yaml
+
+# benchmark
+.vegeta
+
+# profile
+.pprof
+
+# logs
+.logs
+
+# binary file for air
+tmp/
