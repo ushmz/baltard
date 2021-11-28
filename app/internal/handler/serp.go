@@ -8,7 +8,7 @@ import (
 	"ratri/internal/domain/model"
 	"ratri/internal/usecase"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type Serp struct {
@@ -20,6 +20,18 @@ func NewSerpHandler(serp usecase.Serp) *Serp {
 }
 
 // FetchSerpWithDistributionByID : Return search result pages with similarweb information (such as icon)
+// @Id fetch_serp_with_distribution_by_id
+// @Summary Returns json which have a list of search results with data for RatioUI.
+// @Description Returns json which have a list of search results with tracked pages of Similarweb top 2000 and its category.
+// @Accept json
+// @Produce json
+// @Param taskId path int true "Task ID"
+// @Param offset query int true "Number of offset to display"
+// @Param top query int false "Number of categories to display"
+// @Success 200 {object} []model.SerpWithRatio
+// @Failure 400
+// @Failure 500
+// @Router /v1/serp/{taskId}/ratio [GET]
 func (s *Serp) FetchSerpWithDistributionByID(c echo.Context) error {
 	// taskId : Get task Id from path parameter.
 	taskId := c.Param("id")
@@ -68,6 +80,18 @@ func (s *Serp) FetchSerpWithDistributionByID(c echo.Context) error {
 }
 
 // FetchSerpWithIconByID : Return search result pages with similarweb information (such as icon)
+// @Id fetch_serp_with_icon_by_id
+// @Summary Returns json which have a list of search results with data for IconUI.
+// @Description Returns json which have a list of search results with tracked pages of Similarweb top 2000 pages and its favicon URL.
+// @Accept json
+// @Produce json
+// @Param taskId path int true "Task ID"
+// @Param offset query int true "Number of offset to display"
+// @Param top query int false "Number of icons to display"
+// @Success 200 {object} []model.SerpWithIcon
+// @Failure 400
+// @Failure 500
+// @Router /v1/serp/{taskId}/icon [GET]
 func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
 	// taskId : Get task Id from path parameter.
 	taskId := c.Param("id")
@@ -119,6 +143,17 @@ func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
 }
 
 // FetchSerpByID : Return search result pages by task id .
+// @Id fetch_serp_by_id
+// @Summary Returns json which have a list of search results.
+// @Description Returns json which have a list of search results with no additional data.
+// @Accept json
+// @Produce json
+// @Param taskId path int true "Task ID"
+// @Param offset query int true "Number of offset to display"
+// @Success 200 {object} []model.SearchPage
+// @Failure 400
+// @Failure 500
+// @Router /v1/serp/{taskId} [GET]
 func (s *Serp) FetchSerpByID(c echo.Context) error {
 	// taskId : Get task Id from path parameter.
 	taskId := c.Param("id")

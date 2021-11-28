@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"time"
 
+	_ "ratri/docs"
 	"ratri/internal/handler"
 	db "ratri/internal/infra/mysql"
 
@@ -14,10 +15,16 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/swaggo/echo-swagger"
 )
 
+// @title ratri API
+// @version 1.0
+// @description ratri is a simple backend API for information retrieval experiments
+// @host localhost:8080
+// @BasePath /api
 func main() {
 	d := db.New()
 	defer d.Close()
@@ -44,7 +51,7 @@ func NewRouter(d *sqlx.DB) *echo.Echo {
 	e.HideBanner = true
 	e.HidePort = true
 
-	e.Use(middleware.Recover())
+	// e.Use(middleware.Recover())
 	e.Use(mw.Logger())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
@@ -66,25 +73,29 @@ func NewRouter(d *sqlx.DB) *echo.Echo {
 
 	h := handler.NewHandler(d)
 
-	v1 := e.Group("/v1")
+	e.GET("/docs/*", echoSwagger.WrapHandler)
+
+	api := e.Group("/api")
+	api.POST("/users", h.User.CreateUser)
+
+	v1 := api.Group("/v1")
 	// v1.Use(mw.Auth())
 
 	// users
-	e.POST("/users", h.User.CreateUser)
 	v1.GET("/users/code/:id", h.User.GetCompletionCode)
 
 	// task
 	v1.GET("/task/:id", h.Task.FetchTaskInfo)
+	v1.POST("/task/answer", h.Task.SubmitTaskAnswer)
 	v1.GET("/serp/:id", h.Serp.FetchSerpByID)
 	v1.GET("/serp/:id/icon", h.Serp.FetchSerpWithIconByID)
-	v1.GET("/serp/:id/pct", h.Serp.FetchSerpWithDistributionByID)
-	v1.POST("/task/answer", h.Task.SubmitTaskAnswer)
+	v1.GET("/serp/:id/ratio", h.Serp.FetchSerpWithDistributionByID)
 
 	// logs
-	v1.PATCH("/users/logs/time", h.Log.CreateTaskTimeLog)
-	v1.POST("/users/logs/time", h.Log.CumulateTaskTimeLog)
-	v1.POST("/users/logs/click", h.Log.CreateSerpClickLog)
-	v1.POST("/task/session", h.Log.StoreSearchSeeion)
+	v1.POST("/logs/time", h.Log.CreateTaskTimeLog)
+	v1.PATCH("/logs/time", h.Log.CumulateTaskTimeLog)
+	v1.POST("/logs/click", h.Log.CreateSerpClickLog)
+	v1.POST("/logs/session", h.Log.StoreSearchSeeion)
 
 	return e
 }
