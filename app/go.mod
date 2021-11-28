@@ -10,12 +10,12 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/labstack/echo v3.3.10+incompatible
-	github.com/labstack/echo/v4 v4.6.1 // indirect
+	github.com/labstack/echo/v4 v4.6.1
 	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/rubenv/sql-migrate v0.0.0-20210614095031-55d5740dbbcc
-	github.com/swaggo/echo-swagger v1.1.4 // indirect
+	github.com/swaggo/echo-swagger v1.1.4
 	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2 // indirect
 	github.com/swaggo/swag v1.7.6
 	github.com/ziutek/mymysql v1.5.4 // indirect
