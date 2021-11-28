@@ -8,7 +8,7 @@ import (
 	"ratri/internal/domain/model"
 	"ratri/internal/usecase"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 type Task struct {
@@ -20,6 +20,16 @@ func NewTaskHandler(task usecase.Task) *Task {
 }
 
 // FetchTaskInfo : Fetch task info by task id
+// @Id fetch_task_info
+// @Summary Fetch task information.
+// @Description Fetch task information by requeted task ID.
+// @Accept json
+// @Produce json
+// @Param id path int true "Task ID"
+// @Success 200 {object} model.Task
+// @Failure 400 "Error with message"
+// @Failure 500 "Error with message"
+// @Router /v1/task/{id} [GET]
 func (t *Task) FetchTaskInfo(c echo.Context) error {
 
 	// taskId : Get task Id from path parameter.
@@ -48,6 +58,16 @@ func (t *Task) FetchTaskInfo(c echo.Context) error {
 }
 
 // SubmitTaskAnswer : Submit task answer
+// @Id submit_task_answer
+// @Summary Submit task answer.
+// @Description Submit task answer.
+// @Accept json
+// @Produce json
+// @Param param body model.Answer true "Answer parameter"
+// @Success 200
+// @Failure 400 "Error with message"
+// @Failure 500 "Error with message"
+// @Router /v1/task/answer [POST]
 func (t *Task) SubmitTaskAnswer(c echo.Context) error {
 	// answer : Bind request body to struct
 	answer := new(model.Answer)

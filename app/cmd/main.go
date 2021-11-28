@@ -15,10 +15,16 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/swaggo/echo-swagger"
 )
 
+// @title ratri API
+// @version 1.0
+// @description ratri is a simple backend API for information retrieval experiments
+// @host localhost:8080
+// @BasePath /api
 func main() {
 	d := db.New()
 	defer d.Close()
