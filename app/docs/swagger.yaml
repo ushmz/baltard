@@ -1,0 +1,484 @@
+basePath: /api
+definitions:
+  model.Answer:
+    properties:
+      answer:
+        description: 'Answer : The Url of evidence of users'' decision.'
+        type: string
+      condition:
+        description: 'ConditionId : This point out which kind of task did user take.'
+        type: integer
+      id:
+        description: 'Id : The ID of user.'
+        type: integer
+      reason:
+        description: 'Reason : The reason of users'' decision.'
+        type: string
+      task:
+        description: 'TaskId : The identity of task.'
+        type: integer
+      user:
+        description: 'UserId : Means external Id.'
+        type: integer
+    type: object
+  model.CategoryCount:
+    properties:
+      category:
+        description: 'Category : Category name.'
+        type: string
+      count:
+        description: 'Count : Total number of pages.'
+        type: integer
+      pct:
+        description: 'Percentage : The percentage of this category.'
+        type: number
+    type: object
+  model.SearchPage:
+    properties:
+      id:
+        description: 'PageId : ID of search page.'
+        type: integer
+      snippet:
+        description: 'Snippet : Snippet of each search result page.'
+        type: string
+      title:
+        description: 'Title : The title of each search result page.'
+        type: string
+      url:
+        description: 'Url : Url of each search result page.'
+        type: string
+    type: object
+  model.SearchPageClickLogParam:
+    properties:
+      conditionId:
+        description: 'ConditionId : User''s condition Id that means group and task
+          category.'
+        type: integer
+      id:
+        description: 'Id : The ID of each log record.'
+        type: string
+      page:
+        description: 'Page : The Id of page that user clicked.'
+        type: integer
+      rank:
+        description: 'Rank : Search result rank that user clicked.'
+        type: integer
+      taskId:
+        description: 'TaskId : The Id of task that user working.'
+        type: integer
+      time:
+        description: 'Time : User''s page viewing time.'
+        type: integer
+      user:
+        description: 'Uid : The ID of user (worker)'
+        type: integer
+      visible:
+        description: 'IsVisible : Risk is visible or not.'
+        type: boolean
+    type: object
+  model.SearchSession:
+    properties:
+      condition:
+        description: 'ConditionId : User''s condition Id that means group and task
+          category.'
+        type: integer
+      task:
+        description: 'TaskId : The Id of task that user working.'
+        type: integer
+      user:
+        description: 'UserId : Allocated ID of user (worker)'
+        type: integer
+    type: object
+  model.SerpWithIcon:
+    properties:
+      id:
+        description: 'PageId : ID of search page.'
+        type: integer
+      leaks:
+        description: 'LeaksSet : Users'' behavioral data that probably leaked to third
+          party. For more detail, see `Leaks` type.'
+        items:
+          $ref: '#/definitions/model.SimilarwebPage'
+        type: array
+      snippet:
+        description: 'Snippet : Snippet of each search result page.'
+        type: string
+      title:
+        description: 'Title : The title of each search result page.'
+        type: string
+      url:
+        description: 'Url : Url of each search result page.'
+        type: string
+    type: object
+  model.SerpWithRatio:
+    properties:
+      distribution:
+        description: 'Distribution : Distribution information for each categories.'
+        items:
+          $ref: '#/definitions/model.CategoryCount'
+        type: array
+      id:
+        description: 'PageId : ID of search page.'
+        type: integer
+      snippet:
+        description: 'Snippet : Snippet of each search result page.'
+        type: string
+      title:
+        description: 'Title : The title of each search result page.'
+        type: string
+      total:
+        description: 'Total : Total number of similarweb pages.'
+        type: integer
+      url:
+        description: 'Url : Url of each search result page.'
+        type: string
+    type: object
+  model.SimilarwebPage:
+    properties:
+      category:
+        description: 'Category : Category name of similarweb.'
+        type: string
+      icon:
+        description: 'Icon : Favicon url of the page.'
+        type: string
+      id:
+        description: 'Id : ID of similarweb pages.'
+        type: integer
+      title:
+        description: 'Title : The title of similarweb page.'
+        type: string
+      url:
+        description: 'Url : Url of the similarweb page.'
+        type: string
+    type: object
+  model.Task:
+    properties:
+      description:
+        description: 'Description : Description text of task.'
+        type: string
+      id:
+        description: 'Id : The ID of task'
+        type: integer
+      query:
+        description: 'Query : Search query for this task.'
+        type: string
+      searchUrl:
+        description: 'SearchUrl : Url used in this task.'
+        type: string
+      title:
+        description: 'Title : Title of this task.'
+        type: string
+    type: object
+  model.TaskTimeLogParam:
+    properties:
+      condition:
+        description: 'ConditionId : User''s condition Id that means group and task
+          category.'
+        type: integer
+      task:
+        description: 'TaskId : The Id of task that user working.'
+        type: integer
+      user:
+        description: 'UserId : The ID of user (worker)'
+        type: integer
+    type: object
+  model.User:
+    properties:
+      id:
+        description: 'Id : The ID of user.'
+        type: integer
+      secret:
+        description: 'Secret : Generated secret string.'
+        type: string
+      uid:
+        description: 'Uid : External user_id (like crowdsourcing site).'
+        type: string
+    type: object
+  model.UserParam:
+    properties:
+      uid:
+        description: 'Uid : User name/Id for label.'
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: ratri is a simple backend API for information retrieval experiments
+  title: ratri API
+  version: "1.0"
+paths:
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Register user using crowd-sourcing service ID and allocate task
+        at the same time. If external service ID is already exists, re-allocate task
+        and return.
+      operationId: create_user
+      parameters:
+      - description: User parameter
+        in: body
+        name: param
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Error with message
+        "500":
+          description: Error with message
+      summary: Register new user.
+  /v1/logs/click:
+    post:
+      consumes:
+      - application/json
+      description: Create click log in SERP.
+      operationId: create_serp_click_log
+      parameters:
+      - description: Log parameter
+        in: body
+        name: param
+        required: true
+        schema:
+          $ref: '#/definitions/model.SearchPageClickLogParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Error with message
+        "500":
+          description: Error with message
+      summary: Store SERP click log
+  /v1/logs/session:
+    post:
+      consumes:
+      - application/json
+      description: Store search session log that is consists of task start(User presses
+        the "Start searching for the task" button) and end(User presses the "Submit
+        answer" button) time.
+      operationId: store_search_session
+      parameters:
+      - description: Log parameter
+        in: body
+        name: param
+        required: true
+        schema:
+          $ref: '#/definitions/model.SearchSession'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Error with message
+        "500":
+          description: Error with message
+      summary: Store search session log
+  /v1/logs/time:
+    post:
+      consumes:
+      - application/json
+      description: Create task time log. Task time is measured by cumulating number
+        of requests that should be sended once/sec.
+      operationId: cumulate_task_time_log
+      parameters:
+      - description: Log parameter
+        in: body
+        name: param
+        required: true
+        schema:
+          $ref: '#/definitions/model.TaskTimeLogParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Error with message
+        "500":
+          description: Error with message
+      summary: Store task time log
+  /v1/serp/{taskId}:
+    get:
+      consumes:
+      - application/json
+      description: Returns json which have a list of search results with no additional
+        data.
+      operationId: fetch_serp_by_id
+      parameters:
+      - description: Task ID
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      - description: Number of offset to display
+        in: query
+        name: offset
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.SearchPage'
+            type: array
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: Returns json which have a list of search results.
+  /v1/serp/{taskId}/icon:
+    get:
+      consumes:
+      - application/json
+      description: Returns json which have a list of search results with tracked pages
+        of Similarweb top 2000 pages and its favicon URL.
+      operationId: fetch_serp_with_icon_by_id
+      parameters:
+      - description: Task ID
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      - description: Number of offset to display
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - description: Number of icons to display
+        in: query
+        name: top
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.SerpWithIcon'
+            type: array
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: Returns json which have a list of search results with data for IconUI.
+  /v1/serp/{taskId}/ratio:
+    get:
+      consumes:
+      - application/json
+      description: Returns json which have a list of search results with tracked pages
+        of Similarweb top 2000 and its category.
+      operationId: fetch_serp_with_distribution_by_id
+      parameters:
+      - description: Task ID
+        in: path
+        name: taskId
+        required: true
+        type: integer
+      - description: Number of offset to display
+        in: query
+        name: offset
+        required: true
+        type: integer
+      - description: Number of categories to display
+        in: query
+        name: top
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.SerpWithRatio'
+            type: array
+        "400":
+          description: ""
+        "500":
+          description: ""
+      summary: Returns json which have a list of search results with data for RatioUI.
+  /v1/task/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Fetch task information by requeted task ID.
+      operationId: fetch_task_info
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Task'
+        "400":
+          description: Error with message
+        "500":
+          description: Error with message
+      summary: Fetch task information.
+  /v1/task/answer:
+    post:
+      consumes:
+      - application/json
+      description: Submit task answer.
+      operationId: submit_task_answer
+      parameters:
+      - description: Answer parameter
+        in: body
+        name: param
+        required: true
+        schema:
+          $ref: '#/definitions/model.Answer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Error with message
+        "500":
+          description: Error with message
+      summary: Submit task answer.
+  /v1/users/code/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get unique task completion code.
+      operationId: get_completion_code
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Completion code
+          schema:
+            type: int
+        "400":
+          description: Error with message
+        "500":
+          description: Error with message
+      summary: Get completion code.
+swagger: "2.0"
