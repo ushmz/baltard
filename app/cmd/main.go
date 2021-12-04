@@ -53,6 +53,7 @@ func NewRouter(d *sqlx.DB) *echo.Echo {
 
 	// e.Use(middleware.Recover())
 	e.Use(mw.Logger())
+	e.Use(mw.CacheAdapter())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowHeaders: []string{
