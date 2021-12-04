@@ -66,7 +66,7 @@ func (u UserRepositoryImpl) FindById(userId int) (*model.User, error) {
 
 func (u UserRepositoryImpl) FindByUid(uid string) (*model.User, error) {
 	user := model.User{}
-	row := u.DB.QueryRowx(`
+	err := u.DB.Get(&user, `
 		SELECT
 			id,
 			uid,
@@ -76,7 +76,7 @@ func (u UserRepositoryImpl) FindByUid(uid string) (*model.User, error) {
 		WHERE
 			uid = ?
 	`, uid)
-	if err := row.StructScan(&user); err != nil {
+	if err != nil {
 		return nil, err
 	}
 	return &user, nil

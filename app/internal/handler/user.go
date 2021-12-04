@@ -32,9 +32,9 @@ func NewUserHandler(user usecase.User) *User {
 // @Router /users [POST]
 func (u *User) CreateUser(c echo.Context) error {
 	// u : Request body struct
-	param := new(model.UserParam)
+	var param model.UserParam
 	// Bind request body parameters to struct
-	if err := c.Bind(param); err != nil {
+	if err := c.Bind(&param); err != nil {
 		c.Echo().Logger.Errorf("Error. Invalid request body. : %v", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
