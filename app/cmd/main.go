@@ -92,8 +92,8 @@ func NewRouter(d *sqlx.DB) *echo.Echo {
 	v1.GET("/serp/:id/ratio", h.Serp.FetchSerpWithDistributionByID)
 
 	// logs
-	v1.POST("/logs/time", h.Log.CreateTaskTimeLog)
-	v1.PATCH("/logs/time", h.Log.CumulateTaskTimeLog)
+	// v1.POST("/logs/time", h.Log.CreateTaskTimeLog)
+	v1.POST("/logs/time", h.Log.CumulateTaskTimeLog)
 	v1.POST("/logs/click", h.Log.CreateSerpClickLog)
 	v1.POST("/logs/session", h.Log.StoreSearchSeeion)
 
