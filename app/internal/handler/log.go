@@ -19,16 +19,16 @@ func NewLogHandler(log usecase.Log) *Log {
 }
 
 // CreateTaskTimeLog : Create task time log. Table name is `behacior_logs`.
-// @Id create_task_time_log
-// @Summary Store task time log
-// @Description Create task time log with value in the request. If key (user_id and task_id) is depulicated, update `time` value instead of creating new record.
-// @Accept json
-// @Produce json
-// @Param param body model.TaskTimeLogParamWithTime true "Log parameter"
-// @Success 200
-// @Failure 400
-// @Failure 500
-// @Router /v1/logs/time [POST]
+// Id create_task_time_log
+// Summary Store task time log
+// Description Create task time log with value in the request. If key (user_id and task_id) is depulicated, update `time` value instead of creating new record.
+// Accept json
+// Produce json
+// Param param body model.TaskTimeLogParamWithTime true "Log parameter"
+// Success 200
+// Failure 400
+// Failure 500
+// Router /v1/logs/time [POST]
 func (l *Log) CreateTaskTimeLog(c echo.Context) error {
 	// param : Bind request body to struct.
 	param := new(model.TaskTimeLogParamWithTime)
@@ -62,7 +62,7 @@ func (l *Log) CreateTaskTimeLog(c echo.Context) error {
 // @Success 200
 // @Failure 400 "Error with message"
 // @Failure 500 "Error with message"
-// @Router /v1/logs/time [PATCH]
+// @Router /v1/logs/time [POST]
 func (l *Log) CumulateTaskTimeLog(c echo.Context) error {
 	// param : Bind request body to struct.
 	param := new(model.TaskTimeLogParam)
