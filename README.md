@@ -17,8 +17,4 @@ docker compose up
 |:-:|:-:|
 |app|8080|
 |mysql|3366|
-|nginx|80|
-
-## TODO
-
-- certbot compatible
+|http(caddy or nginx)|80|
