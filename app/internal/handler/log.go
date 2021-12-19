@@ -18,7 +18,7 @@ func NewLogHandler(log usecase.Log) *Log {
 	return &Log{usecase: log}
 }
 
-// CreateTaskTimeLog : Create task time log. Table name is `behacior_logs`.
+// CreateTaskTimeLog : Create task time log. Table name is `logs_serp_dwell_time`.
 // Id create_task_time_log
 // Summary Store task time log
 // Description Create task time log with value in the request. If key (user_id and task_id) is depulicated, update `time` value instead of creating new record.
@@ -31,7 +31,7 @@ func NewLogHandler(log usecase.Log) *Log {
 // Router /v1/logs/time [POST]
 func (l *Log) CreateTaskTimeLog(c echo.Context) error {
 	// param : Bind request body to struct.
-	param := new(model.TaskTimeLogParamWithTime)
+	param := new(model.SerpViewingLogParamWithTime)
 	if err := c.Bind(param); err != nil {
 		c.Echo().Logger.Errorf("Cannot bind request body to struct : %v", err)
 		msg := model.ErrorMessage{
@@ -52,7 +52,7 @@ func (l *Log) CreateTaskTimeLog(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
-// CumulateTaskTimeLog : Create task time log. Task time is counted by cumulating requests that should be sended once/sec.
+// CumulateSerpViewingTime : Create task time log. Task time is counted by cumulating requests that should be sended once/sec.
 // @Id cumulate_task_time_log
 // @Summary Store task time log
 // @Description Create task time log. Task time is measured by cumulating number of requests that should be sended once/sec.
@@ -62,10 +62,10 @@ func (l *Log) CreateTaskTimeLog(c echo.Context) error {
 // @Success 200
 // @Failure 400 "Error with message"
 // @Failure 500 "Error with message"
-// @Router /v1/logs/time [POST]
-func (l *Log) CumulateTaskTimeLog(c echo.Context) error {
+// @Router /v1/logs/serp [POST]
+func (l *Log) CumulateSerpViewingTime(c echo.Context) error {
 	// param : Bind request body to struct.
-	param := new(model.TaskTimeLogParam)
+	param := new(model.SerpViewingLogParam)
 	if err := c.Bind(param); err != nil {
 		c.Echo().Logger.Errorf("Cannot bind request body to struct : %v", err)
 		msg := model.ErrorMessage{
@@ -74,7 +74,7 @@ func (l *Log) CumulateTaskTimeLog(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	err := l.usecase.CumulateTaskTimeLog(param)
+	err := l.usecase.CumulateSerpViewingTime(param)
 	if err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		msg := model.ErrorMessage{
@@ -86,7 +86,41 @@ func (l *Log) CumulateTaskTimeLog(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
-// CreateSerpClickLog : Create click log.
+// CumulatePageViewingTime : Create page viewing time log. Viewing time is counted by cumulating requests that should be sended once/sec.
+// @Id cumulate_page_viewing_time
+// @Summary Store page viewing time log
+// @Description Create page viewing time log. Viewing time is measured by cumulating number of requests that should be sended once/sec.
+// @Accept json
+// @Produce json
+// @Param param body model.PageViewingLogParam true "Log parameter"
+// @Success 200
+// @Failure 400 "Error with message"
+// @Failure 500 "Error with message"
+// @Router /v1/logs/pageview [POST]
+func (l *Log) CumulatePageViewingTime(c echo.Context) error {
+	// param : Bind request body to struct.
+	param := new(model.PageViewingLogParam)
+	if err := c.Bind(param); err != nil {
+		c.Echo().Logger.Errorf("Cannot bind request body to struct : %v", err)
+		msg := model.ErrorMessage{
+			Message: fmt.Sprintf("Cannot bind request body : %v", err),
+		}
+		return c.JSON(http.StatusBadRequest, msg)
+	}
+
+	err := l.usecase.CumulatePageViewingTime(param)
+	if err != nil {
+		c.Echo().Logger.Errorf("Database Execution error : %v", err)
+		msg := model.ErrorMessage{
+			Message: "Database Execution error.",
+		}
+		return c.JSON(http.StatusInternalServerError, msg)
+	}
+
+	return c.NoContent(http.StatusCreated)
+}
+
+// CreateSerpEventLog : Create click log.
 // @Id create_serp_click_log
 // @Summary Store SERP click log
 // @Description Create click log in SERP.
@@ -97,9 +131,9 @@ func (l *Log) CumulateTaskTimeLog(c echo.Context) error {
 // @Failure 400 "Error with message"
 // @Failure 500 "Error with message"
 // @Router /v1/logs/click [POST]
-func (l *Log) CreateSerpClickLog(c echo.Context) error {
+func (l *Log) CreateSerpEventLog(c echo.Context) error {
 	// param : Bind request body to struct.
-	param := new(model.SearchPageClickLogParam)
+	param := new(model.SearchPageEventLogParam)
 	if err := c.Bind(param); err != nil {
 		c.Echo().Logger.Errorf("Failed to bind request body : %v", err)
 		msg := model.ErrorMessage{
@@ -108,7 +142,7 @@ func (l *Log) CreateSerpClickLog(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	err := l.usecase.StoreSerpClickLog(param)
+	err := l.usecase.StoreSerpEventLog(param)
 	if err != nil {
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		msg := model.ErrorMessage{

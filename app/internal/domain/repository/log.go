@@ -5,8 +5,9 @@ import (
 )
 
 type LogRepository interface {
-	StoreTaskTimeLog(*model.TaskTimeLogParamWithTime) error
-	CumulateTaskTimeLog(*model.TaskTimeLogParam) error
-	StoreSerpClickLog(*model.SearchPageClickLogParam) error
+	StoreTaskTimeLog(*model.SerpViewingLogParamWithTime) error
+	CumulateSerpViewingTime(*model.SerpViewingLogParam) error
+	CumulatePageViewingTime(*model.PageViewingLogParam) error
+	StoreSerpEventLog(*model.SearchPageEventLogParam) error
 	StoreSearchSeeion(*model.SearchSession) error
 }
