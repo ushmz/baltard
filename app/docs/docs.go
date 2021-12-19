@@ -79,7 +79,77 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.SearchPageClickLogParam"
+                            "$ref": "#/definitions/model.SearchPageEventLogParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Error with message"
+                    },
+                    "500": {
+                        "description": "Error with message"
+                    }
+                }
+            }
+        },
+        "/v1/logs/pageview": {
+            "post": {
+                "description": "Create page viewing time log. Viewing time is measured by cumulating number of requests that should be sended once/sec.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Store page viewing time log",
+                "operationId": "cumulate_page_viewing_time",
+                "parameters": [
+                    {
+                        "description": "Log parameter",
+                        "name": "param",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.PageViewingLogParam"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Error with message"
+                    },
+                    "500": {
+                        "description": "Error with message"
+                    }
+                }
+            }
+        },
+        "/v1/logs/serp": {
+            "post": {
+                "description": "Create task time log. Task time is measured by cumulating number of requests that should be sended once/sec.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Store task time log",
+                "operationId": "cumulate_task_time_log",
+                "parameters": [
+                    {
+                        "description": "Log parameter",
+                        "name": "param",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SerpViewingLogParam"
                         }
                     }
                 ],
@@ -115,41 +185,6 @@ var doc = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/model.SearchSession"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": ""
-                    },
-                    "400": {
-                        "description": "Error with message"
-                    },
-                    "500": {
-                        "description": "Error with message"
-                    }
-                }
-            }
-        },
-        "/v1/logs/time": {
-            "post": {
-                "description": "Create task time log. Task time is measured by cumulating number of requests that should be sended once/sec.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Store task time log",
-                "operationId": "cumulate_task_time_log",
-                "parameters": [
-                    {
-                        "description": "Log parameter",
-                        "name": "param",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.TaskTimeLogParam"
                         }
                     }
                 ],
@@ -471,6 +506,27 @@ var doc = `{
                 }
             }
         },
+        "model.PageViewingLogParam": {
+            "type": "object",
+            "properties": {
+                "condition": {
+                    "description": "ConditionId : User's condition Id that means group and task category.",
+                    "type": "integer"
+                },
+                "page": {
+                    "description": "PageId : Page ID that user view.",
+                    "type": "integer"
+                },
+                "task": {
+                    "description": "TaskId : The Id of task that user working.",
+                    "type": "integer"
+                },
+                "user": {
+                    "description": "UserId : The ID of user (worker)",
+                    "type": "integer"
+                }
+            }
+        },
         "model.SearchPage": {
             "type": "object",
             "properties": {
@@ -492,12 +548,16 @@ var doc = `{
                 }
             }
         },
-        "model.SearchPageClickLogParam": {
+        "model.SearchPageEventLogParam": {
             "type": "object",
             "properties": {
                 "conditionId": {
                     "description": "ConditionId : User's condition Id that means group and task category.",
                     "type": "integer"
+                },
+                "event": {
+                    "description": "Event : It is expected to be \"click\", \"hover\" or \"paginate\"",
+                    "type": "string"
                 },
                 "id": {
                     "description": "Id : The ID of each log record.",
@@ -542,6 +602,23 @@ var doc = `{
                 },
                 "user": {
                     "description": "UserId : Allocated ID of user (worker)",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.SerpViewingLogParam": {
+            "type": "object",
+            "properties": {
+                "condition": {
+                    "description": "ConditionId : User's condition Id that means group and task category.",
+                    "type": "integer"
+                },
+                "task": {
+                    "description": "TaskId : The Id of task that user working.",
+                    "type": "integer"
+                },
+                "user": {
+                    "description": "UserId : The ID of user (worker)",
                     "type": "integer"
                 }
             }
@@ -653,23 +730,6 @@ var doc = `{
                 "title": {
                     "description": "Title : Title of this task.",
                     "type": "string"
-                }
-            }
-        },
-        "model.TaskTimeLogParam": {
-            "type": "object",
-            "properties": {
-                "condition": {
-                    "description": "ConditionId : User's condition Id that means group and task category.",
-                    "type": "integer"
-                },
-                "task": {
-                    "description": "TaskId : The Id of task that user working.",
-                    "type": "integer"
-                },
-                "user": {
-                    "description": "UserId : The ID of user (worker)",
-                    "type": "integer"
                 }
             }
         },

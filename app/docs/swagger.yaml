@@ -33,6 +33,22 @@ definitions:
         description: 'Percentage : The percentage of this category.'
         type: number
     type: object
+  model.PageViewingLogParam:
+    properties:
+      condition:
+        description: 'ConditionId : User''s condition Id that means group and task
+          category.'
+        type: integer
+      page:
+        description: 'PageId : Page ID that user view.'
+        type: integer
+      task:
+        description: 'TaskId : The Id of task that user working.'
+        type: integer
+      user:
+        description: 'UserId : The ID of user (worker)'
+        type: integer
+    type: object
   model.SearchPage:
     properties:
       id:
@@ -48,12 +64,15 @@ definitions:
         description: 'Url : Url of each search result page.'
         type: string
     type: object
-  model.SearchPageClickLogParam:
+  model.SearchPageEventLogParam:
     properties:
       conditionId:
         description: 'ConditionId : User''s condition Id that means group and task
           category.'
         type: integer
+      event:
+        description: 'Event : It is expected to be "click", "hover" or "paginate"'
+        type: string
       id:
         description: 'Id : The ID of each log record.'
         type: string
@@ -87,6 +106,19 @@ definitions:
         type: integer
       user:
         description: 'UserId : Allocated ID of user (worker)'
+        type: integer
+    type: object
+  model.SerpViewingLogParam:
+    properties:
+      condition:
+        description: 'ConditionId : User''s condition Id that means group and task
+          category.'
+        type: integer
+      task:
+        description: 'TaskId : The Id of task that user working.'
+        type: integer
+      user:
+        description: 'UserId : The ID of user (worker)'
         type: integer
     type: object
   model.SerpWithIcon:
@@ -169,19 +201,6 @@ definitions:
         description: 'Title : Title of this task.'
         type: string
     type: object
-  model.TaskTimeLogParam:
-    properties:
-      condition:
-        description: 'ConditionId : User''s condition Id that means group and task
-          category.'
-        type: integer
-      task:
-        description: 'TaskId : The Id of task that user working.'
-        type: integer
-      user:
-        description: 'UserId : The ID of user (worker)'
-        type: integer
-    type: object
   model.User:
     properties:
       id:
@@ -246,7 +265,7 @@ paths:
         name: param
         required: true
         schema:
-          $ref: '#/definitions/model.SearchPageClickLogParam'
+          $ref: '#/definitions/model.SearchPageEventLogParam'
       produces:
       - application/json
       responses:
@@ -257,6 +276,54 @@ paths:
         "500":
           description: Error with message
       summary: Store SERP click log
+  /v1/logs/pageview:
+    post:
+      consumes:
+      - application/json
+      description: Create page viewing time log. Viewing time is measured by cumulating
+        number of requests that should be sended once/sec.
+      operationId: cumulate_page_viewing_time
+      parameters:
+      - description: Log parameter
+        in: body
+        name: param
+        required: true
+        schema:
+          $ref: '#/definitions/model.PageViewingLogParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Error with message
+        "500":
+          description: Error with message
+      summary: Store page viewing time log
+  /v1/logs/serp:
+    post:
+      consumes:
+      - application/json
+      description: Create task time log. Task time is measured by cumulating number
+        of requests that should be sended once/sec.
+      operationId: cumulate_task_time_log
+      parameters:
+      - description: Log parameter
+        in: body
+        name: param
+        required: true
+        schema:
+          $ref: '#/definitions/model.SerpViewingLogParam'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Error with message
+        "500":
+          description: Error with message
+      summary: Store task time log
   /v1/logs/session:
     post:
       consumes:
@@ -282,30 +349,6 @@ paths:
         "500":
           description: Error with message
       summary: Store search session log
-  /v1/logs/time:
-    post:
-      consumes:
-      - application/json
-      description: Create task time log. Task time is measured by cumulating number
-        of requests that should be sended once/sec.
-      operationId: cumulate_task_time_log
-      parameters:
-      - description: Log parameter
-        in: body
-        name: param
-        required: true
-        schema:
-          $ref: '#/definitions/model.TaskTimeLogParam'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ""
-        "400":
-          description: Error with message
-        "500":
-          description: Error with message
-      summary: Store task time log
   /v1/serp/{taskId}:
     get:
       consumes:

@@ -24,7 +24,7 @@ func NewLogHandler(log usecase.Log) *Log {
 // Description Create task time log with value in the request. If key (user_id and task_id) is depulicated, update `time` value instead of creating new record.
 // Accept json
 // Produce json
-// Param param body model.TaskTimeLogParamWithTime true "Log parameter"
+// Param param body model.SerpViewingLogParamWithTime true "Log parameter"
 // Success 200
 // Failure 400
 // Failure 500
@@ -58,7 +58,7 @@ func (l *Log) CreateTaskTimeLog(c echo.Context) error {
 // @Description Create task time log. Task time is measured by cumulating number of requests that should be sended once/sec.
 // @Accept json
 // @Produce json
-// @Param param body model.TaskTimeLogParam true "Log parameter"
+// @Param param body model.SerpViewingLogParam true "Log parameter"
 // @Success 200
 // @Failure 400 "Error with message"
 // @Failure 500 "Error with message"
@@ -126,7 +126,7 @@ func (l *Log) CumulatePageViewingTime(c echo.Context) error {
 // @Description Create click log in SERP.
 // @Accept json
 // @Produce json
-// @Param param body model.SearchPageClickLogParam true "Log parameter"
+// @Param param body model.SearchPageEventLogParam true "Log parameter"
 // @Success 200
 // @Failure 400 "Error with message"
 // @Failure 500 "Error with message"
