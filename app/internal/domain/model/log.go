@@ -1,23 +1,23 @@
 package model
 
-// TaskTimeLogParamWithTime : Struct for task viewing time log request body
+// SerpViewingLogParamWithTime : Struct for task viewing time log request body
 // This struct is deprecated on the same reason with `repository.StoreTaskTimeLog()`
-type TaskTimeLogParamWithTime struct {
+type SerpViewingLogParamWithTime struct {
 	// UserId : The ID of user (worker)
 	UserId int `db:"user_id" json:"user"`
+
+	// TaskId : The Id of task that user working.
+	TaskId int `db:"task_id" json:"task"`
+
+	// ConditionId : User's condition Id that means group and task category.
+	ConditionId int `db:"condition_id" json:"condition"`
 
 	// TimeOnPage : User's page viewing time.
 	TimeOnPage int `db:"time_on_page" json:"time"`
-
-	// TaskId : The Id of task that user working.
-	TaskId int `db:"task_id" json:"task"`
-
-	// ConditionId : User's condition Id that means group and task category.
-	ConditionId int `db:"condition_id" json:"condition"`
 }
 
-// TaskTimeLogParam : Struct for task viewing time log request body
-type TaskTimeLogParam struct {
+// SerpViewingLogParam : Struct for task viewing time log request body
+type SerpViewingLogParam struct {
 	// UserId : The ID of user (worker)
 	UserId int `db:"user_id" json:"user"`
 
@@ -28,8 +28,23 @@ type TaskTimeLogParam struct {
 	ConditionId int `db:"condition_id" json:"condition"`
 }
 
-// SearchPageClickLogParamWithVisible : Struct for page click log request body.
-type SearchPageClickLogParam struct {
+// PageViewingLogParam : Struct for each search result page viewing time log request body
+type PageViewingLogParam struct {
+	// UserId : The ID of user (worker)
+	UserId int `db:"user_id" json:"user"`
+
+	// TaskId : The Id of task that user working.
+	TaskId int `db:"task_id" json:"task"`
+
+	// ConditionId : User's condition Id that means group and task category.
+	ConditionId int `db:"condition_id" json:"condition"`
+
+	// PageId : Page ID that user view.
+	PageId int `db:"page_id" json:"page"`
+}
+
+// SearchPageEventLogParam : Struct for page click log request body.
+type SearchPageEventLogParam struct {
 	// Id : The ID of each log record.
 	Id string `db:"id" json:"id"`
 
@@ -53,6 +68,9 @@ type SearchPageClickLogParam struct {
 
 	// IsVisible : Risk is visible or not.
 	IsVisible bool `db:"is_visible" json:"visible"`
+
+	// Event : It is expected to be "click", "hover" or "paginate"
+	Event string `db:"event" json:"event"`
 }
 
 // SearchSession : Struct fot search session request body.

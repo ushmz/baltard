@@ -6,9 +6,10 @@ import (
 )
 
 type Log interface {
-	StoreTaskTimeLog(*model.TaskTimeLogParamWithTime) error
-	CumulateTaskTimeLog(*model.TaskTimeLogParam) error
-	StoreSerpClickLog(*model.SearchPageClickLogParam) error
+	StoreTaskTimeLog(*model.SerpViewingLogParamWithTime) error
+	CumulateSerpViewingTime(*model.SerpViewingLogParam) error
+	CumulatePageViewingTime(*model.PageViewingLogParam) error
+	StoreSerpEventLog(*model.SearchPageEventLogParam) error
 	StoreSearchSeeion(*model.SearchSession) error
 }
 
@@ -20,16 +21,20 @@ func NewLogUsecase(logRepository repo.LogRepository) Log {
 	return &LogImpl{repository: logRepository}
 }
 
-func (l *LogImpl) StoreTaskTimeLog(p *model.TaskTimeLogParamWithTime) error {
+func (l *LogImpl) StoreTaskTimeLog(p *model.SerpViewingLogParamWithTime) error {
 	return l.repository.StoreTaskTimeLog(p)
 }
 
-func (l *LogImpl) CumulateTaskTimeLog(p *model.TaskTimeLogParam) error {
-	return l.repository.CumulateTaskTimeLog(p)
+func (l *LogImpl) CumulateSerpViewingTime(p *model.SerpViewingLogParam) error {
+	return l.repository.CumulateSerpViewingTime(p)
 }
 
-func (l *LogImpl) StoreSerpClickLog(p *model.SearchPageClickLogParam) error {
-	return l.repository.StoreSerpClickLog(p)
+func (l *LogImpl) CumulatePageViewingTime(p *model.PageViewingLogParam) error {
+	return l.repository.CumulatePageViewingTime(p)
+}
+
+func (l *LogImpl) StoreSerpEventLog(p *model.SearchPageEventLogParam) error {
+	return l.repository.StoreSerpEventLog(p)
 }
 
 func (l *LogImpl) StoreSearchSeeion(p *model.SearchSession) error {

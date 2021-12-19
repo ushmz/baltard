@@ -1,5 +1,5 @@
 -- +migrate Up
-CREATE TABLE `behavior_logs` (
+CREATE TABLE `logs_serp_dwell_time` (
   `user_id` int NOT NULL,
   `task_id` int NOT NULL,
   `condition_id` int DEFAULT NULL,

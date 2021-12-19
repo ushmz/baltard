@@ -20,10 +20,10 @@ func NewLogRepository(db *sqlx.DB) repo.LogRepository {
 // Key exists, update `time_on_page` value of requested value.
 // This method update task time directly with requested value.
 // Therefore, if reloading occur in client side, task time value can be reset unintentionally.
-func (l LogRepositoryImpl) StoreTaskTimeLog(p *model.TaskTimeLogParamWithTime) error {
+func (l LogRepositoryImpl) StoreTaskTimeLog(p *model.SerpViewingLogParamWithTime) error {
 	_, err := l.DB.NamedExec(`
 		INSERT INTO
-			behavior_logs (
+			logs_serp_dwell_time (
 				user_id,
 				task_id,
 				time_on_page,
@@ -46,13 +46,13 @@ func (l LogRepositoryImpl) StoreTaskTimeLog(p *model.TaskTimeLogParamWithTime) e
 	return nil
 }
 
-// CumulateTaskTimeLog : Logging task time.
+// CumulateSerpViewingTime : Logging task time.
 // Key (pair of user_id and task_id) doesn't exist, insert new record.
 // Key exists, increment `time_on_page` value.
-func (l LogRepositoryImpl) CumulateTaskTimeLog(p *model.TaskTimeLogParam) error {
+func (l LogRepositoryImpl) CumulateSerpViewingTime(p *model.SerpViewingLogParam) error {
 	_, err := l.DB.NamedExec(`
 		INSERT INTO
-			behavior_logs (
+			logs_serp_dwell_time (
 				user_id,
 				task_id,
 				condition_id
@@ -73,17 +73,47 @@ func (l LogRepositoryImpl) CumulateTaskTimeLog(p *model.TaskTimeLogParam) error 
 	return nil
 }
 
-func (l LogRepositoryImpl) StoreSerpClickLog(p *model.SearchPageClickLogParam) error {
+// CumulatePageViewingTime : Logging page viewing time.
+// Key (pair of user_id, task_id and page_id) doesn't exist, insert new record.
+// Key exists, increment `time_on_page` value.
+func (l LogRepositoryImpl) CumulatePageViewingTime(p *model.PageViewingLogParam) error {
 	_, err := l.DB.NamedExec(`
 		INSERT INTO
-			behavior_logs_click (
+			logs_page_dwell_time (
+				user_id,
+				task_id,
+				condition_id,
+				page_id
+			)
+		VALUES (
+			:user_id, 
+			:task_id, 
+			:condition_id,
+			:page_id
+		)
+		ON DUPLICATE
+			KEY UPDATE
+				time_on_page = time_on_page + 1, 
+				updated_at = CURRENT_TIMESTAMP
+	`, p)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (l LogRepositoryImpl) StoreSerpEventLog(p *model.SearchPageEventLogParam) error {
+	_, err := l.DB.NamedExec(`
+		INSERT INTO
+			logs_event (
 				user_id,
 				task_id,
 				condition_id,
 				time_on_page,
 				serp_page,
 				serp_rank,
-				is_visible
+				is_visible,
+				event
 			)
 		VALUES (
 			:user_id, 
@@ -92,7 +122,8 @@ func (l LogRepositoryImpl) StoreSerpClickLog(p *model.SearchPageClickLogParam) e
 			:time_on_page, 
 			:serp_page,
 			:serp_rank,
-			:is_visible
+			:is_visible,
+			:event
 		)`, p)
 	if err != nil {
 		return err
