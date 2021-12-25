@@ -52,10 +52,10 @@ type SearchPageEventLogParam struct {
 	User int `db:"user_id" json:"user"`
 
 	// TaskId : The Id of task that user working.
-	TaskId int `db:"task_id" json:"taskId"`
+	TaskId int `db:"task_id" json:"task"`
 
 	// ConditionId : User's condition Id that means group and task category.
-	ConditionId int `db:"condition_id" json:"conditionId"`
+	ConditionId int `db:"condition_id" json:"condition"`
 
 	// Time : User's page viewing time.
 	Time int `db:"time_on_page" json:"time"`
