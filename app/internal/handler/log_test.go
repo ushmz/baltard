@@ -94,10 +94,10 @@ func TestCreateTaskTimeLog(t *testing.T) {
 	defer ctrl.Finish()
 
 	e := echo.New()
-	mock := mock.NewMockLog(ctrl)
+	mck := mock.NewMockLog(ctrl)
 	for _, tt := range serpViewLogs {
 		t.Run(tt.name, func(t *testing.T) {
-			mock.EXPECT().CumulateSerpViewingTime(&tt.in).Return(nil)
+			mck.EXPECT().CumulateSerpViewingTime(&tt.in).Return(nil)
 
 			b, err := json.Marshal(tt.in)
 			if err != nil {
@@ -113,7 +113,7 @@ func TestCreateTaskTimeLog(t *testing.T) {
 			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
-			h := handler.NewLogHandler(mock)
+			h := handler.NewLogHandler(mck)
 
 			err = h.CumulateSerpViewingTime(c)
 
