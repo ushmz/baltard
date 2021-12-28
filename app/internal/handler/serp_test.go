@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	tests = []struct {
+	serpTests = []struct {
 		name      string
 		in        map[string]interface{}
 		want      interface{}
@@ -34,7 +34,7 @@ func TestFetchSerpWithDistributionByID(t *testing.T) {
 
 	e := echo.New()
 	mck := mock.NewMockSerp(ctrl)
-	for _, tt := range tests {
+	for _, tt := range serpTests {
 		t.Run(tt.name, func(t *testing.T) {
 			mck.EXPECT().FetchSerpWithRatio(tt.in["task"], tt.in["offset"], tt.in["top"]).Return(nil, nil)
 			h := handler.NewSerpHandler(mck)
@@ -83,7 +83,7 @@ func TestFetchSerpWithIconByID(t *testing.T) {
 
 	e := echo.New()
 	mck := mock.NewMockSerp(ctrl)
-	for _, tt := range tests {
+	for _, tt := range serpTests {
 		t.Run(tt.name, func(t *testing.T) {
 			mck.EXPECT().FetchSerpWithIcon(tt.in["task"], tt.in["offset"], tt.in["top"]).Return(nil, nil)
 			h := handler.NewSerpHandler(mck)
@@ -132,7 +132,7 @@ func TestFetchSerpByID(t *testing.T) {
 
 	e := echo.New()
 	mck := mock.NewMockSerp(ctrl)
-	for _, tt := range tests {
+	for _, tt := range serpTests {
 		t.Run(tt.name, func(t *testing.T) {
 			mck.EXPECT().FetchSerp(tt.in["task"], tt.in["offset"]).Return(nil, nil)
 			h := handler.NewSerpHandler(mck)
