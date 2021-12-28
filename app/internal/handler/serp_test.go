@@ -1,55 +1,175 @@
 package handler_test
 
 import (
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"ratri/internal/handler"
+	mock "ratri/internal/mock/usecase"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/google/go-cmp/cmp"
+	"github.com/labstack/echo/v4"
 )
 
-/*
- * Functions in `handler/serp.go` have huge response body,
- * so, is it better to read ideal request body from external text file?
- */
+var (
+	tests = []struct {
+		name      string
+		in        map[string]interface{}
+		want      interface{}
+		wantError bool
+		err       error
+	}{
+
+		{"Want no error", map[string]interface{}{"task": 5, "offset": 0, "top": 3}, 200, false, nil},
+		{"Want no error", map[string]interface{}{"task": 6, "offset": 1, "top": 5}, 200, false, nil},
+	}
+)
 
 func TestFetchSerpWithDistributionByID(t *testing.T) {
-	// e := echo.New()
-	// req := httptest.NewRequest(http.MethodGet, "/v1/serp/5/pct", nil)
-	// req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	// rec := httptest.NewRecorder()
-	// c := e.NewContext(req, rec)
-	// h := &Handler{DB: database.New()}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	// if assert.NoError(t, h.FetchSerpWithDistributionByID(c)) {
-	// 	if diff := cmp.Diff(rec.Code, http.StatusOK); diff != "" {
-	// 		t.Errorf("Status code does not match.\n%v", diff)
-	// 	}
-	// }
+	e := echo.New()
+	mck := mock.NewMockSerp(ctrl)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mck.EXPECT().FetchSerpWithRatio(tt.in["task"], tt.in["offset"], tt.in["top"]).Return(nil, nil)
+			h := handler.NewSerpHandler(mck)
+
+			// Set query parameter
+			q := make(url.Values)
+			q.Set("offset", fmt.Sprintf("%v", tt.in["offset"]))
+			q.Set("top", fmt.Sprintf("%v", tt.in["top"]))
+
+			req := httptest.NewRequest(
+				http.MethodGet,
+				"/v1/serp/"+fmt.Sprintf("%v", tt.in["task"])+"/ratio?"+q.Encode(),
+				nil,
+			)
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+
+			// Set path parameter explicitly
+			c.SetParamNames("id")
+			c.SetParamValues(fmt.Sprintf("%v", tt.in["task"]))
+
+			err := h.FetchSerpWithDistributionByID(c)
+
+			// Throw t.Fatal if unexpected error has occurred.
+			if !tt.wantError && err != nil {
+				t.Fatalf("Want no error, but got %#v", err)
+			}
+
+			// Throw t.Fatal if different error has occurred.
+			if tt.wantError && !(err == tt.err) {
+				t.Fatalf("Want %#v, but got %#v", tt.err, err)
+			}
+
+			// Throw t.Fatal if expected value is different from result.
+			if diff := cmp.Diff(tt.want, rec.Code); !tt.wantError && diff != "" {
+				t.Fatalf("Want %d, but got %d\n%v", tt.want, rec.Code, diff)
+			}
+		})
+	}
 }
 
 func TestFetchSerpWithIconByID(t *testing.T) {
-	// e := echo.New()
-	// req := httptest.NewRequest(http.MethodGet, "/v1/serp/5/icon", nil)
-	// req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	// rec := httptest.NewRecorder()
-	// c := e.NewContext(req, rec)
-	// h := &Handler{DB: database.New()}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	// if assert.NoError(t, h.FetchSerpWithDistributionByID(c)) {
-	// 	if diff := cmp.Diff(rec.Code, http.StatusOK); diff != "" {
-	// 		t.Errorf("Status code does not match.\n%v", diff)
-	// 	}
-	// }
+	e := echo.New()
+	mck := mock.NewMockSerp(ctrl)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mck.EXPECT().FetchSerpWithIcon(tt.in["task"], tt.in["offset"], tt.in["top"]).Return(nil, nil)
+			h := handler.NewSerpHandler(mck)
+
+			// Set query parameter
+			q := make(url.Values)
+			q.Set("offset", fmt.Sprintf("%v", tt.in["offset"]))
+			q.Set("top", fmt.Sprintf("%v", tt.in["top"]))
+
+			req := httptest.NewRequest(
+				http.MethodGet,
+				"/v1/serp/"+fmt.Sprintf("%v", tt.in["task"])+"/icon?"+q.Encode(),
+				nil,
+			)
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+
+			// Set path parameter explicitly
+			c.SetParamNames("id")
+			c.SetParamValues(fmt.Sprintf("%v", tt.in["task"]))
+
+			err := h.FetchSerpWithIconByID(c)
+
+			// Throw t.Fatal if unexpected error has occurred.
+			if !tt.wantError && err != nil {
+				t.Fatalf("Want no error, but got %#v", err)
+			}
+
+			// Throw t.Fatal if different error has occurred.
+			if tt.wantError && !(err == tt.err) {
+				t.Fatalf("Want %#v, but got %#v", tt.err, err)
+			}
+
+			// Throw t.Fatal if expected value is different from result.
+			if diff := cmp.Diff(tt.want, rec.Code); !tt.wantError && diff != "" {
+				t.Fatalf("Want %d, but got %d\n%v", tt.want, rec.Code, diff)
+			}
+		})
+	}
 }
 
 func TestFetchSerpByID(t *testing.T) {
-	// e := echo.New()
-	// req := httptest.NewRequest(http.MethodGet, "/v1/serp/5", nil)
-	// req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	// rec := httptest.NewRecorder()
-	// c := e.NewContext(req, rec)
-	// h := &Handler{DB: database.New()}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	// if assert.NoError(t, h.FetchSerpWithDistributionByID(c)) {
-	// 	if diff := cmp.Diff(rec.Code, http.StatusOK); diff != "" {
-	// 		t.Errorf("Status code does not match.\n%v", diff)
-	// 	}
-	// }
+	e := echo.New()
+	mck := mock.NewMockSerp(ctrl)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mck.EXPECT().FetchSerp(tt.in["task"], tt.in["offset"]).Return(nil, nil)
+			h := handler.NewSerpHandler(mck)
+
+			// Set query parameter
+			q := make(url.Values)
+			q.Set("offset", fmt.Sprintf("%v", tt.in["offset"]))
+
+			req := httptest.NewRequest(
+				http.MethodGet,
+				"/v1/serp/"+fmt.Sprintf("%v", tt.in["task"])+"/ratio?"+q.Encode(),
+				nil,
+			)
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+
+			// Set path parameter explicitly
+			c.SetParamNames("id")
+			c.SetParamValues(fmt.Sprintf("%v", tt.in["task"]))
+
+			err := h.FetchSerpByID(c)
+
+			// Throw t.Fatal if unexpected error has occurred.
+			if !tt.wantError && err != nil {
+				t.Fatalf("Want no error, but got %#v", err)
+			}
+
+			// Throw t.Fatal if different error has occurred.
+			if tt.wantError && !(err == tt.err) {
+				t.Fatalf("Want %#v, but got %#v", tt.err, err)
+			}
+
+			// Throw t.Fatal if expected value is different from result.
+			if diff := cmp.Diff(tt.want, rec.Code); !tt.wantError && diff != "" {
+				t.Fatalf("Want %d, but got %d\n%v", tt.want, rec.Code, diff)
+			}
+		})
+	}
 }

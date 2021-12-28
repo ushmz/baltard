@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -97,7 +96,6 @@ func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
 	taskId := c.Param("id")
 	task, err := strconv.Atoi(taskId)
 	if err != nil {
-		fmt.Println(err)
 		msg := model.ErrorMessage{
 			Message: "Parameter `taskId` must be number",
 		}
@@ -109,7 +107,6 @@ func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
 	// offset : Parse offset string to int value.
 	offset, err := strconv.Atoi(offsetstr)
 	if err != nil {
-		fmt.Println(err)
 		msg := model.ErrorMessage{
 			Message: "Parameter `offset` must be number",
 		}
