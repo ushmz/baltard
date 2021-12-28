@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"database/sql"
 	"net/http"
 	"strconv"
 
@@ -45,11 +44,15 @@ func (t *Task) FetchTaskInfo(c echo.Context) error {
 	// Fetch task information by task Id
 	ti, err := t.usecase.FetchTaskInfo(task)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			// Unreachable code block
-			c.Echo().Logger.Infof("TaskId %v not found", taskId)
-			return c.NoContent(http.StatusNotFound)
-		}
+		// [TODO] Wrap `sql.ErrNoRows` with original error and
+		// make it possible to distinguish with other error.
+		// (We would like to return 404 error)
+		// ---------------------------------------------------
+		// if err == sql.ErrNoRows {
+		// 	// Unreachable code block
+		// 	c.Echo().Logger.Infof("TaskId %v not found", taskId)
+		// 	return c.NoContent(http.StatusNotFound)
+		// }
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
