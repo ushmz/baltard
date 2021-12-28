@@ -1,50 +1,135 @@
 package handler_test
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"ratri/internal/domain/model"
+	"ratri/internal/handler"
+	mock "ratri/internal/mock/usecase"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/google/go-cmp/cmp"
+	"github.com/labstack/echo/v4"
 )
 
 var (
-	userData = `{
-		"uid": "test_user"
-	}`
-	// How do I get this value?
-	// or, combine `TestCreateUser` and `TestGetCompletionCode` ?
-	// If so, how do I get user ID from response body in *bytes.Buffer ?
-	userId = "999"
+	task = model.TaskInfo{
+		GroupId:     3,
+		ConditionId: 2,
+		TaskIds:     []int{5, 7},
+	}
+	userTests = []struct {
+		name      string
+		in        model.UserParam
+		want      interface{}
+		wantError bool
+		err       error
+	}{
+		{"Want no error", model.UserParam{Uid: "test42"}, 200, false, nil},
+	}
+
+	completionTest = []struct {
+		name      string
+		in        interface{}
+		want      interface{}
+		wantError bool
+		err       error
+	}{
+		{"Want no error", 999, 200, false, nil},
+	}
 )
 
 func TestCreateUser(t *testing.T) {
-	// e := echo.New()
-	// req := httptest.NewRequest(http.MethodPost, "/users", strings.NewReader(userData))
-	// req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	// rec := httptest.NewRecorder()
-	// c := e.NewContext(req, rec)
-	// h := &Handler{DB: database.New()}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	// if assert.NoError(t, h.CreateUser(c)) {
-	// 	// Response body contain random string value
-	// 	// Is there any way to test random value?
-	// 	if diff := cmp.Diff(rec.Code, http.StatusOK); diff != "" {
-	// 		t.Errorf("Status code does not match.\n%v", diff)
-	// 	}
-	// }
+	e := echo.New()
+	mck := mock.NewMockUser(ctrl)
+	for _, tt := range userTests {
+		t.Run(tt.name, func(t *testing.T) {
+			mck.EXPECT().FindByUid(tt.in.Uid).Return(nil, false, nil)
+			mck.EXPECT().CreateUser(tt.in.Uid).Return(&model.User{}, nil)
+			mck.EXPECT().AllocateTask().Return(task, nil)
+
+			h := handler.NewUserHandler(mck)
+
+			b, err := json.Marshal(tt.in)
+			if err != nil {
+				t.Fatal("Failed to marshal test case: %w\n", err)
+			}
+			req := httptest.NewRequest(
+				http.MethodPost,
+				"/users",
+				bytes.NewBuffer(b),
+			)
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+
+			err = h.CreateUser(c)
+
+			// Throw t.Fatal if unexpected error has occurred.
+			if !tt.wantError && err != nil {
+				t.Fatalf("Want no error, but got %#v", err)
+			}
+
+			// Throw t.Fatal if different error has occurred.
+			if tt.wantError && !(err == tt.err) {
+				t.Fatalf("Want %#v, but got %#v", tt.err, err)
+			}
+
+			// Throw t.Fatal if expected value is different from result.
+			if diff := cmp.Diff(tt.want, rec.Code); !tt.wantError && diff != "" {
+				t.Fatalf("Want %d, but got %d\n%v", tt.want, rec.Code, diff)
+			}
+		})
+	}
 }
 
 func TestGetCompletionCode(t *testing.T) {
-	// e := echo.New()
-	// req := httptest.NewRequest(http.MethodPost, "/users/code/"+userId, nil)
-	// req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-	// rec := httptest.NewRecorder()
-	// c := e.NewContext(req, rec)
-	// h := &Handler{DB: database.New()}
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	// if assert.NoError(t, h.CreateUser(c)) {
-	// 	// Response body contain random int value
-	// 	// Is there any way to test random value?
-	// 	if diff := cmp.Diff(rec.Code, http.StatusOK); diff != "" {
-	// 		t.Errorf("Status code does not match.\n%v", diff)
-	// 	}
-	// }
+	e := echo.New()
+	mck := mock.NewMockUser(ctrl)
+	for _, tt := range completionTest {
+		t.Run(tt.name, func(t *testing.T) {
+			mck.EXPECT().GetCompletionCode(tt.in).Return(42424, nil)
+			h := handler.NewUserHandler(mck)
 
+			req := httptest.NewRequest(
+				http.MethodGet,
+				"/v1/users/code"+fmt.Sprintf("%v", tt.in),
+				nil,
+			)
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+
+			// Set path parameter explicitly
+			c.SetParamNames("id")
+			c.SetParamValues(fmt.Sprintf("%v", tt.in))
+
+			err := h.GetCompletionCode(c)
+
+			// Throw t.Fatal if unexpected error has occurred.
+			if !tt.wantError && err != nil {
+				t.Fatalf("Want no error, but got %#v", err)
+			}
+
+			// Throw t.Fatal if different error has occurred.
+			if tt.wantError && !(err == tt.err) {
+				t.Fatalf("Want %#v, but got %#v", tt.err, err)
+			}
+
+			// Throw t.Fatal if expected value is different from result.
+			if diff := cmp.Diff(tt.want, rec.Code); !tt.wantError && diff != "" {
+				t.Fatalf("Want %d, but got %d\n%v", tt.want, rec.Code, diff)
+			}
+		})
+	}
 }
