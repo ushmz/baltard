@@ -1,5 +1,7 @@
 # ratri
 
+[![](https://github.com/ushmz/ratri/actions/workflows/test.yml/badge.svg)](https://github.com/ushmz/ratri/actions/workflows/test.yml)
+
 Backend server for my thesis. Works with [savitr](https://github.com/ushmz/savitr)
 
 ## Requirements
