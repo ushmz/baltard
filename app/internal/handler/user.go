@@ -52,7 +52,7 @@ func (u *User) CreateUser(c echo.Context) error {
 	}
 
 	if exist {
-		user = *eu
+		user = eu
 	} else {
 		nu, err := u.usecase.CreateUser(param.Uid)
 		if err != nil {
@@ -61,7 +61,7 @@ func (u *User) CreateUser(c echo.Context) error {
 				Message: err.Error(),
 			})
 		}
-		user = *nu
+		user = nu
 	}
 
 	info, err := u.usecase.AllocateTask()

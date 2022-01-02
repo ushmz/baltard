@@ -6,7 +6,7 @@ import (
 )
 
 type TaskRepository interface {
-	FetchTaskInfo(taskId int) (*model.Task, error)
+	FetchTaskInfo(taskId int) (model.Task, error)
 	CreateTaskAnswer(*model.Answer) error
 	UpdateTaskAllocation() (int, error)
 	// Think about creating `ConditionReporitory` and `GroupReporitory` ???

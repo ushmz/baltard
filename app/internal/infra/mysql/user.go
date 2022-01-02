@@ -17,7 +17,8 @@ func NewUserRepository(db *sqlx.DB) repo.UserRepository {
 	return &UserRepositoryImpl{DB: db}
 }
 
-func (u UserRepositoryImpl) Create(uid, secret string) (*model.User, error) {
+func (u UserRepositoryImpl) Create(uid, secret string) (model.User, error) {
+	user := model.User{}
 	rows, err := u.DB.Exec(`
 		INSERT INTO
 			users (
@@ -30,23 +31,23 @@ func (u UserRepositoryImpl) Create(uid, secret string) (*model.User, error) {
 		secret,
 	)
 	if err != nil {
-		return nil, err
+		return user, err
 	}
 
 	insertedId, err := rows.LastInsertId()
 	if err != nil {
-		return nil, err
+		return user, err
 	}
 
-	eu := model.User{
+	user = model.User{
 		Id:     int(insertedId),
 		Uid:    uid,
 		Secret: secret,
 	}
-	return &eu, nil
+	return user, nil
 }
 
-func (u UserRepositoryImpl) FindById(userId int) (*model.User, error) {
+func (u UserRepositoryImpl) FindById(userId int) (model.User, error) {
 	user := model.User{}
 	row := u.DB.QueryRowx(`
 		SELECT
@@ -64,10 +65,10 @@ func (u UserRepositoryImpl) FindById(userId int) (*model.User, error) {
 		}
 		return user, err
 	}
-	return &user, nil
+	return user, nil
 }
 
-func (u UserRepositoryImpl) FindByUid(uid string) (*model.User, error) {
+func (u UserRepositoryImpl) FindByUid(uid string) (model.User, error) {
 	user := model.User{}
 	err := u.DB.Get(&user, `
 		SELECT
@@ -85,7 +86,7 @@ func (u UserRepositoryImpl) FindByUid(uid string) (*model.User, error) {
 		}
 		return user, err
 	}
-	return &user, nil
+	return user, nil
 }
 
 func (u UserRepositoryImpl) AddCompletionCode(userId, code int) error {

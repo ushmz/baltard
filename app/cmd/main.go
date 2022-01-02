@@ -17,7 +17,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/swaggo/echo-swagger"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 // @title ratri API
@@ -90,7 +90,7 @@ func NewRouter(d *sqlx.DB) *echo.Echo {
 	v1.POST("/task/answer", h.Task.SubmitTaskAnswer)
 	v1.GET("/serp/:id", h.Serp.FetchSerpByID)
 	v1.GET("/serp/:id/icon", h.Serp.FetchSerpWithIconByID)
-	v1.GET("/serp/:id/ratio", h.Serp.FetchSerpWithDistributionByID)
+	v1.GET("/serp/:id/ratio", h.Serp.FetchSerpWithRatioByID)
 
 	// logs
 	// v1.POST("/logs/time", h.Log.CreateTaskTimeLog)
