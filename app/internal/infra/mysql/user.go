@@ -59,7 +59,10 @@ func (u UserRepositoryImpl) FindById(userId int) (*model.User, error) {
 			id = ?
 	`, userId)
 	if err := row.StructScan(&user); err != nil {
-		return nil, err
+		if err == sql.ErrNoRows {
+			return user, model.NoSuchDataError{}
+		}
+		return user, err
 	}
 	return &user, nil
 }
@@ -77,7 +80,10 @@ func (u UserRepositoryImpl) FindByUid(uid string) (*model.User, error) {
 			uid = ?
 	`, uid)
 	if err != nil {
-		return nil, err
+		if err == sql.ErrNoRows {
+			return user, model.NoSuchDataError{}
+		}
+		return user, err
 	}
 	return &user, nil
 }
@@ -111,12 +117,15 @@ func (u UserRepositoryImpl) GetCompletionCodeById(userId int) (int, error) {
 	`, userId)
 
 	if err := row.Scan(&code); err != nil {
+		if err == sql.ErrNoRows {
+			return 0, model.NoSuchDataError{}
+		}
 		return 0, err
 	}
 
 	if code.Valid {
 		return int(code.Int64), nil
 	} else {
-		return 42, sql.ErrNoRows
+		return 42, model.NoSuchDataError{}
 	}
 }

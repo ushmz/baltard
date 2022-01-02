@@ -69,8 +69,10 @@ func (s *Serp) FetchSerpWithDistributionByID(c echo.Context) error {
 
 	serp, err := s.usecase.FetchSerpWithRatio(task, offset, top)
 	if err != nil {
-		msg := model.ErrorMessage{
-			Message: "Database execution error: Failed to fetch relations: " + err.Error(),
+		if errors.Is(err, model.NoSuchDataError{}) {
+			return c.JSON(http.StatusNotFound, model.ErrorMessage{
+				Message: "Pages not found",
+			})
 		}
 		return c.JSON(http.StatusInternalServerError, msg)
 	}
@@ -130,10 +132,15 @@ func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
 
 	serp, err := s.usecase.FetchSerpWithIcon(task, offset, top)
 	if err != nil {
-		msg := model.ErrorMessage{
-			Message: "Database execution error: Failed to fetch relations : " + err.Error(),
+		if errors.Is(err, model.NoSuchDataError{}) {
+			return c.JSON(http.StatusNotFound, model.ErrorMessage{
+				Message: "Pages not found",
+			})
 		}
-		return c.JSON(http.StatusInternalServerError, msg)
+
+		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
+			Message: "Database execution error: Failed to fetch relations : " + err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, serp)
@@ -173,6 +180,16 @@ func (s *Serp) FetchSerpByID(c echo.Context) error {
 	}
 
 	serp, err := s.usecase.FetchSerp(task, offset)
+	if err != nil {
+		if errors.Is(err, model.NoSuchDataError{}) {
+			return c.JSON(http.StatusNotFound, model.ErrorMessage{
+				Message: "Pages not found",
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
+			Message: "Database execution error: Failed to fetch relations: " + err.Error(),
+		})
+	}
 
 	return c.JSON(http.StatusOK, serp)
 }
