@@ -50,10 +50,10 @@ func (mr *MockUserMockRecorder) AllocateTask() *gomock.Call {
 }
 
 // CreateUser mocks base method.
-func (m *MockUser) CreateUser(uid string) (*model.User, error) {
+func (m *MockUser) CreateUser(uid string) (model.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", uid)
-	ret0, _ := ret[0].(*model.User)
+	ret0, _ := ret[0].(model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -65,10 +65,10 @@ func (mr *MockUserMockRecorder) CreateUser(uid interface{}) *gomock.Call {
 }
 
 // FindByUid mocks base method.
-func (m *MockUser) FindByUid(uid string) (*model.User, bool, error) {
+func (m *MockUser) FindByUid(uid string) (model.User, bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByUid", uid)
-	ret0, _ := ret[0].(*model.User)
+	ret0, _ := ret[0].(model.User)
 	ret1, _ := ret[1].(bool)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
