@@ -42,36 +42,36 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - 
         uses: actions/checkout@v2
-
       - 
         name: Setup Go environment
         uses: actions/setup-go@v2.1.5
         with:
           go-version: 1.16
-
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-
       - 
         name: Build DB container
         run: docker-compose up -d --build db
-    
+      -
+        name: Wait for DB
+        run: |
+          while ! docker-compose exec -T db mysql -e "SELECT 1" >/dev/null 2>&1
+          do
+            sleep 1
+          done
       - 
         name: Get dependencies
         run: go get -v -t -d ./...
         working-directory: ./app
-
       - 
         name: Test handler layer code
         run: go test ./internal/handler/...
         working-directory: ./app
-      
       - 
         name: Test usecase layer code
         run: go test ./internal/usecase/...
         working-directory: ./app
-        
       - 
         name: Test infrastructure layer code
         run: go test ./internal/infra/...
