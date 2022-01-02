@@ -59,7 +59,11 @@ jobs:
       -
         name: Insert test data into DB
         run: |
-          mysql --protocol=tcp -h localhost -P ${{secrets.MYSQL_PORT}} -u ${{secrets.MYSQL_USER}} -p${{secrets.MYSQL_PASS}} ${{secrets.MYSQL_DBNAME}} < ./db/mysql/init.d/*.sql
+          for file in *
+          do
+            mysql --protocol=tcp -h localhost -P ${{secrets.MYSQL_PORT}} -u ${{secrets.MYSQL_USER}} -p${{secrets.MYSQL_PASS}} ${{secrets.MYSQL_DBNAME}} < $file
+          done
+        working-directory: ./db/mysql/init.d
       - 
         name: Test infrastructure layer code
         run: go test ./internal/infra/...
