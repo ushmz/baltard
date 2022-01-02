@@ -59,9 +59,10 @@ jobs:
       -
         name: Insert test data into DB
         run: |
+          mysql --protocol=tcp -h localhost -P ${{secrets.MYSQL_PORT}} -u root -p${{secrets.MYSQL_PASS}} -e "CREATE DATABASE ${{secrets.MYSQL_DBNAME}}"
           for file in *
           do
-            mysql --protocol=tcp -h localhost -P ${{secrets.MYSQL_PORT}} -u ${{secrets.MYSQL_USER}} -p${{secrets.MYSQL_PASS}} ${{secrets.MYSQL_DBNAME}} < $file
+            mysql --protocol=tcp -h localhost -P ${{secrets.MYSQL_PORT}} -u root -p${{secrets.MYSQL_PASS}} ${{secrets.MYSQL_DBNAME}} < $file
           done
         working-directory: ./db/mysql/init.d
       - 
