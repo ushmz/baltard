@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"ratri/internal/domain/model"
 	repo "ratri/internal/domain/repository"
 
@@ -31,9 +32,19 @@ func (s SerpReporitoryImpl) FetchSerpByTaskID(taskId, offset int) ([]model.Searc
 			?, 10
 	`, taskId, offset*10)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return &srp, model.NoSuchDataError{}
+		}
 		return nil, err
 	}
-	return srp, nil
+
+	// `sqlx.DB.Select` does not throw `ErrNoRows`,
+	// so if length of fetched array is 0, return `model.NoSuchDataError`
+	if len(srp) == 0 {
+		return &srp, model.NoSuchDataError{}
+	}
+
+	return &srp, nil
 }
 
 func (s SerpReporitoryImpl) FetchSerpWithIconByTaskID(taskId, offset, top int) ([]model.SerpWithIconQueryResult, error) {
@@ -135,7 +146,13 @@ func (s SerpReporitoryImpl) FetchSerpWithIconByTaskID(taskId, offset, top int) (
 		return nil, err
 	}
 
-	return swi, nil
+	// `sqlx.DB.Select` does not throw `ErrNoRows`,
+	// so if length of fetched array is 0, return `model.NoSuchDataError`
+	if len(swi) == 0 {
+		return &swi, model.NoSuchDataError{}
+	}
+
+	return &swi, nil
 }
 
 func (s SerpReporitoryImpl) FetchSerpWithRatioByTaskID(taskId, offset, top int) ([]model.SerpWithRatioQueryResult, error) {
@@ -202,8 +219,17 @@ func (s SerpReporitoryImpl) FetchSerpWithRatioByTaskID(taskId, offset, top int) 
 			) as relation_count
 	`, taskId, offset*10)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return &swr, model.NoSuchDataError{}
+		}
 		return nil, err
 	}
 
-	return swr, nil
+	// `sqlx.DB.Select` does not throw `ErrNoRows`,
+	// so if length of fetched array is 0, return `model.NoSuchDataError`
+	if len(swr) == 0 {
+		return &swr, model.NoSuchDataError{}
+	}
+
+	return &swr, nil
 }

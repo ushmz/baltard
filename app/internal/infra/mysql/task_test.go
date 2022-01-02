@@ -2,7 +2,6 @@ package mysql_test
 
 import (
 	"ratri/internal/domain/model"
-	"reflect"
 	"testing"
 )
 
@@ -14,14 +13,15 @@ var (
 		wantError bool
 		err       error
 	}{
-		{"Want no error", 1, nil, false, nil},
-		{"Want no error", 2, nil, false, nil},
-		{"Want no error", 3, nil, false, nil},
-		{"Want no error", 4, nil, false, nil},
-		{"Want no error", 5, &model.Task{}, false, nil},
-		{"Want no error", 6, &model.Task{}, false, nil},
-		{"Want no error", 7, &model.Task{}, false, nil},
-		{"Want no error", 8, &model.Task{}, false, nil},
+
+		{"Want no data error#1", 1, nil, true, model.NoSuchDataError{}},
+		{"Want no data error#2", 2, nil, true, model.NoSuchDataError{}},
+		{"Want no data error#3", 3, nil, true, model.NoSuchDataError{}},
+		{"Want no data error#4", 4, nil, true, model.NoSuchDataError{}},
+		{"Want no error#5", 5, &model.Task{}, false, nil},
+		{"Want no error#6", 6, &model.Task{}, false, nil},
+		{"Want no error#7", 7, &model.Task{}, false, nil},
+		{"Want no error#8", 8, &model.Task{}, false, nil},
 	}
 )
 
@@ -39,8 +39,12 @@ func TestFetchTaskInfo(t *testing.T) {
 				}
 			}
 
-			if reflect.DeepEqual(tt.want, task) {
-				t.Fatal(err)
+			// if reflect.DeepEqual(tt.want, *task) {
+			// 	t.Fatalf("Want %#v, but got %#v:\n %#v", tt.want, task, err)
+			// }
+
+			if tt.want == task {
+				t.Fatalf("Want %#v, but got %#v:\n %#v", tt.want, task, err)
 			}
 
 		})
