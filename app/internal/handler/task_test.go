@@ -19,14 +19,19 @@ import (
 var (
 	taskTests = []struct {
 		name      string
-		in        interface{}
+		in        int
 		want      interface{}
 		wantError bool
 		err       error
 	}{
-		{"Want no error", 5, 200, false, nil},
-		// [TODO]
-		// {"Want no error", 4, 404, false, nil},
+		{"Want 404 error#1", 1, 404, false, nil},
+		{"Want 404 error#2", 2, 404, false, nil},
+		{"Want 404 error#3", 3, 404, false, nil},
+		{"Want 404 error#4", 4, 404, false, nil},
+		{"Want no error#1", 5, 200, false, nil},
+		{"Want no error#2", 6, 200, false, nil},
+		{"Want no error#3", 7, 200, false, nil},
+		{"Want no error#4", 8, 200, false, nil},
 	}
 
 	answerTests = []struct {
@@ -54,7 +59,11 @@ func TestFetchTaskInfo(t *testing.T) {
 	mck := mock.NewMockTask(ctrl)
 	for _, tt := range taskTests {
 		t.Run(tt.name, func(t *testing.T) {
-			mck.EXPECT().FetchTaskInfo(tt.in).Return(nil, nil)
+			if tt.in > 4 && tt.in < 9 {
+				mck.EXPECT().FetchTaskInfo(tt.in).Return(model.Task{}, nil)
+			} else {
+				mck.EXPECT().FetchTaskInfo(tt.in).Return(model.Task{}, model.NoSuchDataError{})
+			}
 			h := handler.NewTaskHandler(mck)
 
 			req := httptest.NewRequest(

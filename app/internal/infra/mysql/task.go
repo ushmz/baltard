@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"ratri/internal/domain/model"
 	repo "ratri/internal/domain/repository"
 
@@ -16,7 +17,7 @@ func NewTaskRepository(db *sqlx.DB) repo.TaskRepository {
 }
 
 // FetchTaskInfo : Fetch task info by task id
-func (t TaskRepositoryImpl) FetchTaskInfo(taskId int) (*model.Task, error) {
+func (t TaskRepositoryImpl) FetchTaskInfo(taskId int) (model.Task, error) {
 	task := model.Task{}
 	row := t.DB.QueryRowx(`
 		SELECT
@@ -32,10 +33,13 @@ func (t TaskRepositoryImpl) FetchTaskInfo(taskId int) (*model.Task, error) {
 		`, taskId)
 
 	if err := row.StructScan(&task); err != nil {
-		return nil, err
+		if err == sql.ErrNoRows {
+			return task, model.NoSuchDataError{}
+		}
+		return task, err
 	}
 
-	return &task, nil
+	return task, nil
 }
 
 func (t TaskRepositoryImpl) UpdateTaskAllocation() (int, error) {
@@ -93,6 +97,9 @@ func (t TaskRepositoryImpl) GetTaskIdsByGroupId(groupId int) ([]int, error) {
 	`, groupId)
 
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, model.NoSuchDataError{}
+		}
 		return nil, err
 	}
 
@@ -112,6 +119,9 @@ func (t TaskRepositoryImpl) GetConditionIdByGroupId(groupId int) (int, error) {
 	`, groupId)
 
 	if err := row.Scan(&condition); err != nil {
+		if err == sql.ErrNoRows {
+			return 0, model.NoSuchDataError{}
+		}
 		return 0, err
 	}
 

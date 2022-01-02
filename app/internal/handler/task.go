@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -35,24 +37,19 @@ func (t *Task) FetchTaskInfo(c echo.Context) error {
 	taskId := c.Param("id")
 	task, err := strconv.Atoi(taskId)
 	if err != nil {
-		msg := model.ErrorMessage{
+		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
 			Message: "Parameter `taskId` must be number",
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		})
 	}
 
 	// Fetch task information by task Id
 	ti, err := t.usecase.FetchTaskInfo(task)
 	if err != nil {
-		// [TODO] Wrap `sql.ErrNoRows` with original error and
-		// make it possible to distinguish with other error.
-		// (We would like to return 404 error)
-		// ---------------------------------------------------
-		// if err == sql.ErrNoRows {
-		// 	// Unreachable code block
-		// 	c.Echo().Logger.Infof("TaskId %v not found", taskId)
-		// 	return c.NoContent(http.StatusNotFound)
-		// }
+		if errors.Is(err, model.NoSuchDataError{}) {
+			return c.JSON(http.StatusNotFound, model.ErrorMessage{
+				Message: fmt.Sprintf("TaskId %v not found", taskId),
+			})
+		}
 		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
@@ -75,8 +72,9 @@ func (t *Task) SubmitTaskAnswer(c echo.Context) error {
 	// answer : Bind request body to struct
 	answer := new(model.Answer)
 	if err := c.Bind(answer); err != nil {
-		c.Echo().Logger.Errorf("Error. Invalid request body : %v", err)
-		return c.NoContent(http.StatusBadRequest)
+		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
+			Message: fmt.Sprintf("Invalid request body : %v", err),
+		})
 	}
 
 	err := t.usecase.CreateTaskAnswer(answer)

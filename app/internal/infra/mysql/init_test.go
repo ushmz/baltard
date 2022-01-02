@@ -1,10 +1,11 @@
-package mysql
+package mysql_test
 
 import (
 	"os"
 	"testing"
 
 	repo "ratri/internal/domain/repository"
+	"ratri/internal/infra/mysql"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -17,16 +18,16 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	cenv := NewMySQLConnectionEnv()
+	cenv := mysql.NewMySQLConnectionEnv()
 	db, err := cenv.ConnectDB()
 	if err != nil {
 		panic(err)
 	}
 
-	logDao = NewLogRepository(db)
-	serpDao = NewSerpRepository(db)
-	taskDao = NewTaskRepository(db)
-	userDao = NewUserRepository(db)
+	logDao = mysql.NewLogRepository(db)
+	serpDao = mysql.NewSerpRepository(db)
+	taskDao = mysql.NewTaskRepository(db)
+	userDao = mysql.NewUserRepository(db)
 
 	os.Exit(m.Run())
 }

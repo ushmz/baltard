@@ -35,10 +35,10 @@ func (m *MockSerp) EXPECT() *MockSerpMockRecorder {
 }
 
 // FetchSerp mocks base method.
-func (m *MockSerp) FetchSerp(taskId, offset int) ([]model.SearchPage, error) {
+func (m *MockSerp) FetchSerp(taskId, offset int) (*[]model.SearchPage, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FetchSerp", taskId, offset)
-	ret0, _ := ret[0].([]model.SearchPage)
+	ret0, _ := ret[0].(*[]model.SearchPage)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -50,10 +50,10 @@ func (mr *MockSerpMockRecorder) FetchSerp(taskId, offset interface{}) *gomock.Ca
 }
 
 // FetchSerpWithIcon mocks base method.
-func (m *MockSerp) FetchSerpWithIcon(taskId, offset, top int) ([]model.SerpWithIcon, error) {
+func (m *MockSerp) FetchSerpWithIcon(taskId, offset, top int) (*[]model.SerpWithIcon, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FetchSerpWithIcon", taskId, offset, top)
-	ret0, _ := ret[0].([]model.SerpWithIcon)
+	ret0, _ := ret[0].(*[]model.SerpWithIcon)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -65,10 +65,10 @@ func (mr *MockSerpMockRecorder) FetchSerpWithIcon(taskId, offset, top interface{
 }
 
 // FetchSerpWithRatio mocks base method.
-func (m *MockSerp) FetchSerpWithRatio(taskId, offset, top int) ([]model.SerpWithRatio, error) {
+func (m *MockSerp) FetchSerpWithRatio(taskId, offset, top int) (*[]model.SerpWithRatio, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FetchSerpWithRatio", taskId, offset, top)
-	ret0, _ := ret[0].([]model.SerpWithRatio)
+	ret0, _ := ret[0].(*[]model.SerpWithRatio)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

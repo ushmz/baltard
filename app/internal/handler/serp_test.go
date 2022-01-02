@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"ratri/internal/domain/model"
 	"ratri/internal/handler"
 	mock "ratri/internal/mock/usecase"
 	"testing"
@@ -23,12 +24,15 @@ var (
 		err       error
 	}{
 
-		{"Want no error", map[string]interface{}{"task": 5, "offset": 0, "top": 3}, 200, false, nil},
-		{"Want no error", map[string]interface{}{"task": 6, "offset": 1, "top": 5}, 200, false, nil},
+		{"Want no error#1", map[string]interface{}{"task": 5, "offset": 0, "top": 3}, 200, false, nil},
+		{"Want no error#2", map[string]interface{}{"task": 6, "offset": 1, "top": 5}, 200, false, nil},
+		{"Want 404 code#1", map[string]interface{}{"task": 1, "offset": 1, "top": 5}, 404, false, nil},
+		{"Want 404 code#2", map[string]interface{}{"task": 10, "offset": 1, "top": 5}, 404, false, nil},
+		{"Want 404 code#3", map[string]interface{}{"task": 10, "offset": 10, "top": 5}, 404, false, nil},
 	}
 )
 
-func TestFetchSerpWithDistributionByID(t *testing.T) {
+func TestFetchSerpWithRatioByID(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -36,7 +40,15 @@ func TestFetchSerpWithDistributionByID(t *testing.T) {
 	mck := mock.NewMockSerp(ctrl)
 	for _, tt := range serpTests {
 		t.Run(tt.name, func(t *testing.T) {
-			mck.EXPECT().FetchSerpWithRatio(tt.in["task"], tt.in["offset"], tt.in["top"]).Return(nil, nil)
+			if tt.in["task"].(int) > 4 && tt.in["task"].(int) < 9 && tt.in["offset"].(int) < 10 {
+				mck.EXPECT().
+					FetchSerpWithRatio(tt.in["task"], tt.in["offset"], tt.in["top"]).
+					Return(nil, nil)
+			} else {
+				mck.EXPECT().
+					FetchSerpWithRatio(tt.in["task"], tt.in["offset"], tt.in["top"]).
+					Return(nil, model.NoSuchDataError{})
+			}
 			h := handler.NewSerpHandler(mck)
 
 			// Set query parameter
@@ -57,7 +69,7 @@ func TestFetchSerpWithDistributionByID(t *testing.T) {
 			c.SetParamNames("id")
 			c.SetParamValues(fmt.Sprintf("%v", tt.in["task"]))
 
-			err := h.FetchSerpWithDistributionByID(c)
+			err := h.FetchSerpWithRatioByID(c)
 
 			// Throw t.Fatal if unexpected error has occurred.
 			if !tt.wantError && err != nil {
@@ -85,7 +97,15 @@ func TestFetchSerpWithIconByID(t *testing.T) {
 	mck := mock.NewMockSerp(ctrl)
 	for _, tt := range serpTests {
 		t.Run(tt.name, func(t *testing.T) {
-			mck.EXPECT().FetchSerpWithIcon(tt.in["task"], tt.in["offset"], tt.in["top"]).Return(nil, nil)
+			if tt.in["task"].(int) > 4 && tt.in["task"].(int) < 9 && tt.in["offset"].(int) < 10 {
+				mck.EXPECT().
+					FetchSerpWithIcon(tt.in["task"], tt.in["offset"], tt.in["top"]).
+					Return(nil, nil)
+			} else {
+				mck.EXPECT().
+					FetchSerpWithIcon(tt.in["task"], tt.in["offset"], tt.in["top"]).
+					Return(nil, model.NoSuchDataError{})
+			}
 			h := handler.NewSerpHandler(mck)
 
 			// Set query parameter
@@ -134,7 +154,13 @@ func TestFetchSerpByID(t *testing.T) {
 	mck := mock.NewMockSerp(ctrl)
 	for _, tt := range serpTests {
 		t.Run(tt.name, func(t *testing.T) {
-			mck.EXPECT().FetchSerp(tt.in["task"], tt.in["offset"]).Return(nil, nil)
+			if tt.in["task"].(int) > 4 && tt.in["task"].(int) < 9 && tt.in["offset"].(int) < 10 {
+				mck.EXPECT().FetchSerp(tt.in["task"], tt.in["offset"]).Return(nil, nil)
+			} else {
+				mck.EXPECT().
+					FetchSerp(tt.in["task"], tt.in["offset"]).
+					Return(nil, model.NoSuchDataError{})
+			}
 			h := handler.NewSerpHandler(mck)
 
 			// Set query parameter

@@ -49,10 +49,10 @@ func (mr *MockUserRepositoryMockRecorder) AddCompletionCode(userId, code interfa
 }
 
 // Create mocks base method.
-func (m *MockUserRepository) Create(uid, secret string) (*model.User, error) {
+func (m *MockUserRepository) Create(uid, secret string) (model.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", uid, secret)
-	ret0, _ := ret[0].(*model.User)
+	ret0, _ := ret[0].(model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -64,10 +64,10 @@ func (mr *MockUserRepositoryMockRecorder) Create(uid, secret interface{}) *gomoc
 }
 
 // FindById mocks base method.
-func (m *MockUserRepository) FindById(UserId int) (*model.User, error) {
+func (m *MockUserRepository) FindById(UserId int) (model.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindById", UserId)
-	ret0, _ := ret[0].(*model.User)
+	ret0, _ := ret[0].(model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -79,10 +79,10 @@ func (mr *MockUserRepositoryMockRecorder) FindById(UserId interface{}) *gomock.C
 }
 
 // FindByUid mocks base method.
-func (m *MockUserRepository) FindByUid(uid string) (*model.User, error) {
+func (m *MockUserRepository) FindByUid(uid string) (model.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByUid", uid)
-	ret0, _ := ret[0].(*model.User)
+	ret0, _ := ret[0].(model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
