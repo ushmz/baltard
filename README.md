@@ -1,6 +1,6 @@
 # ratri
 
-[![](https://github.com/ushmz/ratri/actions/workflows/test.yml/badge.svg)](https://github.com/ushmz/ratri/actions/workflows/test.yml)
+[![](https://github.com/ushmz/ratri/actions/workflows/unittest.yml/badge.svg)](https://github.com/ushmz/ratri/actions/workflows/test.yml)
 
 Backend server for my thesis. Works with [savitr](https://github.com/ushmz/savitr)
 
