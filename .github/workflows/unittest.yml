@@ -34,9 +34,8 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: ${{secrets.MYSQL_PASS}}
           MYSQL_DATABASE: ${{secrets.MYSQL_DBNAME}}
-          MYSQL_PORT: ${{secrets.MYSQL_PORT}}
           MYSQL_USER: ${{secrets.MYSQL_USER}}
-          MYSQL_PASS: ${{secrets.MYSQL_PASS}}
+          MYSQL_PASSWORD: ${{secrets.MYSQL_PASS}}
         options: >-
           --health-cmd "mysqladmin ping"
           --health-interval 10s
