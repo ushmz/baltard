@@ -33,7 +33,7 @@ jobs:
           - 3366:3306
         env:
           MYSQL_ROOT_PASSWORD: ${{secrets.MYSQL_PASS}}
-          MYSQL_DBNAME: ${{secrets.MYSQL_DBNAME}}
+          MYSQL_DATABASE: ${{secrets.MYSQL_DBNAME}}
           MYSQL_PORT: ${{secrets.MYSQL_PORT}}
           MYSQL_USER: ${{secrets.MYSQL_USER}}
           MYSQL_PASS: ${{secrets.MYSQL_PASS}}
