@@ -16,7 +16,7 @@ func NewTaskRepository(db *sqlx.DB) repo.TaskRepository {
 }
 
 // FetchTaskInfo : Fetch task info by task id
-func (t TaskRepositoryImpl) FetchTaskInfo(taskId int) (*model.Task, error) {
+func (t TaskRepositoryImpl) FetchTaskInfo(taskId int) (model.Task, error) {
 	task := model.Task{}
 	row := t.DB.QueryRowx(`
 		SELECT
@@ -35,7 +35,7 @@ func (t TaskRepositoryImpl) FetchTaskInfo(taskId int) (*model.Task, error) {
 		return nil, err
 	}
 
-	return &task, nil
+	return task, nil
 }
 
 func (t TaskRepositoryImpl) UpdateTaskAllocation() (int, error) {

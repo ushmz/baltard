@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -18,8 +19,8 @@ func NewSerpHandler(serp usecase.Serp) *Serp {
 	return &Serp{usecase: serp}
 }
 
-// FetchSerpWithDistributionByID : Return search result pages with similarweb information (such as icon)
-// @Id fetch_serp_with_distribution_by_id
+// FetchSerpWithRatioByID : Return search result pages with similarweb information (such as icon)
+// @Id fetch_serp_with_ratio_by_id
 // @Summary Returns json which have a list of search results with data for RatioUI.
 // @Description Returns json which have a list of search results with tracked pages of Similarweb top 2000 and its category.
 // @Accept json
@@ -31,15 +32,14 @@ func NewSerpHandler(serp usecase.Serp) *Serp {
 // @Failure 400
 // @Failure 500
 // @Router /v1/serp/{taskId}/ratio [GET]
-func (s *Serp) FetchSerpWithDistributionByID(c echo.Context) error {
+func (s *Serp) FetchSerpWithRatioByID(c echo.Context) error {
 	// taskId : Get task Id from path parameter.
 	taskId := c.Param("id")
 	task, err := strconv.Atoi(taskId)
 	if err != nil {
-		msg := model.ErrorMessage{
+		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
 			Message: "Parameter `taskId` must be number",
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		})
 	}
 
 	// offsetstr : Get offset from query parameter.
@@ -47,10 +47,9 @@ func (s *Serp) FetchSerpWithDistributionByID(c echo.Context) error {
 	// offset : Parse string value to int value.
 	offset, err := strconv.Atoi(offsetstr)
 	if err != nil {
-		msg := model.ErrorMessage{
+		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
 			Message: "Parameter `offset` must be number",
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		})
 	}
 
 	// topstr : Return this number of top category.
@@ -61,10 +60,9 @@ func (s *Serp) FetchSerpWithDistributionByID(c echo.Context) error {
 	// top : Parse string value to int value.
 	top, err := strconv.Atoi(topstr)
 	if err != nil {
-		msg := model.ErrorMessage{
+		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
 			Message: "Parameter `top` must be number",
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		})
 	}
 
 	serp, err := s.usecase.FetchSerpWithRatio(task, offset, top)
@@ -72,7 +70,9 @@ func (s *Serp) FetchSerpWithDistributionByID(c echo.Context) error {
 		msg := model.ErrorMessage{
 			Message: "Database execution error: Failed to fetch relations: " + err.Error(),
 		}
-		return c.JSON(http.StatusInternalServerError, msg)
+		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
+			Message: "Database execution error: Failed to fetch relations: " + err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusOK, serp)
@@ -96,10 +96,9 @@ func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
 	taskId := c.Param("id")
 	task, err := strconv.Atoi(taskId)
 	if err != nil {
-		msg := model.ErrorMessage{
+		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
 			Message: "Parameter `taskId` must be number",
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		})
 	}
 
 	// offsetstr : Get offset from query parameter.
@@ -107,10 +106,9 @@ func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
 	// offset : Parse offset string to int value.
 	offset, err := strconv.Atoi(offsetstr)
 	if err != nil {
-		msg := model.ErrorMessage{
+		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
 			Message: "Parameter `offset` must be number",
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		})
 	}
 
 	// topstr : Return this number of top category.
@@ -122,10 +120,9 @@ func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
 	// top : Parse string value to int value.
 	top, err := strconv.Atoi(topstr)
 	if err != nil {
-		msg := model.ErrorMessage{
+		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
 			Message: "Parameter `top` must be number",
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		})
 	}
 
 	serp, err := s.usecase.FetchSerpWithIcon(task, offset, top)
@@ -156,20 +153,18 @@ func (s *Serp) FetchSerpByID(c echo.Context) error {
 	taskId := c.Param("id")
 	task, err := strconv.Atoi(taskId)
 	if err != nil {
-		msg := model.ErrorMessage{
+		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
 			Message: "Parameter `taskId` must be number",
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		})
 	}
 
 	// offsetstr : Get offset from query parameter.
 	offsetstr := c.QueryParam("offset")
 	offset, err := strconv.Atoi(offsetstr)
 	if err != nil {
-		msg := model.ErrorMessage{
+		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
 			Message: "Parameter `offset` must be number",
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		})
 	}
 
 	serp, err := s.usecase.FetchSerp(task, offset)

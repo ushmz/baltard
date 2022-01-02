@@ -2,7 +2,6 @@
 package usecase
 
 import (
-	"database/sql"
 	"math/rand"
 	"time"
 
@@ -12,8 +11,8 @@ import (
 
 type User interface {
 	GenerateRandomPasswd(l int) string
-	FindByUid(uid string) (*model.User, bool, error)
-	CreateUser(uid string) (*model.User, error)
+	FindByUid(uid string) (model.User, bool, error)
+	CreateUser(uid string) (model.User, error)
 	AllocateTask() (model.TaskInfo, error)
 	GetCompletionCode(userId int) (int, error)
 }
@@ -42,20 +41,19 @@ func (u *UserImpl) GenerateRandomPasswd(l int) string {
 	return string(b) + "k2F"
 }
 
-func (u *UserImpl) FindByUid(uid string) (*model.User, bool, error) {
+func (u *UserImpl) FindByUid(uid string) (model.User, bool, error) {
 	user, err := u.userRepository.FindByUid(uid)
 	if err != nil {
-		if err != sql.ErrNoRows {
-			return &model.User{}, false, err
-		}
-		return &model.User{}, false, nil
+		return model.User{}, false, nil
 	}
 
 	return user, true, nil
 
 }
 
-func (u *UserImpl) CreateUser(uid string) (*model.User, error) {
+func (u *UserImpl) CreateUser(uid string) (model.User, error) {
+	zv := model.User{}
+
 	rand.Seed(time.Now().UnixNano())
 	// randomNumber : Used as completion code
 	randomNumber := rand.Intn(100000)
@@ -64,13 +62,13 @@ func (u *UserImpl) CreateUser(uid string) (*model.User, error) {
 
 	cu, err := u.userRepository.Create(uid, randstr)
 	if err != nil {
-		return &model.User{}, err
+		return zv, err
 	}
 
 	// Insert completion code
 	u.userRepository.AddCompletionCode(cu.Id, randomNumber)
 	if err != nil {
-		return &model.User{}, err
+		return zv, err
 	}
 	return cu, nil
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type Task interface {
-	FetchTaskInfo(taskId int) (*model.Task, error)
+	FetchTaskInfo(taskId int) (model.Task, error)
 	CreateTaskAnswer(answer *model.Answer) error
 }
 
@@ -19,7 +19,7 @@ func NewTaskUsecase(taskRepository repo.TaskRepository) Task {
 	return &TaskImpl{repository: taskRepository}
 }
 
-func (t *TaskImpl) FetchTaskInfo(taskId int) (*model.Task, error) {
+func (t *TaskImpl) FetchTaskInfo(taskId int) (model.Task, error) {
 	return t.repository.FetchTaskInfo(taskId)
 }
 

@@ -15,7 +15,7 @@ func NewSerpRepository(db *sqlx.DB) repo.SerpRepository {
 	return &SerpReporitoryImpl{DB: db}
 }
 
-func (s SerpReporitoryImpl) FetchSerpByTaskID(taskId, offset int) ([]model.SearchPage, error) {
+func (s SerpReporitoryImpl) FetchSerpByTaskID(taskId, offset int) (*[]model.SearchPage, error) {
 	srp := []model.SearchPage{}
 	err := s.DB.Select(&srp, `
 		SELECT
@@ -36,7 +36,7 @@ func (s SerpReporitoryImpl) FetchSerpByTaskID(taskId, offset int) ([]model.Searc
 	return srp, nil
 }
 
-func (s SerpReporitoryImpl) FetchSerpWithIconByTaskID(taskId, offset, top int) ([]model.SerpWithIconQueryResult, error) {
+func (s SerpReporitoryImpl) FetchSerpWithIconByTaskID(taskId, offset, top int) (*[]model.SerpWithIconQueryResult, error) {
 	swi := []model.SerpWithIconQueryResult{}
 	err := s.DB.Select(&swi, `
 		SELECT
@@ -138,7 +138,7 @@ func (s SerpReporitoryImpl) FetchSerpWithIconByTaskID(taskId, offset, top int) (
 	return swi, nil
 }
 
-func (s SerpReporitoryImpl) FetchSerpWithRatioByTaskID(taskId, offset, top int) ([]model.SerpWithRatioQueryResult, error) {
+func (s SerpReporitoryImpl) FetchSerpWithRatioByTaskID(taskId, offset, top int) (*[]model.SerpWithRatioQueryResult, error) {
 	swr := []model.SerpWithRatioQueryResult{}
 	err := s.DB.Select(&swr, `
 		SELECT

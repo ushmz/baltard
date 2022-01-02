@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"ratri/internal/domain/model"
 	"ratri/internal/handler"
 	mock "ratri/internal/mock/usecase"
 	"testing"
@@ -28,7 +29,7 @@ var (
 	}
 )
 
-func TestFetchSerpWithDistributionByID(t *testing.T) {
+func TestFetchSerpWithRatioByID(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -57,7 +58,7 @@ func TestFetchSerpWithDistributionByID(t *testing.T) {
 			c.SetParamNames("id")
 			c.SetParamValues(fmt.Sprintf("%v", tt.in["task"]))
 
-			err := h.FetchSerpWithDistributionByID(c)
+			err := h.FetchSerpWithRatioByID(c)
 
 			// Throw t.Fatal if unexpected error has occurred.
 			if !tt.wantError && err != nil {

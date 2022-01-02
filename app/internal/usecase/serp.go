@@ -10,9 +10,9 @@ import (
 )
 
 type Serp interface {
-	FetchSerp(taskId, offset int) ([]model.SearchPage, error)
-	FetchSerpWithIcon(taskId, offset, top int) ([]model.SerpWithIcon, error)
-	FetchSerpWithRatio(taskId, offset, top int) ([]model.SerpWithRatio, error)
+	FetchSerp(taskId, offset int) (*[]model.SearchPage, error)
+	FetchSerpWithIcon(taskId, offset, top int) (*[]model.SerpWithIcon, error)
+	FetchSerpWithRatio(taskId, offset, top int) (*[]model.SerpWithRatio, error)
 }
 
 type SerpImpl struct {
@@ -23,23 +23,23 @@ func NewSerpUsecase(serpRepository repo.SerpRepository) Serp {
 	return &SerpImpl{repository: serpRepository}
 }
 
-func (s *SerpImpl) FetchSerp(taskId, offset int) ([]model.SearchPage, error) {
+func (s *SerpImpl) FetchSerp(taskId, offset int) (*[]model.SearchPage, error) {
 	return s.repository.FetchSerpByTaskID(taskId, offset)
 }
 
-func (s *SerpImpl) FetchSerpWithIcon(taskId, offset, top int) ([]model.SerpWithIcon, error) {
+func (s *SerpImpl) FetchSerpWithIcon(taskId, offset, top int) (*[]model.SerpWithIcon, error) {
+	// serp : Return struct of this method
+	serp := []model.SerpWithIcon{}
+
 	swi, err := s.repository.FetchSerpWithIconByTaskID(taskId, offset, top)
 	if err != nil {
-		return []model.SerpWithIcon{}, err
+		return &serp, err
 	}
 
 	// serpMap : Map object to format SQL result to return struct.
 	serpMap := map[int]model.SerpWithIcon{}
 
-	// serp : Return struct of this method
-	serp := []model.SerpWithIcon{}
-
-	for _, v := range swi {
+	for _, v := range *swi {
 		if _, ok := serpMap[v.PageId]; !ok {
 			serpMap[v.PageId] = model.SerpWithIcon{
 				PageId:  v.PageId,
@@ -70,22 +70,22 @@ func (s *SerpImpl) FetchSerpWithIcon(taskId, offset, top int) ([]model.SerpWithI
 		serp = append(serp, v)
 	}
 
-	return serp, nil
+	return &serp, nil
 }
 
-func (s *SerpImpl) FetchSerpWithRatio(taskId, offset, top int) ([]model.SerpWithRatio, error) {
+func (s *SerpImpl) FetchSerpWithRatio(taskId, offset, top int) (*[]model.SerpWithRatio, error) {
+	// serp : Return struct of this method
+	serp := []model.SerpWithRatio{}
+
 	swr, err := s.repository.FetchSerpWithRatioByTaskID(taskId, offset, top)
 	if err != nil {
-		return []model.SerpWithRatio{}, err
+		return &serp, err
 	}
 
 	// serpMap : Map object to format SQL result to return struct.
 	serpMap := map[int]model.SerpWithRatio{}
 
-	// serp : Return struct of this method
-	serp := []model.SerpWithRatio{}
-
-	for _, v := range swr {
+	for _, v := range *swr {
 		if _, ok := serpMap[v.PageId]; !ok {
 			serpMap[v.PageId] = model.SerpWithRatio{
 				PageId:       v.PageId,
@@ -114,5 +114,5 @@ func (s *SerpImpl) FetchSerpWithRatio(taskId, offset, top int) ([]model.SerpWith
 		serp = append(serp, v)
 	}
 
-	return serp, nil
+	return &serp, nil
 }
