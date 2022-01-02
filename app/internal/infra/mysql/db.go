@@ -48,6 +48,7 @@ func getEnv(key, defaultValue string) string {
 
 func (mc *MySQLConnectionEnv) ConnectDB() (*sqlx.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", mc.User, mc.Password, mc.Host, mc.Port, mc.DBName)
+	fmt.Println("\n", dsn)
 	return sqlx.Open("mysql", dsn)
 }
 
