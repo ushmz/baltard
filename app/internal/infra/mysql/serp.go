@@ -55,11 +55,11 @@ func (s SerpReporitoryImpl) FetchSerpWithIconByTaskID(taskId, offset, top int) (
 			search_pages.title,
 			search_pages.url,
 			search_pages.snippet,
-			similarweb_pages.id similarweb_id,
-			similarweb_pages.title similarweb_title,
-			similarweb_pages.url similarweb_url,
-			similarweb_pages.icon_path similarweb_icon,
-			similarweb_categories.category similarweb_category
+			similarweb_pages.id linked_page_id,
+			similarweb_pages.title linked_page_title,
+			similarweb_pages.url linked_page_url,
+			similarweb_pages.icon_path linked_page_icon,
+			similarweb_categories.category linked_page_category 
 		FROM (
 			SELECT
 				page_id,
@@ -101,11 +101,11 @@ func (s SerpReporitoryImpl) FetchSerpWithIconByTaskID(taskId, offset, top int) (
 			search_pages.title,
 			search_pages.url,
 			search_pages.snippet,
-			similarweb_pages.id similarweb_id,
-			similarweb_pages.title similarweb_title,
-			similarweb_pages.url similarweb_url,
-			similarweb_pages.icon_path similarweb_icon,
-			similarweb_categories.category similarweb_category
+			similarweb_pages.id linked_page_id,
+			similarweb_pages.title linked_page_title,
+			similarweb_pages.url linked_page_url,
+			similarweb_pages.icon_path linked_page_icon,
+			similarweb_categories.category linked_page_category 
 		FROM (
 			SELECT
 				page_id,
@@ -170,8 +170,8 @@ func (s SerpReporitoryImpl) FetchSerpWithRatioByTaskID(taskId, offset, top int) 
 				DESC
 			) category_rank,
 			relation_count.category_count,
-			relation_count.similarweb_count,
-			relation_count.category_count / relation_count.similarweb_count category_distribution
+			relation_count.similarweb_count linked_page_count,
+			relation_count.category_count / relation_count.similarweb_count category_ratio
 		FROM (
 			SELECT DISTINCT
 				search_pages.id,

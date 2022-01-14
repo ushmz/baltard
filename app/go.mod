@@ -16,8 +16,8 @@ require (
 	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
+	github.com/pkg/errors v0.8.0
 	github.com/rubenv/sql-migrate v0.0.0-20210614095031-55d5740dbbcc
-	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/echo-swagger v1.1.4
 	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2 // indirect
 	github.com/swaggo/swag v1.7.6
