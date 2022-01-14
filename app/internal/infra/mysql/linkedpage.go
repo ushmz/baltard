@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"database/sql"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 
@@ -44,41 +45,47 @@ func (r *LinkedPageRepositoryImpl) Get(linkedPageId int) (model.LinkedPage, erro
 	return linked, nil
 }
 
-func (r *LinkedPageRepositoryImpl) GetBySearchPageId(pageId, taskId, top int) (*[]model.LinkedPage, error) {
-	linked := []model.LinkedPage{}
+func (r *LinkedPageRepositoryImpl) GetBySearchPageIds(pageId []int, taskId, top int) (*[]model.SearchPageWithLinkedPage, error) {
+	linked := []model.SearchPageWithLinkedPage{}
 
 	q := `
 		SELECT
+			rel.page_id,
 			sp.id,
 			sp.title,
 			sp.url,
 			sp.icon_path,
-			sc.category 
-		FROM 
-			similarweb_pages sp
-		JOIN
-			similarweb_categories sc
-		ON
-			sp.category = sc.id
-		WHERE
-			sp.id IN (
-				SELECT * FROM (
-					SELECT
-						similarweb_id
-					FROM
-						search_page_similarweb_relation
-					WHERE
-						page_id = ?
-					AND
-						task_id = ?
-					ORDER BY
-						idf DESC
-					LIMIT
-						? ) linked
-			)
+			sc.category
+		FROM (
+			SELECT
+				*
+			FROM (
+				SELECT
+					page_id,
+					similarweb_id,
+					ROW_NUMBER() OVER (PARTITION BY page_id ORDER BY idf DESC) idf_rank
+				FROM
+					search_page_similarweb_relation
+				WHERE
+					page_id IN( ?` + strings.Repeat(", ?", len(pageId)-1) + `)
+					AND task_id = ?
+				ORDER BY
+					page_id ASC
+			) linked
+			WHERE
+				idf_rank <= ?) rel
+		LEFT JOIN similarweb_pages sp ON rel.similarweb_id = sp.id
+		LEFT JOIN similarweb_categories sc ON sp.category = sc.id;
 	`
 
-	if err := r.DB.Select(&linked, q, pageId, taskId, top); err != nil {
+	a := []interface{}{}
+	for _, v := range pageId {
+		a = append(a, v)
+	}
+	a = append(a, taskId)
+	a = append(a, top)
+
+	if err := r.DB.Select(&linked, q, a...); err != nil {
 		return &linked, err
 	}
 

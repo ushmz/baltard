@@ -5,7 +5,7 @@ import "ratri/internal/domain/model"
 
 type LinkedPageRepository interface {
 	Get(linkedPageId int) (model.LinkedPage, error)
-	GetBySearchPageId(pageId, taskId, top int) (*[]model.LinkedPage, error)
+	GetBySearchPageIds(pageId []int, taskId, top int) (*[]model.SearchPageWithLinkedPage, error)
 	Select(linkedPageIds []int) (*[]model.LinkedPage, error)
 	List(offset, limit int) (*[]model.LinkedPage, error)
 	// Following methods are not implemented

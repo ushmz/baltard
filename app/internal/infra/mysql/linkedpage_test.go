@@ -11,7 +11,7 @@ func TestLinkedPageGet(t *testing.T) {
 }
 
 func TestGetBySearchPageId(t *testing.T) {
-	if v, err := linkedPageDao.GetBySearchPageId(381, 5, 10); err != nil {
+	if v, err := linkedPageDao.GetBySearchPageIds([]int{381, 382, 383, 384, 385}, 5, 10); err != nil {
 		t.Fatal(err)
 	} else {
 		t.Logf("%#v", v)
