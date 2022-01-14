@@ -27,50 +27,19 @@ type SerpWithIcon struct {
 	Url string `json:"url"`
 
 	// Snippet : Snippet of each search result page.
-	Snippet string `db:"snippet" json:"snippet"`
+	Snippet string `json:"snippet"`
 
 	// Linked : Users' behavioral data that probably leaked to third party. For more detail, see `Linked` type.
 	Linked []LinkedPage `json:"linked"`
 }
 
-// SerpWithIconQueryResult : Database select result struct
-type SerpWithIconQueryResult struct {
-	// PageId : ID of search page.
-	PageId int `db:"id"`
+// SearchPageWithLinkedPage : `SearchPage` with `LinkedPage` query result row struct
+type SearchPageWithLinkedPage struct {
+	// PageId : ID of search result page.
+	PageId int `db:"page_id" json:"page"`
 
-	// Title : The title of each search result page.
-	Title string `db:"title"`
-
-	// Url : Url of each search result page.
-	Url string `db:"url"`
-
-	// Snippet : Snippet of each search result page.
-	Snippet string `db:"snippet"`
-
-	// LinkedPageId : ID of the linked page.
-	LinkedPageId int `db:"linked_page_id"`
-
-	// LinkedPageTitle : Title of the linked page.
-	LinkedPageTitle string `db:"linked_page_title"`
-
-	// LinkedPageUrl : Url of the linked page.
-	LinkedPageUrl string `db:"linked_page_url"`
-
-	// LinkedPageIcon : Url of the linked page favicon.
-	LinkedPageIcon string `db:"linked_page_icon"`
-
-	// LinkedPageCategory : Category of the linked page.
-	LinkedPageCategory string `db:"linked_page_category"`
-}
-
-// CategoryCount : Distribution information for each categories.
-type CategoryCount struct {
-	// Category : Category name.
-	Category string `json:"category"`
-	// Count : Total number of pages.
-	Count int `json:"count"`
-	// Percentage : The percentage of this category.
-	Percentage float64 `json:"pct"`
+	// LinkedPage : Linked page information with icon URL.
+	LinkedPage
 }
 
 // SerpWithRatio : The list of this type struct will be returned as a response of `serp` endpoint.
@@ -85,7 +54,7 @@ type SerpWithRatio struct {
 	Url string `json:"url"`
 
 	// Snippet : Snippet of each search result page.
-	Snippet string `db:"snippet" json:"snippet"`
+	Snippet string `json:"snippet"`
 
 	// Total : Total number of linked pages.
 	Total int `json:"total"`
