@@ -29,8 +29,8 @@ type SerpWithIcon struct {
 	// Snippet : Snippet of each search result page.
 	Snippet string `db:"snippet" json:"snippet"`
 
-	// LeaksSet : Users' behavioral data that probably leaked to third party. For more detail, see `Leaks` type.
-	Leaks []SimilarwebPage `json:"leaks"`
+	// Linked : Users' behavioral data that probably leaked to third party. For more detail, see `Linked` type.
+	Linked []LinkedPage `json:"linked"`
 }
 
 // SerpWithIconQueryResult : Database select result struct
@@ -47,20 +47,20 @@ type SerpWithIconQueryResult struct {
 	// Snippet : Snippet of each search result page.
 	Snippet string `db:"snippet"`
 
-	// SimilarwebId : ID of the similarweb page.
-	SimilarwebId int `db:"similarweb_id"`
+	// LinkedPageId : ID of the linked page.
+	LinkedPageId int `db:"linked_page_id"`
 
-	// SimilarwebTitle : Title of the similarweb page.
-	SimilarwebTitle string `db:"similarweb_title"`
+	// LinkedPageTitle : Title of the linked page.
+	LinkedPageTitle string `db:"linked_page_title"`
 
-	// SimilarwebUrl : Url of the similarweb page.
-	SimilarwebUrl string `db:"similarweb_url"`
+	// LinkedPageUrl : Url of the linked page.
+	LinkedPageUrl string `db:"linked_page_url"`
 
-	// SimilarwebIcon : Url of the similarweb page favicon.
-	SimilarwebIcon string `db:"similarweb_icon"`
+	// LinkedPageIcon : Url of the linked page favicon.
+	LinkedPageIcon string `db:"linked_page_icon"`
 
-	// SimilarwebCategory : Category of the similarweb page.
-	SimilarwebCategory string `db:"similarweb_category"`
+	// LinkedPageCategory : Category of the linked page.
+	LinkedPageCategory string `db:"linked_page_category"`
 }
 
 // CategoryCount : Distribution information for each categories.
@@ -87,7 +87,7 @@ type SerpWithRatio struct {
 	// Snippet : Snippet of each search result page.
 	Snippet string `db:"snippet" json:"snippet"`
 
-	// Total : Total number of similarweb pages.
+	// Total : Total number of linked pages.
 	Total int `json:"total"`
 
 	// Distribution : Distribution information for each categories.
@@ -114,12 +114,12 @@ type SerpWithRatioQueryResult struct {
 	// CategoryRank : DESC rank of category.
 	CategoryRank int `db:"category_rank"`
 
-	// CategoryCount : Total number of similarweb pages in the category.
+	// CategoryCount : Total number of linked pages in the category.
 	CategoryCount int `db:"category_count"`
 
-	// SimilarwebCount : The number of all similarweb pages.
-	SimilarwebCount int `db:"similarweb_count"`
+	// LinkedPageCount : The number of all linked pages.
+	LinkedPageCount int `db:"linked_page_count"`
 
-	// CategoryDistribution : The percentage of this category.
-	CategoryDistribution float64 `db:"category_distribution"`
+	// CategoryRatio : The percentage of this category.
+	CategoryRatio float64 `db:"category_ratio"`
 }
