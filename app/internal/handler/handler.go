@@ -22,7 +22,7 @@ func NewHandler(dbx *sqlx.DB) *Handler {
 	user := db.NewUserRepository(dbx)
 
 	logService := usecase.NewLogUsecase(log)
-	serpService := usecase.NewSerpUsecase(linkedPage, serp)
+	serpService := usecase.NewSerpUsecase(serp, linkedPage)
 	taskService := usecase.NewTaskUsecase(task)
 	userService := usecase.NewUserUsecase(user, task)
 

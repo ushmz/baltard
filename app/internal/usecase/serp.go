@@ -18,7 +18,7 @@ type SerpImpl struct {
 	serpRepo repo.SerpRepository
 }
 
-func NewSerpUsecase(linkedPageRepository repo.LinkedPageRepository, serpRepository repo.SerpRepository) Serp {
+func NewSerpUsecase(serpRepository repo.SerpRepository, linkedPageRepository repo.LinkedPageRepository) Serp {
 	return &SerpImpl{lpRepo: linkedPageRepository, serpRepo: serpRepository}
 }
 

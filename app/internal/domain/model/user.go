@@ -2,7 +2,7 @@ package model
 
 // UserParam : Struct for request of `/signup` endpoint
 type UserParam struct {
-	// Uid : User name/Id for label.
+	// Uid : User name/ID for label.
 	Uid string `json:"uid"`
 }
 
@@ -23,18 +23,18 @@ type UserResponse struct {
 	// Exist : Given uid is exist on DB ot not.
 	Exist bool `json:"exist"`
 
-	// UserId : Unique Id used in DB.
+	// UserId : Unique ID used in DB.
 	UserId int `json:"user"`
 
 	// Secret : Generated secret string.
 	Secret string `json:"secret"`
 
-	// TaskIds : Allocated tasks Ids.
+	// TaskIds : Shows the IDs that user perform
 	TaskIds []int `json:"tasks"`
 
-	// ConditionId : Allocated condition Id.
+	// ConditionId : Assigned condition ID
 	ConditionId int `json:"condition"`
 
-	// GroupId : Task and condition distinction.
+	// GroupId : The ID assigned to the pair of "task IDs" and "condition ID"
 	GroupId int `json:"group"`
 }
