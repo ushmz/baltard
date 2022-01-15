@@ -18,40 +18,6 @@ func NewLogHandler(log usecase.Log) *Log {
 	return &Log{usecase: log}
 }
 
-// CreateTaskTimeLog : Create task time log. Table name is `logs_serp_dwell_time`.
-// Id create_task_time_log
-// Summary Store task time log
-// Description Create task time log with value in the request. If key (user_id and task_id) is depulicated, update `time` value instead of creating new record.
-// Accept json
-// Produce json
-// Param param body model.SerpViewingLogParamWithTime true "Log parameter"
-// Success 200
-// Failure 400
-// Failure 500
-// Router /v1/logs/time [POST]
-func (l *Log) CreateTaskTimeLog(c echo.Context) error {
-	// param : Bind request body to struct.
-	param := new(model.SerpViewingLogParamWithTime)
-	if err := c.Bind(param); err != nil {
-		c.Echo().Logger.Errorf("Cannot bind request body to struct : %v", err)
-		msg := model.ErrorMessage{
-			Message: fmt.Sprintf("Cannot bind request body : %v", err),
-		}
-		return c.JSON(http.StatusBadRequest, msg)
-	}
-
-	err := l.usecase.StoreTaskTimeLog(param)
-	if err != nil {
-		c.Echo().Logger.Errorf("Database Execution error : %v", err)
-		msg := model.ErrorMessage{
-			Message: "Database Execution error.",
-		}
-		return c.JSON(http.StatusInternalServerError, msg)
-	}
-
-	return c.NoContent(http.StatusCreated)
-}
-
 // CumulateSerpViewingTime : Create task time log. Task time is counted by cumulating requests that should be sended once/sec.
 // @Id cumulate_task_time_log
 // @Summary Store task time log
