@@ -15,13 +15,14 @@ type Handler struct {
 }
 
 func NewHandler(dbx *sqlx.DB) *Handler {
+	linkedPage := db.NewLinkedPageRepository(dbx)
 	log := db.NewLogRepository(dbx)
 	serp := db.NewSerpRepository(dbx)
 	task := db.NewTaskRepository(dbx)
 	user := db.NewUserRepository(dbx)
 
 	logService := usecase.NewLogUsecase(log)
-	serpService := usecase.NewSerpUsecase(serp)
+	serpService := usecase.NewSerpUsecase(serp, linkedPage)
 	taskService := usecase.NewTaskUsecase(task)
 	userService := usecase.NewUserUsecase(user, task)
 

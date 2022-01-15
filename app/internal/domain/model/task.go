@@ -20,13 +20,21 @@ type Task struct {
 
 // GroupCounts : Struct for group count
 type GroupCounts struct {
+	// GroupId : The ID assigned to the pair of "task IDs" and "condition ID"
 	GroupId int `db:"group_id" json:"groupId"`
-	Count   int `db:"count" json:"count"`
+
+	// Count : Shows how many users are assigned to this group.
+	Count int `db:"count" json:"count"`
 }
 
-// TaskInfo : Struct for response of which task is allocated.
+// TaskInfo : Struct for response of which task is assigned.
 type TaskInfo struct {
-	GroupId     int
+	// GroupId : The ID assigned to the pair of "task IDs" and "condition ID"
+	GroupId int
+
+	// ConditionId : Assigned condition ID
 	ConditionId int
-	TaskIds     []int
+
+	// TaskIds : Shows the IDs that user perform
+	TaskIds []int
 }

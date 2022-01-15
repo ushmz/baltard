@@ -7,7 +7,6 @@ import (
 )
 
 type Log interface {
-	StoreTaskTimeLog(*model.SerpViewingLogParamWithTime) error
 	CumulateSerpViewingTime(*model.SerpViewingLogParam) error
 	CumulatePageViewingTime(*model.PageViewingLogParam) error
 	StoreSerpEventLog(*model.SearchPageEventLogParam) error
@@ -20,10 +19,6 @@ type LogImpl struct {
 
 func NewLogUsecase(logRepository repo.LogRepository) Log {
 	return &LogImpl{repository: logRepository}
-}
-
-func (l *LogImpl) StoreTaskTimeLog(p *model.SerpViewingLogParamWithTime) error {
-	return l.repository.StoreTaskTimeLog(p)
 }
 
 func (l *LogImpl) CumulateSerpViewingTime(p *model.SerpViewingLogParam) error {

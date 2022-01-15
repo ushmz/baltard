@@ -18,108 +18,71 @@ type SearchPage struct {
 // SerpWithIcon : The list of this type struct will be returned as a response of `serp` endpoint.
 type SerpWithIcon struct {
 	// PageId : ID of search page.
-	PageId int `json:"id"`
+	PageId int `db:"id" json:"id"`
 
 	// Title : The title of each search result page.
-	Title string `json:"title"`
+	Title string `db:"title" json:"title"`
 
 	// Url : Url of each search result page.
-	Url string `json:"url"`
+	Url string `db:"url" json:"url"`
 
 	// Snippet : Snippet of each search result page.
 	Snippet string `db:"snippet" json:"snippet"`
 
-	// LeaksSet : Users' behavioral data that probably leaked to third party. For more detail, see `Leaks` type.
-	Leaks []SimilarwebPage `json:"leaks"`
+	// Linked : Users' behavioral data that probably leaked to third party. For more detail, see `Linked` type.
+	Linked []LinkedPage `json:"linked"`
 }
 
-// SerpWithIconQueryResult : Database select result struct
-type SerpWithIconQueryResult struct {
-	// PageId : ID of search page.
-	PageId int `db:"id"`
+// SearchPageWithLinkedPage : `SearchPage` with `LinkedPage` query result row struct
+type SearchPageWithLinkedPage struct {
+	// PageId : ID of search result page.
+	PageId int `db:"page_id" json:"page"`
 
-	// Title : The title of each search result page.
-	Title string `db:"title"`
+	// Id : ID of linked page.
+	Id int `db:"id" json:"id"`
 
-	// Url : Url of each search result page.
-	Url string `db:"url"`
+	// Title : The title of linked page.
+	Title string `db:"title" json:"title"`
 
-	// Snippet : Snippet of each search result page.
-	Snippet string `db:"snippet"`
+	// Url : Url of the linked page.
+	Url string `db:"url" json:"url"`
 
-	// SimilarwebId : ID of the similarweb page.
-	SimilarwebId int `db:"similarweb_id"`
+	// Icon : Favicon url of the page.
+	Icon string `db:"icon_path" json:"icon"`
 
-	// SimilarwebTitle : Title of the similarweb page.
-	SimilarwebTitle string `db:"similarweb_title"`
-
-	// SimilarwebUrl : Url of the similarweb page.
-	SimilarwebUrl string `db:"similarweb_url"`
-
-	// SimilarwebIcon : Url of the similarweb page favicon.
-	SimilarwebIcon string `db:"similarweb_icon"`
-
-	// SimilarwebCategory : Category of the similarweb page.
-	SimilarwebCategory string `db:"similarweb_category"`
-}
-
-// CategoryCount : Distribution information for each categories.
-type CategoryCount struct {
-	// Category : Category name.
-	Category string `json:"category"`
-	// Count : Total number of pages.
-	Count int `json:"count"`
-	// Percentage : The percentage of this category.
-	Percentage float64 `json:"pct"`
+	// Category : Category name of linked page.
+	Category string `db:"category" json:"category"`
 }
 
 // SerpWithRatio : The list of this type struct will be returned as a response of `serp` endpoint.
 type SerpWithRatio struct {
 	// PageId : ID of search page.
-	PageId int `json:"id"`
+	PageId int `db:"id" json:"id"`
 
 	// Title : The title of each search result page.
-	Title string `json:"title"`
+	Title string `db:"title" json:"title"`
 
 	// Url : Url of each search result page.
-	Url string `json:"url"`
+	Url string `db:"url" json:"url"`
 
 	// Snippet : Snippet of each search result page.
 	Snippet string `db:"snippet" json:"snippet"`
 
-	// Total : Total number of similarweb pages.
-	Total int `json:"total"`
+	// Total : Total number of linked pages.
+	Total int `db:"total" json:"total"`
 
 	// Distribution : Distribution information for each categories.
-	Distribution []CategoryCount `json:"distribution"`
+	Distribution []CategoryCount `db:"distribution" json:"distribution"`
 }
 
-// SerpWithRatioQueryResult : Database select result struct
-type SerpWithRatioQueryResult struct {
+// SearchPageWithLinkedPageRatio : `SearchPage` with `LinkedPage` query result row struct
+type SearchPageWithLinkedPageRatio struct {
 	// PageId : ID of search page.
-	PageId int `db:"id"`
+	PageId int `db:"page_id" json:"page"`
 
-	// Title : The title of each search result page.
-	Title string `db:"title"`
-
-	// Url : Url of each search result page.
-	Url string `db:"url"`
-
-	// Snippet : Snippet of each search result page.
-	Snippet string `db:"snippet"`
-
-	// Category : Category name.
+	// Category : Linked page category name.
 	Category string `db:"category"`
 
-	// CategoryRank : DESC rank of category.
-	CategoryRank int `db:"category_rank"`
-
-	// CategoryCount : Total number of similarweb pages in the category.
+	// CategoryCount : Total number of linked pages in the category.
 	CategoryCount int `db:"category_count"`
-
-	// SimilarwebCount : The number of all similarweb pages.
-	SimilarwebCount int `db:"similarweb_count"`
-
-	// CategoryDistribution : The percentage of this category.
-	CategoryDistribution float64 `db:"category_distribution"`
 }

@@ -2,11 +2,9 @@
 package usecase
 
 import (
-	"math/rand"
-	"time"
-
 	"ratri/internal/domain/model"
 	repo "ratri/internal/domain/repository"
+	"sort"
 )
 
 type Serp interface {
@@ -16,58 +14,67 @@ type Serp interface {
 }
 
 type SerpImpl struct {
-	repository repo.SerpRepository
+	lpRepo   repo.LinkedPageRepository
+	serpRepo repo.SerpRepository
 }
 
-func NewSerpUsecase(serpRepository repo.SerpRepository) Serp {
-	return &SerpImpl{repository: serpRepository}
+func NewSerpUsecase(serpRepository repo.SerpRepository, linkedPageRepository repo.LinkedPageRepository) Serp {
+	return &SerpImpl{lpRepo: linkedPageRepository, serpRepo: serpRepository}
 }
 
 func (s *SerpImpl) FetchSerp(taskId, offset int) (*[]model.SearchPage, error) {
-	return s.repository.FetchSerpByTaskID(taskId, offset)
+	return s.serpRepo.FetchSerpByTaskID(taskId, offset)
 }
 
 func (s *SerpImpl) FetchSerpWithIcon(taskId, offset, top int) (*[]model.SerpWithIcon, error) {
 	// serp : Return struct of this method
 	serp := []model.SerpWithIcon{}
 
-	swi, err := s.repository.FetchSerpWithIconByTaskID(taskId, offset, top)
+	srp, err := s.serpRepo.FetchSerpByTaskID(taskId, offset)
 	if err != nil {
 		return &serp, err
 	}
 
+	pageIds := []int{}
 	// serpMap : Map object to format SQL result to return struct.
 	serpMap := map[int]model.SerpWithIcon{}
 
-	for _, v := range *swi {
-		if _, ok := serpMap[v.PageId]; !ok {
-			serpMap[v.PageId] = model.SerpWithIcon{
-				PageId:  v.PageId,
-				Title:   v.Title,
-				Url:     v.Url,
-				Snippet: v.Snippet,
-				Leaks:   []model.SimilarwebPage{},
-			}
-		}
-
-		if v.SimilarwebId != 0 {
-			tempSerp := serpMap[v.PageId]
-			tempSerp.Leaks = append(tempSerp.Leaks, model.SimilarwebPage{
-				Id:       v.SimilarwebId,
-				Title:    v.SimilarwebTitle,
-				Url:      v.SimilarwebUrl,
-				Icon:     v.SimilarwebIcon,
-				Category: v.SimilarwebCategory,
-			})
-			serpMap[v.PageId] = tempSerp
+	for _, v := range *srp {
+		pageIds = append(pageIds, v.PageId)
+		serpMap[v.PageId] = model.SerpWithIcon{
+			PageId:  v.PageId,
+			Title:   v.Title,
+			Url:     v.Url,
+			Snippet: v.Snippet,
+			Linked:  []model.LinkedPage{},
 		}
 	}
 
-	for _, v := range serpMap {
-		rand.Seed(time.Now().UnixNano())
-		rand.Shuffle(len(v.Leaks), func(i, j int) { v.Leaks[i], v.Leaks[j] = v.Leaks[j], v.Leaks[i] })
+	linked, err := s.lpRepo.GetBySearchPageIds(pageIds, taskId, top)
+	if err != nil {
+		return &serp, err
+	}
 
-		serp = append(serp, v)
+	for _, v := range *linked {
+		tempSerp := serpMap[v.PageId]
+		tempSerp.Linked = append(tempSerp.Linked, model.LinkedPage{
+			Id:       v.Id,
+			Title:    v.Title,
+			Url:      v.Url,
+			Icon:     v.Icon,
+			Category: v.Category,
+		})
+		serpMap[v.PageId] = tempSerp
+	}
+
+	// To fix the order of search result page, sort pageIds
+	sort.Ints(pageIds)
+	for _, v := range pageIds {
+		// If you need to randomize `LinkedPage` order, use following code block.
+		// -----------------------------------------
+		// rand.Seed(time.Now().UnixNano())
+		// rand.Shuffle(len(v.Linked), func(i, j int) { v.Linked[i], v.Linked[j] = v.Linked[j], v.Linked[i] })
+		serp = append(serp, serpMap[v])
 	}
 
 	return &serp, nil
@@ -77,41 +84,47 @@ func (s *SerpImpl) FetchSerpWithRatio(taskId, offset, top int) (*[]model.SerpWit
 	// serp : Return struct of this method
 	serp := []model.SerpWithRatio{}
 
-	swr, err := s.repository.FetchSerpWithRatioByTaskID(taskId, offset, top)
+	srp, err := s.serpRepo.FetchSerpByTaskID(taskId, offset)
 	if err != nil {
 		return &serp, err
 	}
 
+	pageIds := []int{}
 	// serpMap : Map object to format SQL result to return struct.
 	serpMap := map[int]model.SerpWithRatio{}
 
-	for _, v := range *swr {
-		if _, ok := serpMap[v.PageId]; !ok {
-			serpMap[v.PageId] = model.SerpWithRatio{
-				PageId:       v.PageId,
-				Title:        v.Title,
-				Url:          v.Url,
-				Snippet:      v.Snippet,
-				Total:        v.SimilarwebCount,
-				Distribution: []model.CategoryCount{},
-			}
-		}
-
-		if v.Category != "" {
-			if v.CategoryRank <= top {
-				tempSerp := serpMap[v.PageId]
-				tempSerp.Distribution = append(tempSerp.Distribution, model.CategoryCount{
-					Category:   v.Category,
-					Count:      v.CategoryCount,
-					Percentage: v.CategoryDistribution,
-				})
-				serpMap[v.PageId] = tempSerp
-			}
+	for _, v := range *srp {
+		pageIds = append(pageIds, v.PageId)
+		serpMap[v.PageId] = model.SerpWithRatio{
+			PageId:       v.PageId,
+			Title:        v.Title,
+			Url:          v.Url,
+			Snippet:      v.Snippet,
+			Total:        0,
+			Distribution: []model.CategoryCount{},
 		}
 	}
 
-	for _, v := range serpMap {
-		serp = append(serp, v)
+	linked, err := s.lpRepo.GetRatioBySearchPageIds(pageIds, taskId)
+	if err != nil {
+		return &serp, err
+	}
+
+	for _, v := range *linked {
+		tempSerp := serpMap[v.PageId]
+		tempSerp.Total += v.CategoryCount
+		if len(tempSerp.Distribution) < top {
+			tempSerp.Distribution = append(tempSerp.Distribution, model.CategoryCount{
+				Category: v.Category,
+				Count:    v.CategoryCount,
+			})
+		}
+		serpMap[v.PageId] = tempSerp
+	}
+
+	sort.Ints(pageIds)
+	for _, v := range pageIds {
+		serp = append(serp, serpMap[v])
 	}
 
 	return &serp, nil

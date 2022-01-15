@@ -4,7 +4,7 @@ type Answer struct {
 	// Id : The ID of user.
 	Id int `db:"id" json:"id"`
 
-	// UserId : Means external Id.
+	// UserId : Means external ID.
 	UserId int `db:"user_id" json:"user"`
 
 	// TaskId : The identity of task.

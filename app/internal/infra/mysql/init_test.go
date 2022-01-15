@@ -11,10 +11,11 @@ import (
 )
 
 var (
-	logDao  repo.LogRepository
-	serpDao repo.SerpRepository
-	taskDao repo.TaskRepository
-	userDao repo.UserRepository
+	linkedPageDao repo.LinkedPageRepository
+	logDao        repo.LogRepository
+	serpDao       repo.SerpRepository
+	taskDao       repo.TaskRepository
+	userDao       repo.UserRepository
 )
 
 func TestMain(m *testing.M) {
@@ -24,6 +25,7 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
+	linkedPageDao = mysql.NewLinkedPageRepository(db)
 	logDao = mysql.NewLogRepository(db)
 	serpDao = mysql.NewSerpRepository(db)
 	taskDao = mysql.NewTaskRepository(db)

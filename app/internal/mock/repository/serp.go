@@ -48,33 +48,3 @@ func (mr *MockSerpRepositoryMockRecorder) FetchSerpByTaskID(taskId, offset inter
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerpByTaskID", reflect.TypeOf((*MockSerpRepository)(nil).FetchSerpByTaskID), taskId, offset)
 }
-
-// FetchSerpWithIconByTaskID mocks base method.
-func (m *MockSerpRepository) FetchSerpWithIconByTaskID(taskId, offset, top int) (*[]model.SerpWithIconQueryResult, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FetchSerpWithIconByTaskID", taskId, offset, top)
-	ret0, _ := ret[0].(*[]model.SerpWithIconQueryResult)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FetchSerpWithIconByTaskID indicates an expected call of FetchSerpWithIconByTaskID.
-func (mr *MockSerpRepositoryMockRecorder) FetchSerpWithIconByTaskID(taskId, offset, top interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerpWithIconByTaskID", reflect.TypeOf((*MockSerpRepository)(nil).FetchSerpWithIconByTaskID), taskId, offset, top)
-}
-
-// FetchSerpWithRatioByTaskID mocks base method.
-func (m *MockSerpRepository) FetchSerpWithRatioByTaskID(taskId, offset, top int) (*[]model.SerpWithRatioQueryResult, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FetchSerpWithRatioByTaskID", taskId, offset, top)
-	ret0, _ := ret[0].(*[]model.SerpWithRatioQueryResult)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FetchSerpWithRatioByTaskID indicates an expected call of FetchSerpWithRatioByTaskID.
-func (mr *MockSerpRepositoryMockRecorder) FetchSerpWithRatioByTaskID(taskId, offset, top interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerpWithRatioByTaskID", reflect.TypeOf((*MockSerpRepository)(nil).FetchSerpWithRatioByTaskID), taskId, offset, top)
-}
