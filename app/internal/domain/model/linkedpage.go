@@ -18,12 +18,16 @@ type LinkedPage struct {
 	Category string `db:"category" json:"category"`
 }
 
+type LinkedPageRatio struct {
+	PageId        int    `db:"page_id"`
+	Category      string `db:"category"`
+	CategoryCount int    `db:"category_count"`
+}
+
 // CategoryCount : Distribution information for each categories.
 type CategoryCount struct {
 	// Category : Category name.
 	Category string `json:"category"`
 	// Count : Total number of pages.
 	Count int `json:"count"`
-	// Percentage : The percentage of this category.
-	Percentage float64 `json:"ratio"`
 }
