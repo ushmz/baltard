@@ -89,17 +89,3 @@ func (mr *MockLogMockRecorder) StoreSerpEventLog(arg0 interface{}) *gomock.Call 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StoreSerpEventLog", reflect.TypeOf((*MockLog)(nil).StoreSerpEventLog), arg0)
 }
-
-// StoreTaskTimeLog mocks base method.
-func (m *MockLog) StoreTaskTimeLog(arg0 *model.SerpViewingLogParamWithTime) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "StoreTaskTimeLog", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// StoreTaskTimeLog indicates an expected call of StoreTaskTimeLog.
-func (mr *MockLogMockRecorder) StoreTaskTimeLog(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StoreTaskTimeLog", reflect.TypeOf((*MockLog)(nil).StoreTaskTimeLog), arg0)
-}
