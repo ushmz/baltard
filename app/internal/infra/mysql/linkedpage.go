@@ -92,6 +92,39 @@ func (r *LinkedPageRepositoryImpl) GetBySearchPageIds(pageId []int, taskId, top 
 	return &linked, nil
 }
 
+func (r *LinkedPageRepositoryImpl) GetRatioBySearchPageIds(pageIds []int, taskId int) (*[]model.SearchPageWithLinkedPageRatio, error) {
+	linked := []model.SearchPageWithLinkedPageRatio{}
+
+	q := `
+		SELECT DISTINCT
+			rel.page_id,
+			sc.category,
+			COUNT(*) OVER(PARTITION BY rel.page_id, sp.category) category_count
+		FROM
+			search_page_similarweb_relation rel
+		LEFT JOIN similarweb_pages sp ON rel.similarweb_id = sp.id
+		LEFT JOIN similarweb_categories sc ON sp.category = sc.id
+		WHERE
+			task_id = ?
+		AND
+			page_id IN ( ? ` + strings.Repeat(", ?", len(pageIds)-1) + ` )
+		ORDER BY
+			page_id, category_count DESC
+	`
+
+	a := []interface{}{}
+	a = append(a, taskId)
+	for _, v := range pageIds {
+		a = append(a, v)
+	}
+
+	if err := r.DB.Select(&linked, q, a...); err != nil {
+		return &linked, err
+	}
+
+	return &linked, nil
+}
+
 // Select gets listed `LinkedPage` specified with argument `linkedPageIds`.
 // [TODO] Which is better?
 // - Take only `[]int` argument and cast it to `[]interface{}`.
