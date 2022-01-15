@@ -36,7 +36,6 @@ func (s *SerpImpl) FetchSerpWithIcon(taskId, offset, top int) (*[]model.SerpWith
 	}
 
 	pageIds := []int{}
-
 	// serpMap : Map object to format SQL result to return struct.
 	serpMap := map[int]model.SerpWithIcon{}
 
@@ -85,85 +84,47 @@ func (s *SerpImpl) FetchSerpWithRatio(taskId, offset, top int) (*[]model.SerpWit
 	// serp : Return struct of this method
 	serp := []model.SerpWithRatio{}
 
-	swr, err := s.serpRepo.FetchSerpWithRatioByTaskID(taskId, offset, top)
+	srp, err := s.serpRepo.FetchSerpByTaskID(taskId, offset)
 	if err != nil {
 		return &serp, err
 	}
 
+	pageIds := []int{}
 	// serpMap : Map object to format SQL result to return struct.
 	serpMap := map[int]model.SerpWithRatio{}
 
-	for _, v := range *swr {
-		if _, ok := serpMap[v.PageId]; !ok {
-			serpMap[v.PageId] = model.SerpWithRatio{
-				PageId:       v.PageId,
-				Title:        v.Title,
-				Url:          v.Url,
-				Snippet:      v.Snippet,
-				Total:        v.LinkedPageCount,
-				Distribution: []model.CategoryCount{},
-			}
-		}
-
-		if v.Category != "" {
-			if v.CategoryRank <= top {
-				tempSerp := serpMap[v.PageId]
-				tempSerp.Distribution = append(tempSerp.Distribution, model.CategoryCount{
-					Category:   v.Category,
-					Count:      v.CategoryCount,
-					Percentage: v.CategoryRatio,
-				})
-				serpMap[v.PageId] = tempSerp
-			}
+	for _, v := range *srp {
+		pageIds = append(pageIds, v.PageId)
+		serpMap[v.PageId] = model.SerpWithRatio{
+			PageId:       v.PageId,
+			Title:        v.Title,
+			Url:          v.Url,
+			Snippet:      v.Snippet,
+			Total:        0,
+			Distribution: []model.CategoryCount{},
 		}
 	}
 
-	for _, v := range serpMap {
-		serp = append(serp, v)
-	}
-
-	return &serp, nil
-}
-
-func (s *SerpImpl) FetchSerpWithRatiox(taskId, offset, top int) (*[]model.SerpWithRatio, error) {
-	// serp : Return struct of this method
-	serp := []model.SerpWithRatio{}
-
-	swr, err := s.serpRepo.FetchSerpWithRatioByTaskID(taskId, offset, top)
+	linked, err := s.lpRepo.GetRatioBySearchPageIds(pageIds, taskId)
 	if err != nil {
 		return &serp, err
 	}
 
-	// serpMap : Map object to format SQL result to return struct.
-	serpMap := map[int]model.SerpWithRatio{}
-
-	for _, v := range *swr {
-		if _, ok := serpMap[v.PageId]; !ok {
-			serpMap[v.PageId] = model.SerpWithRatio{
-				PageId:       v.PageId,
-				Title:        v.Title,
-				Url:          v.Url,
-				Snippet:      v.Snippet,
-				Total:        v.LinkedPageCount,
-				Distribution: []model.CategoryCount{},
-			}
+	for _, v := range *linked {
+		tempSerp := serpMap[v.PageId]
+		tempSerp.Total += v.CategoryCount
+		if len(tempSerp.Distribution) < top {
+			tempSerp.Distribution = append(tempSerp.Distribution, model.CategoryCount{
+				Category: v.Category,
+				Count:    v.CategoryCount,
+			})
 		}
-
-		if v.Category != "" {
-			if v.CategoryRank <= top {
-				tempSerp := serpMap[v.PageId]
-				tempSerp.Distribution = append(tempSerp.Distribution, model.CategoryCount{
-					Category:   v.Category,
-					Count:      v.CategoryCount,
-					Percentage: v.CategoryRatio,
-				})
-				serpMap[v.PageId] = tempSerp
-			}
-		}
+		serpMap[v.PageId] = tempSerp
 	}
 
-	for _, v := range serpMap {
-		serp = append(serp, v)
+	sort.Ints(pageIds)
+	for _, v := range pageIds {
+		serp = append(serp, serpMap[v])
 	}
 
 	return &serp, nil
