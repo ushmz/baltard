@@ -5,20 +5,6 @@ import (
 	"testing"
 )
 
-// TestStoreTaskTimeLog : [Deprecated] Logging task time.
-func TestStoreTaskTimeLog(t *testing.T) {
-	p := model.SerpViewingLogParamWithTime{
-		UserId:      1,
-		TaskId:      5,
-		ConditionId: 5,
-		TimeOnPage:  42,
-	}
-
-	if err := logDao.StoreTaskTimeLog(&p); err != nil {
-		t.Fatal(err)
-	}
-}
-
 func TestCumulateSerpViewingTime(t *testing.T) {
 	p := model.SerpViewingLogParam{
 		UserId:      42,
