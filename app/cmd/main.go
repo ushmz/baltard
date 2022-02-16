@@ -95,9 +95,13 @@ func NewRouter(d *sqlx.DB) *echo.Echo {
 	// logs
 	// v1.POST("/logs/time", h.Log.CreateTaskTimeLog)
 	v1.POST("/logs/serp", h.Log.CumulateSerpViewingTime)
+	v1.GET("/logs/serp/export", h.Log.ExportSerpViewingTime)
 	v1.POST("/logs/pageview", h.Log.CumulatePageViewingTime)
+	v1.GET("/logs/pageview/export", h.Log.ExportPageViewingTime)
 	v1.POST("/logs/events", h.Log.CreateSerpEventLog)
+	v1.GET("/logs/events/export", h.Log.ExportSerpEventLog)
 	v1.POST("/logs/session", h.Log.StoreSearchSeeion)
+	v1.GET("/logs/session/export", h.Log.ExportSearchSeeion)
 
 	return e
 }

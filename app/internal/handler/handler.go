@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"ratri/internal/infra/fileio"
 	db "ratri/internal/infra/mysql"
 	"ratri/internal/usecase"
 
@@ -20,8 +21,9 @@ func NewHandler(dbx *sqlx.DB) *Handler {
 	serp := db.NewSerpRepository(dbx)
 	task := db.NewTaskRepository(dbx)
 	user := db.NewUserRepository(dbx)
+	file := fileio.NewLogStore()
 
-	logService := usecase.NewLogUsecase(log)
+	logService := usecase.NewLogUsecase(log, file)
 	serpService := usecase.NewSerpUsecase(serp, linkedPage)
 	taskService := usecase.NewTaskUsecase(task)
 	userService := usecase.NewUserUsecase(user, task)

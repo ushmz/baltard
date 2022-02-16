@@ -9,7 +9,7 @@ import (
 	repo "ratri/internal/domain/repository"
 )
 
-type User interface {
+type UserUsecase interface {
 	GenerateRandomPasswd(l int) string
 	FindByUid(uid string) (model.User, bool, error)
 	CreateUser(uid string) (model.User, error)
@@ -22,7 +22,7 @@ type UserImpl struct {
 	taskRepository repo.TaskRepository
 }
 
-func NewUserUsecase(userRepository repo.UserRepository, taskRepository repo.TaskRepository) User {
+func NewUserUsecase(userRepository repo.UserRepository, taskRepository repo.TaskRepository) UserUsecase {
 	return &UserImpl{userRepository: userRepository, taskRepository: taskRepository}
 }
 

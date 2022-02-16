@@ -13,10 +13,10 @@ import (
 )
 
 type Task struct {
-	usecase usecase.Task
+	usecase usecase.TaskUsecase
 }
 
-func NewTaskHandler(task usecase.Task) *Task {
+func NewTaskHandler(task usecase.TaskUsecase) *Task {
 	return &Task{usecase: task}
 }
 
@@ -38,7 +38,7 @@ func (t *Task) FetchTaskInfo(c echo.Context) error {
 	task, err := strconv.Atoi(taskId)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
-			Message: "Parameter `taskId` must be number",
+			Message: "Parameter `id` must be number",
 		})
 	}
 
@@ -50,7 +50,6 @@ func (t *Task) FetchTaskInfo(c echo.Context) error {
 				Message: fmt.Sprintf("TaskId %v not found", taskId),
 			})
 		}
-		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
@@ -70,17 +69,16 @@ func (t *Task) FetchTaskInfo(c echo.Context) error {
 // @Router /v1/task/answer [POST]
 func (t *Task) SubmitTaskAnswer(c echo.Context) error {
 	// answer : Bind request body to struct
-	answer := new(model.Answer)
-	if err := c.Bind(answer); err != nil {
+	p := model.Answer{}
+	if err := c.Bind(&p); err != nil {
 		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
 			Message: fmt.Sprintf("Invalid request body : %v", err),
 		})
 	}
 
-	err := t.usecase.CreateTaskAnswer(answer)
+	err := t.usecase.CreateTaskAnswer(&p)
 	// Execute query.
 	if err != nil {
-		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
 			Message: "Failed to submit answer.",
 		})

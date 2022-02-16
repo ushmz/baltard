@@ -17,7 +17,7 @@ func NewTaskRepository(db *sqlx.DB) repo.TaskRepository {
 }
 
 // FetchTaskInfo : Fetch task info by task id
-func (t TaskRepositoryImpl) FetchTaskInfo(taskId int) (model.Task, error) {
+func (t *TaskRepositoryImpl) FetchTaskInfo(taskId int) (model.Task, error) {
 	task := model.Task{}
 	row := t.DB.QueryRowx(`
 		SELECT
@@ -42,7 +42,7 @@ func (t TaskRepositoryImpl) FetchTaskInfo(taskId int) (model.Task, error) {
 	return task, nil
 }
 
-func (t TaskRepositoryImpl) UpdateTaskAllocation() (int, error) {
+func (t *TaskRepositoryImpl) UpdateTaskAllocation() (int, error) {
 	tx := t.DB.MustBegin()
 	gc := model.GroupCounts{}
 	err := tx.Get(&gc, `
@@ -85,7 +85,7 @@ func (t TaskRepositoryImpl) UpdateTaskAllocation() (int, error) {
 	return gc.GroupId, nil
 }
 
-func (t TaskRepositoryImpl) GetTaskIdsByGroupId(groupId int) ([]int, error) {
+func (t *TaskRepositoryImpl) GetTaskIdsByGroupId(groupId int) ([]int, error) {
 	taskIds := []int{}
 	err := t.DB.Select(&taskIds, `
 		SELECT
@@ -106,7 +106,7 @@ func (t TaskRepositoryImpl) GetTaskIdsByGroupId(groupId int) ([]int, error) {
 	return taskIds, nil
 }
 
-func (t TaskRepositoryImpl) GetConditionIdByGroupId(groupId int) (int, error) {
+func (t *TaskRepositoryImpl) GetConditionIdByGroupId(groupId int) (int, error) {
 	var condition int
 	row := t.DB.QueryRow(`
 		SELECT
@@ -128,7 +128,7 @@ func (t TaskRepositoryImpl) GetConditionIdByGroupId(groupId int) (int, error) {
 	return condition, nil
 }
 
-func (a TaskRepositoryImpl) CreateTaskAnswer(answer *model.Answer) error {
+func (a *TaskRepositoryImpl) CreateTaskAnswer(answer *model.Answer) error {
 	_, err := a.DB.NamedExec(`
 		INSERT INTO
 			answers (

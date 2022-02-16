@@ -7,7 +7,7 @@ import (
 	"sort"
 )
 
-type Serp interface {
+type SerpUsecase interface {
 	FetchSerp(taskId, offset int) (*[]model.SearchPage, error)
 	FetchSerpWithIcon(taskId, offset, top int) (*[]model.SerpWithIcon, error)
 	FetchSerpWithRatio(taskId, offset, top int) (*[]model.SerpWithRatio, error)
@@ -18,7 +18,7 @@ type SerpImpl struct {
 	serpRepo repo.SerpRepository
 }
 
-func NewSerpUsecase(serpRepository repo.SerpRepository, linkedPageRepository repo.LinkedPageRepository) Serp {
+func NewSerpUsecase(serpRepository repo.SerpRepository, linkedPageRepository repo.LinkedPageRepository) SerpUsecase {
 	return &SerpImpl{lpRepo: linkedPageRepository, serpRepo: serpRepository}
 }
 

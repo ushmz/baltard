@@ -26,7 +26,7 @@ var (
 	}{
 		{
 			"name",
-			model.SerpViewingLogParam{UserId: 999, TaskId: 5, ConditionId: 3},
+			model.SerpViewingLogParam{UserID: 999, TaskID: 5, ConditionId: 3},
 			201,
 			false,
 			nil,
@@ -41,7 +41,7 @@ var (
 	}{
 		{
 			"name",
-			model.PageViewingLogParam{UserId: 999, TaskId: 5, ConditionId: 3, PageId: 356},
+			model.PageViewingLogParam{UserID: 999, TaskID: 5, ConditionID: 3, PageID: 356},
 			201,
 			false,
 			nil,
@@ -59,8 +59,8 @@ var (
 			"name",
 			model.SearchPageEventLogParam{
 				User:        42,
-				TaskId:      5,
-				ConditionId: 3,
+				TaskID:      5,
+				ConditionID: 3,
 				Time:        42,
 				Page:        1,
 				Rank:        3,
@@ -74,14 +74,14 @@ var (
 	}
 	searchSessionLogs = []struct {
 		name      string
-		in        model.SearchSession
+		in        model.SearchSessionParam
 		want      int
 		wantError bool
 		err       error
 	}{
 		{
 			"name",
-			model.SearchSession{UserId: 42, TaskId: 5, ConditionId: 3},
+			model.SearchSessionParam{UserID: 42, TaskID: 5, ConditionID: 3},
 			201,
 			false,
 			nil,
@@ -94,10 +94,10 @@ func TestCreateTaskTimeLog(t *testing.T) {
 	defer ctrl.Finish()
 
 	e := echo.New()
-	mck := mock.NewMockLog(ctrl)
+	mck := mock.NewMockLogUsecase(ctrl)
 	for _, tt := range serpViewLogs {
 		t.Run(tt.name, func(t *testing.T) {
-			mck.EXPECT().CumulateSerpViewingTime(&tt.in).Return(nil)
+			mck.EXPECT().CumulateSerpViewingTime(tt.in).Return(nil)
 
 			b, err := json.Marshal(tt.in)
 			if err != nil {
@@ -140,11 +140,11 @@ func TestCumulateSerpViewingTime(t *testing.T) {
 	defer ctrl.Finish()
 
 	e := echo.New()
-	mock := mock.NewMockLog(ctrl)
+	mock := mock.NewMockLogUsecase(ctrl)
 
 	for _, tt := range serpViewLogs {
 
-		mock.EXPECT().CumulateSerpViewingTime(&tt.in).Return(nil)
+		mock.EXPECT().CumulateSerpViewingTime(tt.in).Return(nil)
 
 		b, err := json.Marshal(tt.in)
 		if err != nil {
@@ -186,10 +186,10 @@ func TestCumulatePageViewingTime(t *testing.T) {
 	defer ctrl.Finish()
 
 	e := echo.New()
-	mock := mock.NewMockLog(ctrl)
+	mock := mock.NewMockLogUsecase(ctrl)
 
 	for _, tt := range pageViewLogs {
-		mock.EXPECT().CumulatePageViewingTime(&tt.in).Return(nil)
+		mock.EXPECT().CumulatePageViewingTime(tt.in).Return(nil)
 		b, err := json.Marshal(tt.in)
 		if err != nil {
 			t.Fatal("Failed to marshal test case: %w\n", err)
@@ -229,10 +229,10 @@ func TestCreateSerpEventLog(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mock := mock.NewMockLog(ctrl)
+	mock := mock.NewMockLogUsecase(ctrl)
 
 	for _, tt := range serpEventLogs {
-		mock.EXPECT().StoreSerpEventLog(&tt.in).Return(nil)
+		mock.EXPECT().StoreSerpEventLog(tt.in).Return(nil)
 
 		b, err := json.Marshal(tt.in)
 		if err != nil {
@@ -274,10 +274,10 @@ func TestStoreSearchSession(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mock := mock.NewMockLog(ctrl)
+	mock := mock.NewMockLogUsecase(ctrl)
 
 	for _, tt := range searchSessionLogs {
-		mock.EXPECT().StoreSearchSeeion(&tt.in).Return(nil)
+		mock.EXPECT().StoreSearchSeeion(tt.in).Return(nil)
 
 		b, err := json.Marshal(tt.in)
 		if err != nil {

@@ -5,16 +5,17 @@ import (
 	"net/http"
 
 	"ratri/internal/domain/model"
+	"ratri/internal/domain/store"
 	"ratri/internal/usecase"
 
 	"github.com/labstack/echo/v4"
 )
 
 type Log struct {
-	usecase usecase.Log
+	usecase usecase.LogUsecase
 }
 
-func NewLogHandler(log usecase.Log) *Log {
+func NewLogHandler(log usecase.LogUsecase) *Log {
 	return &Log{usecase: log}
 }
 
@@ -30,19 +31,16 @@ func NewLogHandler(log usecase.Log) *Log {
 // @Failure 500 "Error with message"
 // @Router /v1/logs/serp [POST]
 func (l *Log) CumulateSerpViewingTime(c echo.Context) error {
-	// param : Bind request body to struct.
-	param := new(model.SerpViewingLogParam)
-	if err := c.Bind(param); err != nil {
-		c.Echo().Logger.Errorf("Cannot bind request body to struct : %v", err)
+	p := model.SerpViewingLogParam{}
+	if err := c.Bind(&p); err != nil {
 		msg := model.ErrorMessage{
 			Message: fmt.Sprintf("Cannot bind request body : %v", err),
 		}
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	err := l.usecase.CumulateSerpViewingTime(param)
+	err := l.usecase.CumulateSerpViewingTime(p)
 	if err != nil {
-		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		msg := model.ErrorMessage{
 			Message: "Database Execution error.",
 		}
@@ -50,6 +48,49 @@ func (l *Log) CumulateSerpViewingTime(c echo.Context) error {
 	}
 
 	return c.NoContent(http.StatusCreated)
+}
+
+type FileExportParam struct {
+	Header   bool           `json:"header" query:"header"`
+	FileType store.FileType `json:"type" query:"type"`
+}
+
+// ExportSerpViewingTime : Export all task time log.
+// @Id export_task_time_log
+// @Summary Export task time log
+// @Description Export all task time log.
+// @Accept json
+// @Produce text/csv text/tab-separated-values
+// @Param param query FileExportParam true "Export parameter"
+// @Success 200
+// @Failure 400 "Error with message"
+// @Failure 500 "Error with message"
+// @Router /v1/logs/serp/export [GET]
+func (l *Log) ExportSerpViewingTime(c echo.Context) error {
+	// param : Bind request body to struct.
+	p := FileExportParam{}
+	if err := c.Bind(&p); err != nil {
+		msg := model.ErrorMessage{
+			Message: fmt.Sprintf("Cannot bind request body : %v", err),
+		}
+		return c.JSON(http.StatusBadRequest, msg)
+	}
+
+	b, err := l.usecase.ExportPageViewingTimeLog(p.Header, p.FileType)
+	if err != nil {
+		msg := model.ErrorMessage{
+			Message: "Failed to export data.",
+		}
+		return c.JSON(http.StatusInternalServerError, msg)
+	}
+
+	if p.FileType == store.TSV {
+		c.Response().Header().Set("Content-Type", "text/tab-separated-values")
+	} else {
+		c.Response().Header().Set("Content-Type", "text/csv")
+	}
+
+	return c.JSONBlob(http.StatusOK, b.Bytes())
 }
 
 // CumulatePageViewingTime : Create page viewing time log. Viewing time is counted by cumulating requests that should be sended once/sec.
@@ -64,19 +105,16 @@ func (l *Log) CumulateSerpViewingTime(c echo.Context) error {
 // @Failure 500 "Error with message"
 // @Router /v1/logs/pageview [POST]
 func (l *Log) CumulatePageViewingTime(c echo.Context) error {
-	// param : Bind request body to struct.
-	param := new(model.PageViewingLogParam)
-	if err := c.Bind(param); err != nil {
-		c.Echo().Logger.Errorf("Cannot bind request body to struct : %v", err)
+	p := model.PageViewingLogParam{}
+	if err := c.Bind(&p); err != nil {
 		msg := model.ErrorMessage{
 			Message: fmt.Sprintf("Cannot bind request body : %v", err),
 		}
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	err := l.usecase.CumulatePageViewingTime(param)
+	err := l.usecase.CumulatePageViewingTime(p)
 	if err != nil {
-		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		msg := model.ErrorMessage{
 			Message: "Database Execution error.",
 		}
@@ -84,6 +122,32 @@ func (l *Log) CumulatePageViewingTime(c echo.Context) error {
 	}
 
 	return c.NoContent(http.StatusCreated)
+}
+
+func (l *Log) ExportPageViewingTime(c echo.Context) error {
+	p := FileExportParam{}
+	if err := c.Bind(&p); err != nil {
+		msg := model.ErrorMessage{
+			Message: fmt.Sprintf("Cannot bind request body : %v", err),
+		}
+		return c.JSON(http.StatusBadRequest, msg)
+	}
+
+	b, err := l.usecase.ExportPageViewingTimeLog(p.Header, p.FileType)
+	if err != nil {
+		msg := model.ErrorMessage{
+			Message: "Failed to export log.",
+		}
+		return c.JSON(http.StatusInternalServerError, msg)
+	}
+
+	if p.FileType == store.TSV {
+		c.Response().Header().Set("Content-Type", "text/tab-separated-values")
+	} else {
+		c.Response().Header().Set("Content-Type", "text/csv")
+	}
+
+	return c.JSONBlob(http.StatusOK, b.Bytes())
 }
 
 // CreateSerpEventLog : Create click log.
@@ -98,19 +162,16 @@ func (l *Log) CumulatePageViewingTime(c echo.Context) error {
 // @Failure 500 "Error with message"
 // @Router /v1/logs/click [POST]
 func (l *Log) CreateSerpEventLog(c echo.Context) error {
-	// param : Bind request body to struct.
-	param := new(model.SearchPageEventLogParam)
-	if err := c.Bind(param); err != nil {
-		c.Echo().Logger.Errorf("Failed to bind request body : %v", err)
+	p := model.SearchPageEventLogParam{}
+	if err := c.Bind(&p); err != nil {
 		msg := model.ErrorMessage{
 			Message: fmt.Sprintf("Cannot bind request body : %v", err),
 		}
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	err := l.usecase.StoreSerpEventLog(param)
+	err := l.usecase.StoreSerpEventLog(p)
 	if err != nil {
-		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		msg := model.ErrorMessage{
 			Message: "Database Execution error.",
 		}
@@ -118,6 +179,32 @@ func (l *Log) CreateSerpEventLog(c echo.Context) error {
 	}
 
 	return c.NoContent(http.StatusCreated)
+}
+
+func (l *Log) ExportSerpEventLog(c echo.Context) error {
+	p := FileExportParam{}
+	if err := c.Bind(&p); err != nil {
+		msg := model.ErrorMessage{
+			Message: fmt.Sprintf("Cannot bind request body : %v", err),
+		}
+		return c.JSON(http.StatusBadRequest, msg)
+	}
+
+	b, err := l.usecase.ExportSerpEventLog(p.Header, p.FileType)
+	if err != nil {
+		msg := model.ErrorMessage{
+			Message: "Failed to export log.",
+		}
+		return c.JSON(http.StatusInternalServerError, msg)
+	}
+
+	if p.FileType == store.TSV {
+		c.Response().Header().Set("Content-Type", "text/tab-separated-value")
+	} else {
+		c.Response().Header().Set("Content-Type", "csv")
+	}
+
+	return c.JSONBlob(http.StatusOK, b.Bytes())
 }
 
 // StoreSearchSeeion : Store search session log.
@@ -132,18 +219,16 @@ func (l *Log) CreateSerpEventLog(c echo.Context) error {
 // @Failure 500 "Error with message"
 // @Router /v1/logs/session [POST]
 func (l *Log) StoreSearchSeeion(c echo.Context) error {
-	s := new(model.SearchSession)
-	if err := c.Bind(s); err != nil {
-		c.Echo().Logger.Errorf("Invalid request body : %v", err)
+	p := model.SearchSessionParam{}
+	if err := c.Bind(&p); err != nil {
 		msg := model.ErrorMessage{
 			Message: "Invalid request body.",
 		}
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	err := l.usecase.StoreSearchSeeion(s)
+	err := l.usecase.StoreSearchSeeion(p)
 	if err != nil {
-		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		msg := model.ErrorMessage{
 			Message: "Database Execution error.",
 		}
@@ -151,4 +236,30 @@ func (l *Log) StoreSearchSeeion(c echo.Context) error {
 	}
 
 	return c.NoContent(http.StatusCreated)
+}
+
+func (l *Log) ExportSearchSeeion(c echo.Context) error {
+	p := FileExportParam{}
+	if err := c.Bind(&p); err != nil {
+		msg := model.ErrorMessage{
+			Message: "Invalid request body.",
+		}
+		return c.JSON(http.StatusBadRequest, msg)
+	}
+
+	b, err := l.usecase.ExportSearchSeeion(p.Header, p.FileType)
+	if err != nil {
+		msg := model.ErrorMessage{
+			Message: "Failed to export log",
+		}
+		return c.JSON(http.StatusInternalServerError, msg)
+	}
+
+	if p.FileType == store.TSV {
+		c.Response().Header().Set("Content-Type", "text/tab-separated-value")
+	} else {
+		c.Response().Header().Set("Content-Type", "text/tab-separated-value")
+	}
+
+	return c.JSONBlob(http.StatusOK, b.Bytes())
 }
