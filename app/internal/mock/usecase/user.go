@@ -11,31 +11,31 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
-// MockUser is a mock of User interface.
-type MockUser struct {
+// MockUserUsecase is a mock of UserUsecase interface.
+type MockUserUsecase struct {
 	ctrl     *gomock.Controller
-	recorder *MockUserMockRecorder
+	recorder *MockUserUsecaseMockRecorder
 }
 
-// MockUserMockRecorder is the mock recorder for MockUser.
-type MockUserMockRecorder struct {
-	mock *MockUser
+// MockUserUsecaseMockRecorder is the mock recorder for MockUserUsecase.
+type MockUserUsecaseMockRecorder struct {
+	mock *MockUserUsecase
 }
 
-// NewMockUser creates a new mock instance.
-func NewMockUser(ctrl *gomock.Controller) *MockUser {
-	mock := &MockUser{ctrl: ctrl}
-	mock.recorder = &MockUserMockRecorder{mock}
+// NewMockUserUsecase creates a new mock instance.
+func NewMockUserUsecase(ctrl *gomock.Controller) *MockUserUsecase {
+	mock := &MockUserUsecase{ctrl: ctrl}
+	mock.recorder = &MockUserUsecaseMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockUser) EXPECT() *MockUserMockRecorder {
+func (m *MockUserUsecase) EXPECT() *MockUserUsecaseMockRecorder {
 	return m.recorder
 }
 
 // AllocateTask mocks base method.
-func (m *MockUser) AllocateTask() (model.TaskInfo, error) {
+func (m *MockUserUsecase) AllocateTask() (model.TaskInfo, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AllocateTask")
 	ret0, _ := ret[0].(model.TaskInfo)
@@ -44,13 +44,13 @@ func (m *MockUser) AllocateTask() (model.TaskInfo, error) {
 }
 
 // AllocateTask indicates an expected call of AllocateTask.
-func (mr *MockUserMockRecorder) AllocateTask() *gomock.Call {
+func (mr *MockUserUsecaseMockRecorder) AllocateTask() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AllocateTask", reflect.TypeOf((*MockUser)(nil).AllocateTask))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AllocateTask", reflect.TypeOf((*MockUserUsecase)(nil).AllocateTask))
 }
 
 // CreateUser mocks base method.
-func (m *MockUser) CreateUser(uid string) (model.User, error) {
+func (m *MockUserUsecase) CreateUser(uid string) (model.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", uid)
 	ret0, _ := ret[0].(model.User)
@@ -59,13 +59,13 @@ func (m *MockUser) CreateUser(uid string) (model.User, error) {
 }
 
 // CreateUser indicates an expected call of CreateUser.
-func (mr *MockUserMockRecorder) CreateUser(uid interface{}) *gomock.Call {
+func (mr *MockUserUsecaseMockRecorder) CreateUser(uid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockUser)(nil).CreateUser), uid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockUserUsecase)(nil).CreateUser), uid)
 }
 
 // FindByUid mocks base method.
-func (m *MockUser) FindByUid(uid string) (model.User, bool, error) {
+func (m *MockUserUsecase) FindByUid(uid string) (model.User, bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByUid", uid)
 	ret0, _ := ret[0].(model.User)
@@ -75,13 +75,13 @@ func (m *MockUser) FindByUid(uid string) (model.User, bool, error) {
 }
 
 // FindByUid indicates an expected call of FindByUid.
-func (mr *MockUserMockRecorder) FindByUid(uid interface{}) *gomock.Call {
+func (mr *MockUserUsecaseMockRecorder) FindByUid(uid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByUid", reflect.TypeOf((*MockUser)(nil).FindByUid), uid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByUid", reflect.TypeOf((*MockUserUsecase)(nil).FindByUid), uid)
 }
 
 // GenerateRandomPasswd mocks base method.
-func (m *MockUser) GenerateRandomPasswd(l int) string {
+func (m *MockUserUsecase) GenerateRandomPasswd(l int) string {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GenerateRandomPasswd", l)
 	ret0, _ := ret[0].(string)
@@ -89,13 +89,13 @@ func (m *MockUser) GenerateRandomPasswd(l int) string {
 }
 
 // GenerateRandomPasswd indicates an expected call of GenerateRandomPasswd.
-func (mr *MockUserMockRecorder) GenerateRandomPasswd(l interface{}) *gomock.Call {
+func (mr *MockUserUsecaseMockRecorder) GenerateRandomPasswd(l interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRandomPasswd", reflect.TypeOf((*MockUser)(nil).GenerateRandomPasswd), l)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRandomPasswd", reflect.TypeOf((*MockUserUsecase)(nil).GenerateRandomPasswd), l)
 }
 
 // GetCompletionCode mocks base method.
-func (m *MockUser) GetCompletionCode(userId int) (int, error) {
+func (m *MockUserUsecase) GetCompletionCode(userId int) (int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCompletionCode", userId)
 	ret0, _ := ret[0].(int)
@@ -104,7 +104,7 @@ func (m *MockUser) GetCompletionCode(userId int) (int, error) {
 }
 
 // GetCompletionCode indicates an expected call of GetCompletionCode.
-func (mr *MockUserMockRecorder) GetCompletionCode(userId interface{}) *gomock.Call {
+func (mr *MockUserUsecaseMockRecorder) GetCompletionCode(userId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompletionCode", reflect.TypeOf((*MockUser)(nil).GetCompletionCode), userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompletionCode", reflect.TypeOf((*MockUserUsecase)(nil).GetCompletionCode), userId)
 }

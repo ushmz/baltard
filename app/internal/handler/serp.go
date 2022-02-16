@@ -12,10 +12,10 @@ import (
 )
 
 type Serp struct {
-	usecase usecase.Serp
+	usecase usecase.SerpUsecase
 }
 
-func NewSerpHandler(serp usecase.Serp) *Serp {
+func NewSerpHandler(serp usecase.SerpUsecase) *Serp {
 	return &Serp{usecase: serp}
 }
 

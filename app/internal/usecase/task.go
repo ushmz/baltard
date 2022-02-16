@@ -6,7 +6,7 @@ import (
 	repo "ratri/internal/domain/repository"
 )
 
-type Task interface {
+type TaskUsecase interface {
 	FetchTaskInfo(taskId int) (model.Task, error)
 	CreateTaskAnswer(answer *model.Answer) error
 }
@@ -15,7 +15,7 @@ type TaskImpl struct {
 	repository repo.TaskRepository
 }
 
-func NewTaskUsecase(taskRepository repo.TaskRepository) Task {
+func NewTaskUsecase(taskRepository repo.TaskRepository) TaskUsecase {
 	return &TaskImpl{repository: taskRepository}
 }
 

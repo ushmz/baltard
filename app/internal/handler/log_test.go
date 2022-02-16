@@ -26,7 +26,7 @@ var (
 	}{
 		{
 			"name",
-			model.SerpViewingLogParam{UserId: 999, TaskId: 5, ConditionId: 3},
+			model.SerpViewingLogParam{UserID: 999, TaskID: 5, ConditionId: 3},
 			201,
 			false,
 			nil,
@@ -41,7 +41,7 @@ var (
 	}{
 		{
 			"name",
-			model.PageViewingLogParam{UserId: 999, TaskId: 5, ConditionId: 3, PageId: 356},
+			model.PageViewingLogParam{UserID: 999, TaskID: 5, ConditionID: 3, PageID: 356},
 			201,
 			false,
 			nil,
@@ -59,8 +59,8 @@ var (
 			"name",
 			model.SearchPageEventLogParam{
 				User:        42,
-				TaskId:      5,
-				ConditionId: 3,
+				TaskID:      5,
+				ConditionID: 3,
 				Time:        42,
 				Page:        1,
 				Rank:        3,
@@ -74,14 +74,14 @@ var (
 	}
 	searchSessionLogs = []struct {
 		name      string
-		in        model.SearchSession
+		in        model.SearchSessionParam
 		want      int
 		wantError bool
 		err       error
 	}{
 		{
 			"name",
-			model.SearchSession{UserId: 42, TaskId: 5, ConditionId: 3},
+			model.SearchSessionParam{UserID: 42, TaskID: 5, ConditionID: 3},
 			201,
 			false,
 			nil,

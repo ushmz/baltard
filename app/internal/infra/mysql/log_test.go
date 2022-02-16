@@ -7,8 +7,8 @@ import (
 
 func TestCumulateSerpViewingTime(t *testing.T) {
 	p := model.SerpViewingLogParam{
-		UserId:      42,
-		TaskId:      5,
+		UserID:      42,
+		TaskID:      5,
 		ConditionId: 5,
 	}
 
@@ -19,10 +19,10 @@ func TestCumulateSerpViewingTime(t *testing.T) {
 
 func TestCumulatePageViewingTime(t *testing.T) {
 	p := model.PageViewingLogParam{
-		UserId:      42,
-		TaskId:      5,
-		ConditionId: 5,
-		PageId:      432,
+		UserID:      42,
+		TaskID:      5,
+		ConditionID: 5,
+		PageID:      432,
 	}
 
 	if err := logDao.CumulatePageViewingTime(&p); err != nil {
@@ -33,8 +33,8 @@ func TestCumulatePageViewingTime(t *testing.T) {
 func TestStoreSerpEventLog(t *testing.T) {
 	p := model.SearchPageEventLogParam{
 		User:        42,
-		TaskId:      5,
-		ConditionId: 5,
+		TaskID:      5,
+		ConditionID: 5,
 		Time:        142,
 		Page:        2,
 		Rank:        5,
@@ -47,10 +47,10 @@ func TestStoreSerpEventLog(t *testing.T) {
 }
 
 func TestStoreSearchSession(t *testing.T) {
-	p := model.SearchSession{
-		UserId:      42,
-		TaskId:      5,
-		ConditionId: 5,
+	p := model.SearchSessionParam{
+		UserID:      42,
+		TaskID:      5,
+		ConditionID: 5,
 	}
 
 	if err := logDao.StoreSearchSeeion(&p); err != nil {

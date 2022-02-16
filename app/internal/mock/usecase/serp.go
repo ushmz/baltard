@@ -11,31 +11,31 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
-// MockSerp is a mock of Serp interface.
-type MockSerp struct {
+// MockSerpUsecase is a mock of SerpUsecase interface.
+type MockSerpUsecase struct {
 	ctrl     *gomock.Controller
-	recorder *MockSerpMockRecorder
+	recorder *MockSerpUsecaseMockRecorder
 }
 
-// MockSerpMockRecorder is the mock recorder for MockSerp.
-type MockSerpMockRecorder struct {
-	mock *MockSerp
+// MockSerpUsecaseMockRecorder is the mock recorder for MockSerpUsecase.
+type MockSerpUsecaseMockRecorder struct {
+	mock *MockSerpUsecase
 }
 
-// NewMockSerp creates a new mock instance.
-func NewMockSerp(ctrl *gomock.Controller) *MockSerp {
-	mock := &MockSerp{ctrl: ctrl}
-	mock.recorder = &MockSerpMockRecorder{mock}
+// NewMockSerpUsecase creates a new mock instance.
+func NewMockSerpUsecase(ctrl *gomock.Controller) *MockSerpUsecase {
+	mock := &MockSerpUsecase{ctrl: ctrl}
+	mock.recorder = &MockSerpUsecaseMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSerp) EXPECT() *MockSerpMockRecorder {
+func (m *MockSerpUsecase) EXPECT() *MockSerpUsecaseMockRecorder {
 	return m.recorder
 }
 
 // FetchSerp mocks base method.
-func (m *MockSerp) FetchSerp(taskId, offset int) (*[]model.SearchPage, error) {
+func (m *MockSerpUsecase) FetchSerp(taskId, offset int) (*[]model.SearchPage, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FetchSerp", taskId, offset)
 	ret0, _ := ret[0].(*[]model.SearchPage)
@@ -44,13 +44,13 @@ func (m *MockSerp) FetchSerp(taskId, offset int) (*[]model.SearchPage, error) {
 }
 
 // FetchSerp indicates an expected call of FetchSerp.
-func (mr *MockSerpMockRecorder) FetchSerp(taskId, offset interface{}) *gomock.Call {
+func (mr *MockSerpUsecaseMockRecorder) FetchSerp(taskId, offset interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerp", reflect.TypeOf((*MockSerp)(nil).FetchSerp), taskId, offset)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerp", reflect.TypeOf((*MockSerpUsecase)(nil).FetchSerp), taskId, offset)
 }
 
 // FetchSerpWithIcon mocks base method.
-func (m *MockSerp) FetchSerpWithIcon(taskId, offset, top int) (*[]model.SerpWithIcon, error) {
+func (m *MockSerpUsecase) FetchSerpWithIcon(taskId, offset, top int) (*[]model.SerpWithIcon, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FetchSerpWithIcon", taskId, offset, top)
 	ret0, _ := ret[0].(*[]model.SerpWithIcon)
@@ -59,13 +59,13 @@ func (m *MockSerp) FetchSerpWithIcon(taskId, offset, top int) (*[]model.SerpWith
 }
 
 // FetchSerpWithIcon indicates an expected call of FetchSerpWithIcon.
-func (mr *MockSerpMockRecorder) FetchSerpWithIcon(taskId, offset, top interface{}) *gomock.Call {
+func (mr *MockSerpUsecaseMockRecorder) FetchSerpWithIcon(taskId, offset, top interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerpWithIcon", reflect.TypeOf((*MockSerp)(nil).FetchSerpWithIcon), taskId, offset, top)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerpWithIcon", reflect.TypeOf((*MockSerpUsecase)(nil).FetchSerpWithIcon), taskId, offset, top)
 }
 
 // FetchSerpWithRatio mocks base method.
-func (m *MockSerp) FetchSerpWithRatio(taskId, offset, top int) (*[]model.SerpWithRatio, error) {
+func (m *MockSerpUsecase) FetchSerpWithRatio(taskId, offset, top int) (*[]model.SerpWithRatio, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FetchSerpWithRatio", taskId, offset, top)
 	ret0, _ := ret[0].(*[]model.SerpWithRatio)
@@ -74,7 +74,7 @@ func (m *MockSerp) FetchSerpWithRatio(taskId, offset, top int) (*[]model.SerpWit
 }
 
 // FetchSerpWithRatio indicates an expected call of FetchSerpWithRatio.
-func (mr *MockSerpMockRecorder) FetchSerpWithRatio(taskId, offset, top interface{}) *gomock.Call {
+func (mr *MockSerpUsecaseMockRecorder) FetchSerpWithRatio(taskId, offset, top interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerpWithRatio", reflect.TypeOf((*MockSerp)(nil).FetchSerpWithRatio), taskId, offset, top)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerpWithRatio", reflect.TypeOf((*MockSerpUsecase)(nil).FetchSerpWithRatio), taskId, offset, top)
 }

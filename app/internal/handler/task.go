@@ -13,10 +13,10 @@ import (
 )
 
 type Task struct {
-	usecase usecase.Task
+	usecase usecase.TaskUsecase
 }
 
-func NewTaskHandler(task usecase.Task) *Task {
+func NewTaskHandler(task usecase.TaskUsecase) *Task {
 	return &Task{usecase: task}
 }
 
