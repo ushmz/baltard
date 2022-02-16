@@ -14,7 +14,7 @@ func NewLogStore() *LogStore {
 	return &LogStore{}
 }
 
-func (l *LogStore) ExportSerpViewingTimeLog(data []model.SerpViewingLog, header bool, filetype store.FileType) ([]byte, error) {
+func (l *LogStore) ExportSerpViewingTimeLog(data []model.SerpViewingLog, header bool, filetype store.FileType) (*bytes.Buffer, error) {
 	content := [][]string{}
 	if header {
 		content = append(content, []string{
@@ -45,10 +45,10 @@ func (l *LogStore) ExportSerpViewingTimeLog(data []model.SerpViewingLog, header 
 	if err != nil {
 		return nil, err
 	}
-	return b.Bytes(), nil
+	return b, nil
 }
 
-func (l *LogStore) ExportPageViewingTimeLog(data []model.PageViewingLog, header bool, filetype store.FileType) ([]byte, error) {
+func (l *LogStore) ExportPageViewingTimeLog(data []model.PageViewingLog, header bool, filetype store.FileType) (*bytes.Buffer, error) {
 	content := [][]string{}
 	if header {
 		content = append(content, []string{
@@ -81,10 +81,10 @@ func (l *LogStore) ExportPageViewingTimeLog(data []model.PageViewingLog, header 
 	if err != nil {
 		return nil, err
 	}
-	return b.Bytes(), nil
+	return b, nil
 }
 
-func (l *LogStore) ExportSerpEventLog(data []model.SearchPageEventLog, header bool, filetype store.FileType) ([]byte, error) {
+func (l *LogStore) ExportSerpEventLog(data []model.SearchPageEventLog, header bool, filetype store.FileType) (*bytes.Buffer, error) {
 	content := [][]string{}
 	if header {
 		content = append(content, []string{
@@ -122,10 +122,10 @@ func (l *LogStore) ExportSerpEventLog(data []model.SearchPageEventLog, header bo
 	if err != nil {
 		return nil, err
 	}
-	return b.Bytes(), nil
+	return b, nil
 }
 
-func (l *LogStore) ExportSearchSessionLog(data []model.SearchSession, header bool, filetype store.FileType) ([]byte, error) {
+func (l *LogStore) ExportSearchSessionLog(data []model.SearchSession, header bool, filetype store.FileType) (*bytes.Buffer, error) {
 	content := [][]string{}
 	if header {
 		content = append(content, []string{
@@ -157,5 +157,5 @@ func (l *LogStore) ExportSearchSessionLog(data []model.SearchSession, header boo
 	if err != nil {
 		return nil, err
 	}
-	return b.Bytes(), nil
+	return b, nil
 }
