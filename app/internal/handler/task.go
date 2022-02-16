@@ -79,7 +79,6 @@ func (t *Task) SubmitTaskAnswer(c echo.Context) error {
 	err := t.usecase.CreateTaskAnswer(&p)
 	// Execute query.
 	if err != nil {
-		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
 			Message: "Failed to submit answer.",
 		})

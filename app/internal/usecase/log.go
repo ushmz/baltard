@@ -22,40 +22,40 @@ type LogUsecase interface {
 }
 
 type LogImpl struct {
-	dbRepo repo.LogRepository
-	store  store.LogStore
+	repository repo.LogRepository
+	store      store.LogStore
 }
 
 func NewLogUsecase(logRepository repo.LogRepository, store store.LogStore) LogUsecase {
-	return &LogImpl{dbRepo: logRepository, store: store}
+	return &LogImpl{repository: logRepository, store: store}
 }
 
 func (l *LogImpl) CumulateSerpViewingTime(p model.SerpViewingLogParam) error {
 	if l == nil {
 		return errors.New("LogImpl is nil")
 	}
-	return l.dbRepo.CumulateSerpViewingTime(p)
+	return l.repository.CumulateSerpViewingTime(p)
 }
 
 func (l *LogImpl) CumulatePageViewingTime(p model.PageViewingLogParam) error {
 	if l == nil {
 		return errors.New("LogImpl is nil")
 	}
-	return l.dbRepo.CumulatePageViewingTime(p)
+	return l.repository.CumulatePageViewingTime(p)
 }
 
 func (l *LogImpl) StoreSerpEventLog(p model.SearchPageEventLogParam) error {
 	if l == nil {
 		return errors.New("LogImpl is nil")
 	}
-	return l.dbRepo.StoreSerpEventLog(p)
+	return l.repository.StoreSerpEventLog(p)
 }
 
 func (l *LogImpl) StoreSearchSeeion(p model.SearchSessionParam) error {
 	if l == nil {
 		return errors.New("LogImpl is nil")
 	}
-	return l.dbRepo.StoreSearchSeeion(p)
+	return l.repository.StoreSearchSeeion(p)
 }
 
 func (l *LogImpl) ExportSerpViewingTimeLog(header bool, filetype store.FileType) (*bytes.Buffer, error) {
@@ -63,7 +63,7 @@ func (l *LogImpl) ExportSerpViewingTimeLog(header bool, filetype store.FileType)
 		return nil, errors.New("LogImpl is nil")
 	}
 
-	data, err := l.dbRepo.FetchAllSerpViewingTimeLogs()
+	data, err := l.repository.FetchAllSerpViewingTimeLogs()
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (l *LogImpl) ExportPageViewingTimeLog(header bool, filetype store.FileType)
 		return nil, errors.New("LogImpl is nil")
 	}
 
-	data, err := l.dbRepo.FetchAllPageViewingTimeLogs()
+	data, err := l.repository.FetchAllPageViewingTimeLogs()
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func (l *LogImpl) ExportSerpEventLog(header bool, filetype store.FileType) (*byt
 		return nil, errors.New("LogImpl is nil")
 	}
 
-	data, err := l.dbRepo.FetchAllSerpEventLogs()
+	data, err := l.repository.FetchAllSerpEventLogs()
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func (l *LogImpl) ExportSearchSeeion(header bool, filetype store.FileType) (*byt
 		return nil, errors.New("LogImpl is nil")
 	}
 
-	data, err := l.dbRepo.FetchAllSearchSessions()
+	data, err := l.repository.FetchAllSearchSessions()
 	if err != nil {
 		return nil, err
 	}
