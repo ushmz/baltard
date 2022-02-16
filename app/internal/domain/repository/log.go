@@ -23,14 +23,14 @@ type LogRepository interface {
 	FetchAllSearchSessions() ([]model.SearchSession, error)
 
 	// CumulateSerpViewingTime : Upsert serp viewing time log.
-	CumulateSerpViewingTime(*model.SerpViewingLogParam) error
+	CumulateSerpViewingTime(model.SerpViewingLogParam) error
 
 	// CumulatePageViewingTime : Upsert page viewing time log.
-	CumulatePageViewingTime(*model.PageViewingLogParam) error
+	CumulatePageViewingTime(model.PageViewingLogParam) error
 
 	// StoreSerpEventLog: Insert event log (such as click, paginate ...).
-	StoreSerpEventLog(*model.SearchPageEventLogParam) error
+	StoreSerpEventLog(model.SearchPageEventLogParam) error
 
 	// StoreSearchSeeion : Upsert searh session log.
-	StoreSearchSeeion(*model.SearchSessionParam) error
+	StoreSearchSeeion(model.SearchSessionParam) error
 }

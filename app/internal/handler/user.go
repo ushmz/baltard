@@ -32,33 +32,30 @@ func NewUserHandler(user usecase.UserUsecase) *User {
 // @Router /users [POST]
 func (u *User) CreateUser(c echo.Context) error {
 	// u : Request body struct
-	var param model.UserParam
+	p := model.UserParam{}
 	// Bind request body parameters to struct
-	if err := c.Bind(&param); err != nil {
-		c.Echo().Logger.Errorf("Error. Invalid request body. : %v", err)
-		return c.NoContent(http.StatusInternalServerError)
+	if err := c.Bind(&p); err != nil {
+		return c.NoContent(http.StatusBadRequest)
 	}
 
 	// Verbose
 	var user model.User
 
 	// exist : Given uid is already exist or not
-	eu, exist, err := u.usecase.FindByUid(param.Uid)
+	eu, exist, err := u.usecase.FindByUid(p.Uid)
 	if err != nil {
-		c.Echo().Logger.Errorf("Failed to detect user existence : %v", err)
 		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-			Message: err.Error(),
+			Message: "Failed to detect user existence.",
 		})
 	}
 
 	if exist {
 		user = eu
 	} else {
-		nu, err := u.usecase.CreateUser(param.Uid)
+		nu, err := u.usecase.CreateUser(p.Uid)
 		if err != nil {
-			c.Echo().Logger.Errorf("Failed to create new user : %v", err)
 			return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-				Message: err.Error(),
+				Message: "Failed to create new user.",
 			})
 		}
 		user = nu
@@ -66,9 +63,8 @@ func (u *User) CreateUser(c echo.Context) error {
 
 	info, err := u.usecase.AllocateTask()
 	if err != nil {
-		c.Echo().Logger.Errorf("Failed to allocate task  : %v", err)
 		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-			Message: err.Error(),
+			Message: "Failed to allocate task.",
 		})
 	}
 
@@ -111,7 +107,6 @@ func (u *User) GetCompletionCode(c echo.Context) error {
 		if err == sql.ErrNoRows {
 			return c.NoContent(http.StatusNotFound)
 		}
-		c.Echo().Logger.Errorf("Database Execution error : %v", err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 

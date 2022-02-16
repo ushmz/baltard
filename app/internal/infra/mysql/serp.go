@@ -16,7 +16,7 @@ func NewSerpRepository(db *sqlx.DB) repo.SerpRepository {
 	return &SerpReporitoryImpl{DB: db}
 }
 
-func (s SerpReporitoryImpl) FetchSerpByTaskID(taskId, offset int) (*[]model.SearchPage, error) {
+func (s *SerpReporitoryImpl) FetchSerpByTaskID(taskId, offset int) (*[]model.SearchPage, error) {
 	srp := []model.SearchPage{}
 	err := s.DB.Select(&srp, `
 		SELECT

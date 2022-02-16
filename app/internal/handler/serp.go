@@ -38,7 +38,7 @@ func (s *Serp) FetchSerpWithRatioByID(c echo.Context) error {
 	task, err := strconv.Atoi(taskId)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
-			Message: "Parameter `taskId` must be number",
+			Message: "Parameter `id` must be number",
 		})
 	}
 
@@ -73,7 +73,7 @@ func (s *Serp) FetchSerpWithRatioByID(c echo.Context) error {
 			})
 		}
 		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-			Message: "Database execution error: Failed to fetch relations: " + err.Error(),
+			Message: "Failed to fetch relations",
 		})
 	}
 
@@ -99,7 +99,7 @@ func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
 	task, err := strconv.Atoi(taskId)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
-			Message: "Parameter `taskId` must be number",
+			Message: "Parameter `id` must be number",
 		})
 	}
 
@@ -136,7 +136,7 @@ func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
 		}
 
 		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-			Message: "Database execution error: Failed to fetch relations : " + err.Error(),
+			Message: "Failed to fetch relations",
 		})
 	}
 
@@ -161,7 +161,7 @@ func (s *Serp) FetchSerpByID(c echo.Context) error {
 	task, err := strconv.Atoi(taskId)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
-			Message: "Parameter `taskId` must be number",
+			Message: "Parameter `id` must be number",
 		})
 	}
 
@@ -182,7 +182,7 @@ func (s *Serp) FetchSerpByID(c echo.Context) error {
 			})
 		}
 		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-			Message: "Database execution error: Failed to fetch relations: " + err.Error(),
+			Message: "Failed to fetch relations",
 		})
 	}
 

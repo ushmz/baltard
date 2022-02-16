@@ -62,7 +62,7 @@ func (l *LogRepositoryImpl) FetchAllSearchSessions() ([]model.SearchSession, err
 // CumulateSerpViewingTime : "Upsert" serp viewing time log.
 // Key (pair of user_id and task_id) doesn't exist, insert new record.
 // Key exists, increment `time_on_page` value.
-func (l *LogRepositoryImpl) CumulateSerpViewingTime(p *model.SerpViewingLogParam) error {
+func (l *LogRepositoryImpl) CumulateSerpViewingTime(p model.SerpViewingLogParam) error {
 	_, err := l.DB.NamedExec(`
 		INSERT INTO
 			logs_serp_dwell_time (
@@ -89,7 +89,7 @@ func (l *LogRepositoryImpl) CumulateSerpViewingTime(p *model.SerpViewingLogParam
 // CumulatePageViewingTime : "Upsert" page viewing time log.
 // Key (pair of user_id, task_id and page_id) doesn't exist, insert new record.
 // Key exists, increment `time_on_page` value.
-func (l *LogRepositoryImpl) CumulatePageViewingTime(p *model.PageViewingLogParam) error {
+func (l *LogRepositoryImpl) CumulatePageViewingTime(p model.PageViewingLogParam) error {
 	_, err := l.DB.NamedExec(`
 		INSERT INTO
 			logs_page_dwell_time (
@@ -115,7 +115,7 @@ func (l *LogRepositoryImpl) CumulatePageViewingTime(p *model.PageViewingLogParam
 	return nil
 }
 
-func (l *LogRepositoryImpl) StoreSerpEventLog(p *model.SearchPageEventLogParam) error {
+func (l *LogRepositoryImpl) StoreSerpEventLog(p model.SearchPageEventLogParam) error {
 	_, err := l.DB.NamedExec(`
 		INSERT INTO
 			logs_event (
@@ -147,7 +147,7 @@ func (l *LogRepositoryImpl) StoreSerpEventLog(p *model.SearchPageEventLogParam) 
 // StoreSearchSeeion : Upsert searh session log.
 // Insert new row if the user start search session.
 // Update "ended_at" field value if the user end search session.
-func (l *LogRepositoryImpl) StoreSearchSeeion(s *model.SearchSessionParam) error {
+func (l *LogRepositoryImpl) StoreSearchSeeion(s model.SearchSessionParam) error {
 	_, err := l.DB.NamedExec(`
 		INSERT INTO
 			search_session(
