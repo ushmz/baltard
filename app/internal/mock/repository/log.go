@@ -62,8 +62,68 @@ func (mr *MockLogRepositoryMockRecorder) CumulateSerpViewingTime(arg0 interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CumulateSerpViewingTime", reflect.TypeOf((*MockLogRepository)(nil).CumulateSerpViewingTime), arg0)
 }
 
+// FetchAllPageViewingTimeLogs mocks base method.
+func (m *MockLogRepository) FetchAllPageViewingTimeLogs() ([]model.PageViewingLog, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FetchAllPageViewingTimeLogs")
+	ret0, _ := ret[0].([]model.PageViewingLog)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FetchAllPageViewingTimeLogs indicates an expected call of FetchAllPageViewingTimeLogs.
+func (mr *MockLogRepositoryMockRecorder) FetchAllPageViewingTimeLogs() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchAllPageViewingTimeLogs", reflect.TypeOf((*MockLogRepository)(nil).FetchAllPageViewingTimeLogs))
+}
+
+// FetchAllSearchSessions mocks base method.
+func (m *MockLogRepository) FetchAllSearchSessions() ([]model.SearchSession, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FetchAllSearchSessions")
+	ret0, _ := ret[0].([]model.SearchSession)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FetchAllSearchSessions indicates an expected call of FetchAllSearchSessions.
+func (mr *MockLogRepositoryMockRecorder) FetchAllSearchSessions() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchAllSearchSessions", reflect.TypeOf((*MockLogRepository)(nil).FetchAllSearchSessions))
+}
+
+// FetchAllSerpEventLogs mocks base method.
+func (m *MockLogRepository) FetchAllSerpEventLogs() ([]model.SearchPageEventLog, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FetchAllSerpEventLogs")
+	ret0, _ := ret[0].([]model.SearchPageEventLog)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FetchAllSerpEventLogs indicates an expected call of FetchAllSerpEventLogs.
+func (mr *MockLogRepositoryMockRecorder) FetchAllSerpEventLogs() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchAllSerpEventLogs", reflect.TypeOf((*MockLogRepository)(nil).FetchAllSerpEventLogs))
+}
+
+// FetchAllSerpViewingTimeLogs mocks base method.
+func (m *MockLogRepository) FetchAllSerpViewingTimeLogs() ([]model.SerpViewingLog, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FetchAllSerpViewingTimeLogs")
+	ret0, _ := ret[0].([]model.SerpViewingLog)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FetchAllSerpViewingTimeLogs indicates an expected call of FetchAllSerpViewingTimeLogs.
+func (mr *MockLogRepositoryMockRecorder) FetchAllSerpViewingTimeLogs() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchAllSerpViewingTimeLogs", reflect.TypeOf((*MockLogRepository)(nil).FetchAllSerpViewingTimeLogs))
+}
+
 // StoreSearchSeeion mocks base method.
-func (m *MockLogRepository) StoreSearchSeeion(arg0 *model.SearchSession) error {
+func (m *MockLogRepository) StoreSearchSeeion(arg0 *model.SearchSessionParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "StoreSearchSeeion", arg0)
 	ret0, _ := ret[0].(error)
