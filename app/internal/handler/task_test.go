@@ -56,7 +56,7 @@ func TestFetchTaskInfo(t *testing.T) {
 	defer ctrl.Finish()
 
 	e := echo.New()
-	mck := mock.NewMockTask(ctrl)
+	mck := mock.NewMockTaskUsecase(ctrl)
 	for _, tt := range taskTests {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.in > 4 && tt.in < 9 {
@@ -104,7 +104,7 @@ func TestSubmitTaskAnswer(t *testing.T) {
 	defer ctrl.Finish()
 
 	e := echo.New()
-	mck := mock.NewMockTask(ctrl)
+	mck := mock.NewMockTaskUsecase(ctrl)
 	for _, tt := range answerTests {
 		t.Run(tt.name, func(t *testing.T) {
 			mck.EXPECT().CreateTaskAnswer(&tt.in).Return(nil)

@@ -94,10 +94,10 @@ func TestCreateTaskTimeLog(t *testing.T) {
 	defer ctrl.Finish()
 
 	e := echo.New()
-	mck := mock.NewMockLog(ctrl)
+	mck := mock.NewMockLogUsecase(ctrl)
 	for _, tt := range serpViewLogs {
 		t.Run(tt.name, func(t *testing.T) {
-			mck.EXPECT().CumulateSerpViewingTime(&tt.in).Return(nil)
+			mck.EXPECT().CumulateSerpViewingTime(tt.in).Return(nil)
 
 			b, err := json.Marshal(tt.in)
 			if err != nil {
@@ -140,11 +140,11 @@ func TestCumulateSerpViewingTime(t *testing.T) {
 	defer ctrl.Finish()
 
 	e := echo.New()
-	mock := mock.NewMockLog(ctrl)
+	mock := mock.NewMockLogUsecase(ctrl)
 
 	for _, tt := range serpViewLogs {
 
-		mock.EXPECT().CumulateSerpViewingTime(&tt.in).Return(nil)
+		mock.EXPECT().CumulateSerpViewingTime(tt.in).Return(nil)
 
 		b, err := json.Marshal(tt.in)
 		if err != nil {
@@ -186,10 +186,10 @@ func TestCumulatePageViewingTime(t *testing.T) {
 	defer ctrl.Finish()
 
 	e := echo.New()
-	mock := mock.NewMockLog(ctrl)
+	mock := mock.NewMockLogUsecase(ctrl)
 
 	for _, tt := range pageViewLogs {
-		mock.EXPECT().CumulatePageViewingTime(&tt.in).Return(nil)
+		mock.EXPECT().CumulatePageViewingTime(tt.in).Return(nil)
 		b, err := json.Marshal(tt.in)
 		if err != nil {
 			t.Fatal("Failed to marshal test case: %w\n", err)
@@ -229,10 +229,10 @@ func TestCreateSerpEventLog(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mock := mock.NewMockLog(ctrl)
+	mock := mock.NewMockLogUsecase(ctrl)
 
 	for _, tt := range serpEventLogs {
-		mock.EXPECT().StoreSerpEventLog(&tt.in).Return(nil)
+		mock.EXPECT().StoreSerpEventLog(tt.in).Return(nil)
 
 		b, err := json.Marshal(tt.in)
 		if err != nil {
@@ -274,10 +274,10 @@ func TestStoreSearchSession(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mock := mock.NewMockLog(ctrl)
+	mock := mock.NewMockLogUsecase(ctrl)
 
 	for _, tt := range searchSessionLogs {
-		mock.EXPECT().StoreSearchSeeion(&tt.in).Return(nil)
+		mock.EXPECT().StoreSearchSeeion(tt.in).Return(nil)
 
 		b, err := json.Marshal(tt.in)
 		if err != nil {

@@ -12,7 +12,7 @@ func TestCumulateSerpViewingTime(t *testing.T) {
 		ConditionId: 5,
 	}
 
-	if err := logDao.CumulateSerpViewingTime(&p); err != nil {
+	if err := logDao.CumulateSerpViewingTime(p); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -25,7 +25,7 @@ func TestCumulatePageViewingTime(t *testing.T) {
 		PageID:      432,
 	}
 
-	if err := logDao.CumulatePageViewingTime(&p); err != nil {
+	if err := logDao.CumulatePageViewingTime(p); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -41,7 +41,7 @@ func TestStoreSerpEventLog(t *testing.T) {
 		IsVisible:   true,
 		Event:       "click",
 	}
-	if err := logDao.StoreSerpEventLog(&p); err != nil {
+	if err := logDao.StoreSerpEventLog(p); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -53,7 +53,7 @@ func TestStoreSearchSession(t *testing.T) {
 		ConditionID: 5,
 	}
 
-	if err := logDao.StoreSearchSeeion(&p); err != nil {
+	if err := logDao.StoreSearchSeeion(p); err != nil {
 		t.Fatal(err)
 	}
 }

@@ -5,6 +5,7 @@
 package mock_usecase
 
 import (
+	bytes "bytes"
 	model "ratri/internal/domain/model"
 	store "ratri/internal/domain/store"
 	reflect "reflect"
@@ -36,7 +37,7 @@ func (m *MockLogUsecase) EXPECT() *MockLogUsecaseMockRecorder {
 }
 
 // CumulatePageViewingTime mocks base method.
-func (m *MockLogUsecase) CumulatePageViewingTime(arg0 *model.PageViewingLogParam) error {
+func (m *MockLogUsecase) CumulatePageViewingTime(arg0 model.PageViewingLogParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CumulatePageViewingTime", arg0)
 	ret0, _ := ret[0].(error)
@@ -50,7 +51,7 @@ func (mr *MockLogUsecaseMockRecorder) CumulatePageViewingTime(arg0 interface{}) 
 }
 
 // CumulateSerpViewingTime mocks base method.
-func (m *MockLogUsecase) CumulateSerpViewingTime(arg0 *model.SerpViewingLogParam) error {
+func (m *MockLogUsecase) CumulateSerpViewingTime(arg0 model.SerpViewingLogParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CumulateSerpViewingTime", arg0)
 	ret0, _ := ret[0].(error)
@@ -64,10 +65,10 @@ func (mr *MockLogUsecaseMockRecorder) CumulateSerpViewingTime(arg0 interface{}) 
 }
 
 // ExportPageViewingTimeLog mocks base method.
-func (m *MockLogUsecase) ExportPageViewingTimeLog(arg0 bool, arg1 store.FileType) ([]byte, error) {
+func (m *MockLogUsecase) ExportPageViewingTimeLog(arg0 bool, arg1 store.FileType) (*bytes.Buffer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExportPageViewingTimeLog", arg0, arg1)
-	ret0, _ := ret[0].([]byte)
+	ret0, _ := ret[0].(*bytes.Buffer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -79,10 +80,10 @@ func (mr *MockLogUsecaseMockRecorder) ExportPageViewingTimeLog(arg0, arg1 interf
 }
 
 // ExportSearchSeeion mocks base method.
-func (m *MockLogUsecase) ExportSearchSeeion(arg0 bool, arg1 store.FileType) ([]byte, error) {
+func (m *MockLogUsecase) ExportSearchSeeion(arg0 bool, arg1 store.FileType) (*bytes.Buffer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExportSearchSeeion", arg0, arg1)
-	ret0, _ := ret[0].([]byte)
+	ret0, _ := ret[0].(*bytes.Buffer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -94,10 +95,10 @@ func (mr *MockLogUsecaseMockRecorder) ExportSearchSeeion(arg0, arg1 interface{})
 }
 
 // ExportSerpEventLog mocks base method.
-func (m *MockLogUsecase) ExportSerpEventLog(arg0 bool, arg1 store.FileType) ([]byte, error) {
+func (m *MockLogUsecase) ExportSerpEventLog(arg0 bool, arg1 store.FileType) (*bytes.Buffer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExportSerpEventLog", arg0, arg1)
-	ret0, _ := ret[0].([]byte)
+	ret0, _ := ret[0].(*bytes.Buffer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -109,10 +110,10 @@ func (mr *MockLogUsecaseMockRecorder) ExportSerpEventLog(arg0, arg1 interface{})
 }
 
 // ExportSerpViewingTimeLog mocks base method.
-func (m *MockLogUsecase) ExportSerpViewingTimeLog(arg0 bool, arg1 store.FileType) ([]byte, error) {
+func (m *MockLogUsecase) ExportSerpViewingTimeLog(arg0 bool, arg1 store.FileType) (*bytes.Buffer, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExportSerpViewingTimeLog", arg0, arg1)
-	ret0, _ := ret[0].([]byte)
+	ret0, _ := ret[0].(*bytes.Buffer)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -124,7 +125,7 @@ func (mr *MockLogUsecaseMockRecorder) ExportSerpViewingTimeLog(arg0, arg1 interf
 }
 
 // StoreSearchSeeion mocks base method.
-func (m *MockLogUsecase) StoreSearchSeeion(arg0 *model.SearchSessionParam) error {
+func (m *MockLogUsecase) StoreSearchSeeion(arg0 model.SearchSessionParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "StoreSearchSeeion", arg0)
 	ret0, _ := ret[0].(error)
@@ -138,7 +139,7 @@ func (mr *MockLogUsecaseMockRecorder) StoreSearchSeeion(arg0 interface{}) *gomoc
 }
 
 // StoreSerpEventLog mocks base method.
-func (m *MockLogUsecase) StoreSerpEventLog(arg0 *model.SearchPageEventLogParam) error {
+func (m *MockLogUsecase) StoreSerpEventLog(arg0 model.SearchPageEventLogParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "StoreSerpEventLog", arg0)
 	ret0, _ := ret[0].(error)

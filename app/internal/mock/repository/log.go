@@ -35,7 +35,7 @@ func (m *MockLogRepository) EXPECT() *MockLogRepositoryMockRecorder {
 }
 
 // CumulatePageViewingTime mocks base method.
-func (m *MockLogRepository) CumulatePageViewingTime(arg0 *model.PageViewingLogParam) error {
+func (m *MockLogRepository) CumulatePageViewingTime(arg0 model.PageViewingLogParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CumulatePageViewingTime", arg0)
 	ret0, _ := ret[0].(error)
@@ -49,7 +49,7 @@ func (mr *MockLogRepositoryMockRecorder) CumulatePageViewingTime(arg0 interface{
 }
 
 // CumulateSerpViewingTime mocks base method.
-func (m *MockLogRepository) CumulateSerpViewingTime(arg0 *model.SerpViewingLogParam) error {
+func (m *MockLogRepository) CumulateSerpViewingTime(arg0 model.SerpViewingLogParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CumulateSerpViewingTime", arg0)
 	ret0, _ := ret[0].(error)
@@ -123,7 +123,7 @@ func (mr *MockLogRepositoryMockRecorder) FetchAllSerpViewingTimeLogs() *gomock.C
 }
 
 // StoreSearchSeeion mocks base method.
-func (m *MockLogRepository) StoreSearchSeeion(arg0 *model.SearchSessionParam) error {
+func (m *MockLogRepository) StoreSearchSeeion(arg0 model.SearchSessionParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "StoreSearchSeeion", arg0)
 	ret0, _ := ret[0].(error)
@@ -137,7 +137,7 @@ func (mr *MockLogRepositoryMockRecorder) StoreSearchSeeion(arg0 interface{}) *go
 }
 
 // StoreSerpEventLog mocks base method.
-func (m *MockLogRepository) StoreSerpEventLog(arg0 *model.SearchPageEventLogParam) error {
+func (m *MockLogRepository) StoreSerpEventLog(arg0 model.SearchPageEventLogParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "StoreSerpEventLog", arg0)
 	ret0, _ := ret[0].(error)

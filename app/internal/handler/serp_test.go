@@ -37,7 +37,7 @@ func TestFetchSerpWithRatioByID(t *testing.T) {
 	defer ctrl.Finish()
 
 	e := echo.New()
-	mck := mock.NewMockSerp(ctrl)
+	mck := mock.NewMockSerpUsecase(ctrl)
 	for _, tt := range serpTests {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.in["task"].(int) > 4 && tt.in["task"].(int) < 9 && tt.in["offset"].(int) < 10 {
@@ -94,7 +94,7 @@ func TestFetchSerpWithIconByID(t *testing.T) {
 	defer ctrl.Finish()
 
 	e := echo.New()
-	mck := mock.NewMockSerp(ctrl)
+	mck := mock.NewMockSerpUsecase(ctrl)
 	for _, tt := range serpTests {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.in["task"].(int) > 4 && tt.in["task"].(int) < 9 && tt.in["offset"].(int) < 10 {
@@ -151,7 +151,7 @@ func TestFetchSerpByID(t *testing.T) {
 	defer ctrl.Finish()
 
 	e := echo.New()
-	mck := mock.NewMockSerp(ctrl)
+	mck := mock.NewMockSerpUsecase(ctrl)
 	for _, tt := range serpTests {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.in["task"].(int) > 4 && tt.in["task"].(int) < 9 && tt.in["offset"].(int) < 10 {

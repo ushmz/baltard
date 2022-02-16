@@ -48,7 +48,7 @@ func TestCreateUser(t *testing.T) {
 	defer ctrl.Finish()
 
 	e := echo.New()
-	mck := mock.NewMockUser(ctrl)
+	mck := mock.NewMockUserUsecase(ctrl)
 	for _, tt := range userTests {
 		t.Run(tt.name, func(t *testing.T) {
 			mck.EXPECT().FindByUid(tt.in.Uid).Return(model.User{}, false, nil)
@@ -95,7 +95,7 @@ func TestGetCompletionCode(t *testing.T) {
 	defer ctrl.Finish()
 
 	e := echo.New()
-	mck := mock.NewMockUser(ctrl)
+	mck := mock.NewMockUserUsecase(ctrl)
 	for _, tt := range completionTest {
 		t.Run(tt.name, func(t *testing.T) {
 			mck.EXPECT().GetCompletionCode(tt.in).Return(42424, nil)
