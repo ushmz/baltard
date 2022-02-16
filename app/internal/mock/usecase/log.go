@@ -6,36 +6,37 @@ package mock_usecase
 
 import (
 	model "ratri/internal/domain/model"
+	store "ratri/internal/domain/store"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
 )
 
-// MockLog is a mock of Log interface.
-type MockLog struct {
+// MockLogUsecase is a mock of LogUsecase interface.
+type MockLogUsecase struct {
 	ctrl     *gomock.Controller
-	recorder *MockLogMockRecorder
+	recorder *MockLogUsecaseMockRecorder
 }
 
-// MockLogMockRecorder is the mock recorder for MockLog.
-type MockLogMockRecorder struct {
-	mock *MockLog
+// MockLogUsecaseMockRecorder is the mock recorder for MockLogUsecase.
+type MockLogUsecaseMockRecorder struct {
+	mock *MockLogUsecase
 }
 
-// NewMockLog creates a new mock instance.
-func NewMockLog(ctrl *gomock.Controller) *MockLog {
-	mock := &MockLog{ctrl: ctrl}
-	mock.recorder = &MockLogMockRecorder{mock}
+// NewMockLogUsecase creates a new mock instance.
+func NewMockLogUsecase(ctrl *gomock.Controller) *MockLogUsecase {
+	mock := &MockLogUsecase{ctrl: ctrl}
+	mock.recorder = &MockLogUsecaseMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockLog) EXPECT() *MockLogMockRecorder {
+func (m *MockLogUsecase) EXPECT() *MockLogUsecaseMockRecorder {
 	return m.recorder
 }
 
 // CumulatePageViewingTime mocks base method.
-func (m *MockLog) CumulatePageViewingTime(arg0 *model.PageViewingLogParam) error {
+func (m *MockLogUsecase) CumulatePageViewingTime(arg0 *model.PageViewingLogParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CumulatePageViewingTime", arg0)
 	ret0, _ := ret[0].(error)
@@ -43,13 +44,13 @@ func (m *MockLog) CumulatePageViewingTime(arg0 *model.PageViewingLogParam) error
 }
 
 // CumulatePageViewingTime indicates an expected call of CumulatePageViewingTime.
-func (mr *MockLogMockRecorder) CumulatePageViewingTime(arg0 interface{}) *gomock.Call {
+func (mr *MockLogUsecaseMockRecorder) CumulatePageViewingTime(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CumulatePageViewingTime", reflect.TypeOf((*MockLog)(nil).CumulatePageViewingTime), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CumulatePageViewingTime", reflect.TypeOf((*MockLogUsecase)(nil).CumulatePageViewingTime), arg0)
 }
 
 // CumulateSerpViewingTime mocks base method.
-func (m *MockLog) CumulateSerpViewingTime(arg0 *model.SerpViewingLogParam) error {
+func (m *MockLogUsecase) CumulateSerpViewingTime(arg0 *model.SerpViewingLogParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CumulateSerpViewingTime", arg0)
 	ret0, _ := ret[0].(error)
@@ -57,13 +58,73 @@ func (m *MockLog) CumulateSerpViewingTime(arg0 *model.SerpViewingLogParam) error
 }
 
 // CumulateSerpViewingTime indicates an expected call of CumulateSerpViewingTime.
-func (mr *MockLogMockRecorder) CumulateSerpViewingTime(arg0 interface{}) *gomock.Call {
+func (mr *MockLogUsecaseMockRecorder) CumulateSerpViewingTime(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CumulateSerpViewingTime", reflect.TypeOf((*MockLog)(nil).CumulateSerpViewingTime), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CumulateSerpViewingTime", reflect.TypeOf((*MockLogUsecase)(nil).CumulateSerpViewingTime), arg0)
+}
+
+// ExportPageViewingTimeLog mocks base method.
+func (m *MockLogUsecase) ExportPageViewingTimeLog(arg0 bool, arg1 store.FileType) ([]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExportPageViewingTimeLog", arg0, arg1)
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExportPageViewingTimeLog indicates an expected call of ExportPageViewingTimeLog.
+func (mr *MockLogUsecaseMockRecorder) ExportPageViewingTimeLog(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExportPageViewingTimeLog", reflect.TypeOf((*MockLogUsecase)(nil).ExportPageViewingTimeLog), arg0, arg1)
+}
+
+// ExportSearchSeeion mocks base method.
+func (m *MockLogUsecase) ExportSearchSeeion(arg0 bool, arg1 store.FileType) ([]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExportSearchSeeion", arg0, arg1)
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExportSearchSeeion indicates an expected call of ExportSearchSeeion.
+func (mr *MockLogUsecaseMockRecorder) ExportSearchSeeion(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExportSearchSeeion", reflect.TypeOf((*MockLogUsecase)(nil).ExportSearchSeeion), arg0, arg1)
+}
+
+// ExportSerpEventLog mocks base method.
+func (m *MockLogUsecase) ExportSerpEventLog(arg0 bool, arg1 store.FileType) ([]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExportSerpEventLog", arg0, arg1)
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExportSerpEventLog indicates an expected call of ExportSerpEventLog.
+func (mr *MockLogUsecaseMockRecorder) ExportSerpEventLog(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExportSerpEventLog", reflect.TypeOf((*MockLogUsecase)(nil).ExportSerpEventLog), arg0, arg1)
+}
+
+// ExportSerpViewingTimeLog mocks base method.
+func (m *MockLogUsecase) ExportSerpViewingTimeLog(arg0 bool, arg1 store.FileType) ([]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ExportSerpViewingTimeLog", arg0, arg1)
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ExportSerpViewingTimeLog indicates an expected call of ExportSerpViewingTimeLog.
+func (mr *MockLogUsecaseMockRecorder) ExportSerpViewingTimeLog(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExportSerpViewingTimeLog", reflect.TypeOf((*MockLogUsecase)(nil).ExportSerpViewingTimeLog), arg0, arg1)
 }
 
 // StoreSearchSeeion mocks base method.
-func (m *MockLog) StoreSearchSeeion(arg0 *model.SearchSession) error {
+func (m *MockLogUsecase) StoreSearchSeeion(arg0 *model.SearchSessionParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "StoreSearchSeeion", arg0)
 	ret0, _ := ret[0].(error)
@@ -71,13 +132,13 @@ func (m *MockLog) StoreSearchSeeion(arg0 *model.SearchSession) error {
 }
 
 // StoreSearchSeeion indicates an expected call of StoreSearchSeeion.
-func (mr *MockLogMockRecorder) StoreSearchSeeion(arg0 interface{}) *gomock.Call {
+func (mr *MockLogUsecaseMockRecorder) StoreSearchSeeion(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StoreSearchSeeion", reflect.TypeOf((*MockLog)(nil).StoreSearchSeeion), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StoreSearchSeeion", reflect.TypeOf((*MockLogUsecase)(nil).StoreSearchSeeion), arg0)
 }
 
 // StoreSerpEventLog mocks base method.
-func (m *MockLog) StoreSerpEventLog(arg0 *model.SearchPageEventLogParam) error {
+func (m *MockLogUsecase) StoreSerpEventLog(arg0 *model.SearchPageEventLogParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "StoreSerpEventLog", arg0)
 	ret0, _ := ret[0].(error)
@@ -85,7 +146,7 @@ func (m *MockLog) StoreSerpEventLog(arg0 *model.SearchPageEventLogParam) error {
 }
 
 // StoreSerpEventLog indicates an expected call of StoreSerpEventLog.
-func (mr *MockLogMockRecorder) StoreSerpEventLog(arg0 interface{}) *gomock.Call {
+func (mr *MockLogUsecaseMockRecorder) StoreSerpEventLog(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StoreSerpEventLog", reflect.TypeOf((*MockLog)(nil).StoreSerpEventLog), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StoreSerpEventLog", reflect.TypeOf((*MockLogUsecase)(nil).StoreSerpEventLog), arg0)
 }
