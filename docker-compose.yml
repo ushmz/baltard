@@ -2,7 +2,9 @@ version: '3'
 
 services:
   server:
-    build: ./server/caddy
+    build: 
+      context: ./server/caddy
+      dockerfile: ./Dockerfile
     container_name: ratri-caddy
     ports:
       - 80:80
@@ -13,20 +15,18 @@ services:
       - app
 
   app:
-    build: ./app
-    ports:
-      - '8080:8080'
+    build: 
+      context: ./app
+      dockerfile: ./Dockerfile
     container_name: ratri-app
-    volumes:
-      - ./app:/go/src/app
     tty: true
-    command: go run ./cmd/main.go
     depends_on:
       - db
 
   db:
     build:
       context: ./db/mysql
+      dockerfile: ./Dockerfile
     container_name: ratri-mysql
     command:
       mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
