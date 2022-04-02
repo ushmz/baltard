@@ -2,29 +2,37 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
 	"ratri/handler"
+	fa "ratri/infra/firebase"
 	db "ratri/infra/mysql"
 	mw "ratri/middleware"
 
+	firebase "firebase.google.com/go"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 func main() {
 	d := db.New()
 	defer d.Close()
-	r := NewRouter(d)
+
+	// Set up firebase SDK
+	app, err := fa.InitApp()
+	if err != nil {
+		panic(fmt.Sprintf("Failed to initialize firebase app: %+v\n", err))
+	}
+
+	r := NewRouter(d, app)
 	go func() {
 		if err := r.Start(":8080"); err != nil && err != http.ErrServerClosed {
-			r.Logger.Fatal("Shutting down the server")
+			panic(fmt.Sprintf("Failed to start server : %+v\n", err))
 		}
 	}()
 
@@ -39,41 +47,23 @@ func main() {
 	}
 }
 
-func NewRouter(d *sqlx.DB) *echo.Echo {
+func NewRouter(d *sqlx.DB, app *firebase.App) *echo.Echo {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
 
-	// e.Use(middleware.Recover())
 	e.Use(mw.Logger())
 	e.Use(mw.CacheAdapter())
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
-		AllowHeaders: []string{
-			echo.HeaderOrigin,
-			echo.HeaderContentType,
-			echo.HeaderAccept,
-			echo.HeaderAuthorization,
-		},
-		AllowMethods: []string{
-			echo.GET,
-			echo.HEAD,
-			echo.PUT,
-			echo.PATCH,
-			echo.POST,
-			echo.DELETE,
-		},
-	}))
+	e.Use(mw.CORSConfig())
 
-	h := handler.NewHandler(d)
-
-	e.GET("/docs/*", echoSwagger.WrapHandler)
+	h := handler.NewHandler(d, app)
 
 	api := e.Group("/api")
 	api.POST("/users", h.User.CreateUser)
+	api.POST("/session", h.User.CreateSession)
 
 	v1 := api.Group("/v1")
-	// v1.Use(mw.Auth())
+	v1.Use(mw.Auth(app))
 
 	// users
 	v1.GET("/users/code/:id", h.User.GetCompletionCode)
