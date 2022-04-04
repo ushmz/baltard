@@ -2,7 +2,6 @@ package handler
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -66,15 +65,6 @@ func (u *User) CreateUser(c echo.Context) error {
 		})
 	}
 
-	cc := createCookie("exp-condition", fmt.Sprint(info.ConditionId))
-	c.SetCookie(cc)
-	gc := createCookie("exp-group", fmt.Sprint(info.GroupId))
-	c.SetCookie(gc)
-	ftc := createCookie("exp-1-task", fmt.Sprint(info.TaskIds[0]))
-	c.SetCookie(ftc)
-	stc := createCookie("exp-2-task", fmt.Sprint(info.TaskIds[1]))
-	c.SetCookie(stc)
-
 	st := createCookie("exp-token", user.Token)
 	c.SetCookie(st)
 
@@ -90,7 +80,7 @@ func (u *User) CreateUser(c echo.Context) error {
 func createCookie(name string, val string) *http.Cookie {
 	c := new(http.Cookie)
 	c.HttpOnly = true
-	c.Secure = true
+	c.Secure = false
 	c.Path = "/"
 	c.Expires = time.Now().Add(1 * time.Hour)
 	c.Name = name
@@ -117,7 +107,7 @@ func (u *User) CreateSession(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, nil)
 	}
 
-	sc := createCookie("session", cval)
+	sc := createCookie("exp-session", cval)
 	c.SetCookie(sc)
 	return c.NoContent(http.StatusOK)
 }
