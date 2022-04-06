@@ -3,12 +3,15 @@ package handler
 import (
 	"database/sql"
 	"net/http"
+	"os"
 	"strconv"
+	"time"
 
 	"ratri/domain/model"
 	"ratri/usecase"
 
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 )
 
 type User struct {
@@ -38,27 +41,22 @@ func (u *User) CreateUser(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	// Verbose
-	var user model.User
-
 	// exist : Given uid is already exist or not
-	eu, exist, err := u.usecase.FindByUid(p.Uid)
+	user, err := u.usecase.FindByUid(p.Uid)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-			Message: "Failed to detect user existence.",
-		})
-	}
-
-	if exist {
-		user = eu
-	} else {
-		nu, err := u.usecase.CreateUser(p.Uid)
-		if err != nil {
+		switch errors.Cause(err) {
+		case model.ErrNoSuchData:
+			user, err = u.usecase.CreateUser(p.Uid)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
+					Message: "Failed to create new user.",
+				})
+			}
+		default:
 			return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-				Message: "Failed to create new user.",
+				Message: "Failed to detect user existence.",
 			})
 		}
-		user = nu
 	}
 
 	info, err := u.usecase.AllocateTask()
@@ -69,13 +67,48 @@ func (u *User) CreateUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, model.UserResponse{
-		Exist:       exist,
+		Token:       user.Token,
 		UserId:      user.Id,
-		Secret:      user.Secret,
 		TaskIds:     info.TaskIds,
 		ConditionId: info.ConditionId,
 		GroupId:     info.GroupId,
 	})
+}
+
+func createCookie(name string, val string) *http.Cookie {
+	isProd := os.Getenv("ENV") == "prod"
+	c := new(http.Cookie)
+	c.HttpOnly = true
+	c.Secure = isProd
+	c.Path = "/"
+	c.Expires = time.Now().Add(1 * time.Hour)
+	c.Name = name
+	c.Value = val
+	return c
+}
+
+type CreateSessionParameter struct {
+	IDToken string `json:"token"`
+}
+
+func (u *User) CreateSession(c echo.Context) error {
+	if u == nil {
+		return c.JSON(http.StatusInternalServerError, nil)
+	}
+
+	p := new(CreateSessionParameter)
+	if err := c.Bind(p); err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid request body")
+	}
+
+	cval, err := u.usecase.CreateSession(p.IDToken)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, nil)
+	}
+
+	sc := createCookie("exp-session", cval)
+	c.SetCookie(sc)
+	return c.NoContent(http.StatusOK)
 }
 
 // GetCompletionCode : Get users task completion code.

@@ -6,7 +6,7 @@ import (
 )
 
 type UserRepository interface {
-	Create(uid, secret string) (model.User, error)
+	Create(uid string) (model.User, error)
 	FindById(UserId int) (model.User, error)
 	FindByUid(uid string) (model.User, error)
 	AddCompletionCode(userId, code int) error

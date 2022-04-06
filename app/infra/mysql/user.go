@@ -7,6 +7,7 @@ import (
 	repo "ratri/domain/repository"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 )
 
 type UserRepositoryImpl struct {
@@ -17,19 +18,10 @@ func NewUserRepository(db *sqlx.DB) repo.UserRepository {
 	return &UserRepositoryImpl{DB: db}
 }
 
-func (u *UserRepositoryImpl) Create(uid, secret string) (model.User, error) {
+func (u *UserRepositoryImpl) Create(uid string) (model.User, error) {
 	user := model.User{}
-	rows, err := u.DB.Exec(`
-		INSERT INTO
-			users (
-				uid,
-				generated_secret
-			)
-		VALUES (?, ?)
-	`,
-		uid,
-		secret,
-	)
+	// [TODO] Save completion code at the same time
+	rows, err := u.DB.Exec(`INSERT INTO users (uid) VALUES (?) `, uid)
 	if err != nil {
 		return user, err
 	}
@@ -40,28 +32,18 @@ func (u *UserRepositoryImpl) Create(uid, secret string) (model.User, error) {
 	}
 
 	user = model.User{
-		Id:     int(insertedId),
-		Uid:    uid,
-		Secret: secret,
+		Id:  int(insertedId),
+		Uid: uid,
 	}
 	return user, nil
 }
 
 func (u *UserRepositoryImpl) FindById(userId int) (model.User, error) {
 	user := model.User{}
-	row := u.DB.QueryRowx(`
-		SELECT
-			id,
-			uid,
-			generated_secret
-		FROM
-			users
-		WHERE
-			id = ?
-	`, userId)
+	row := u.DB.QueryRowx(`SELECT id, uid FROM users WHERE id = ?`, userId)
 	if err := row.StructScan(&user); err != nil {
 		if err == sql.ErrNoRows {
-			return user, model.NoSuchDataError{}
+			return user, model.ErrNoSuchData
 		}
 		return user, err
 	}
@@ -70,19 +52,10 @@ func (u *UserRepositoryImpl) FindById(userId int) (model.User, error) {
 
 func (u *UserRepositoryImpl) FindByUid(uid string) (model.User, error) {
 	user := model.User{}
-	err := u.DB.Get(&user, `
-		SELECT
-			id,
-			uid,
-			generated_secret
-		FROM
-			users
-		WHERE
-			uid = ?
-	`, uid)
+	err := u.DB.Get(&user, `SELECT id, uid FROM users WHERE uid = ?`, uid)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return user, model.NoSuchDataError{}
+			return user, model.ErrNoSuchData
 		}
 		return user, err
 	}
@@ -119,14 +92,13 @@ func (u *UserRepositoryImpl) GetCompletionCodeById(userId int) (int, error) {
 
 	if err := row.Scan(&code); err != nil {
 		if err == sql.ErrNoRows {
-			return 0, model.NoSuchDataError{}
+			return 0, model.ErrNoSuchData
 		}
-		return 0, err
+		return 0, errors.WithStack(err)
 	}
 
-	if code.Valid {
-		return int(code.Int64), nil
-	} else {
-		return 42, model.NoSuchDataError{}
+	if !code.Valid {
+		return 42, errors.WithStack(model.ErrInternalServerError)
 	}
+	return int(code.Int64), nil
 }
