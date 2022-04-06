@@ -5,10 +5,10 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func CORSConfig() echo.MiddlewareFunc {
+func CORSConfig(origins []string) echo.MiddlewareFunc {
 	return middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowCredentials: true,
-		AllowOrigins:     []string{"*"},
+		AllowOrigins:     origins,
 		AllowHeaders: []string{
 			echo.HeaderOrigin,
 			echo.HeaderContentType,

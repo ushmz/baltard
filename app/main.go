@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"time"
 
+	"ratri/config"
 	"ratri/handler"
 	fa "ratri/infra/firebase"
 	db "ratri/infra/mysql"
@@ -17,6 +18,10 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
+)
+
+var (
+	conf = config.GetConfig()
 )
 
 func main() {
@@ -31,7 +36,7 @@ func main() {
 
 	r := NewRouter(d, app)
 	go func() {
-		if err := r.Start(":8080"); err != nil && err != http.ErrServerClosed {
+		if err := r.Start(conf.GetString("server.port")); err != nil && err != http.ErrServerClosed {
 			panic(fmt.Sprintf("Failed to start server : %+v\n", err))
 		}
 	}()
@@ -54,7 +59,7 @@ func NewRouter(d *sqlx.DB, app *firebase.App) *echo.Echo {
 
 	e.Use(mw.Logger())
 	e.Use(mw.CacheAdapter())
-	e.Use(mw.CORSConfig())
+	e.Use(mw.CORSConfig(conf.GetStringSlice("server.cors")))
 
 	h := handler.NewHandler(d, app)
 
