@@ -3,6 +3,7 @@ package handler
 import (
 	"database/sql"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -65,9 +66,6 @@ func (u *User) CreateUser(c echo.Context) error {
 		})
 	}
 
-	st := createCookie("exp-token", user.Token)
-	c.SetCookie(st)
-
 	return c.JSON(http.StatusOK, model.UserResponse{
 		Token:       user.Token,
 		UserId:      user.Id,
@@ -78,9 +76,10 @@ func (u *User) CreateUser(c echo.Context) error {
 }
 
 func createCookie(name string, val string) *http.Cookie {
+	isProd := os.Getenv("ENV") == "prod"
 	c := new(http.Cookie)
 	c.HttpOnly = true
-	c.Secure = false
+	c.Secure = isProd
 	c.Path = "/"
 	c.Expires = time.Now().Add(1 * time.Hour)
 	c.Name = name
