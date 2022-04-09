@@ -6,8 +6,8 @@ package mock_usecase
 
 import (
 	bytes "bytes"
-	model "ratri/src/domain/model"
-	store "ratri/src/domain/store"
+	model "ratri/domain/model"
+	store "ratri/domain/store"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"

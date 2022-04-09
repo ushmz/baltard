@@ -5,7 +5,7 @@
 package mock_repository
 
 import (
-	model "ratri/src/domain/model"
+	model "ratri/domain/model"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
