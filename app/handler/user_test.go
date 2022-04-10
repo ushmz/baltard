@@ -51,7 +51,7 @@ func TestCreateUser(t *testing.T) {
 	mck := mock.NewMockUserUsecase(ctrl)
 	for _, tt := range userTests {
 		t.Run(tt.name, func(t *testing.T) {
-			mck.EXPECT().FindByUid(tt.in.Uid).Return(model.User{}, false, nil)
+			mck.EXPECT().FindByUid(tt.in.Uid).Return(model.User{}, nil)
 			mck.EXPECT().CreateUser(tt.in.Uid).Return(model.User{}, nil)
 			mck.EXPECT().AllocateTask().Return(task, nil)
 
