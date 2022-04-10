@@ -5,7 +5,7 @@
 package mock_usecase
 
 import (
-	model "ratri/src/domain/model"
+	model "ratri/domain/model"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -49,6 +49,21 @@ func (mr *MockUserUsecaseMockRecorder) AllocateTask() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AllocateTask", reflect.TypeOf((*MockUserUsecase)(nil).AllocateTask))
 }
 
+// CreateSession mocks base method.
+func (m *MockUserUsecase) CreateSession(idToken string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateSession", idToken)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateSession indicates an expected call of CreateSession.
+func (mr *MockUserUsecaseMockRecorder) CreateSession(idToken interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSession", reflect.TypeOf((*MockUserUsecase)(nil).CreateSession), idToken)
+}
+
 // CreateUser mocks base method.
 func (m *MockUserUsecase) CreateUser(uid string) (model.User, error) {
 	m.ctrl.T.Helper()
@@ -65,33 +80,18 @@ func (mr *MockUserUsecaseMockRecorder) CreateUser(uid interface{}) *gomock.Call 
 }
 
 // FindByUid mocks base method.
-func (m *MockUserUsecase) FindByUid(uid string) (model.User, bool, error) {
+func (m *MockUserUsecase) FindByUid(uid string) (model.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByUid", uid)
 	ret0, _ := ret[0].(model.User)
-	ret1, _ := ret[1].(bool)
-	ret2, _ := ret[2].(error)
-	return ret0, ret1, ret2
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // FindByUid indicates an expected call of FindByUid.
 func (mr *MockUserUsecaseMockRecorder) FindByUid(uid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByUid", reflect.TypeOf((*MockUserUsecase)(nil).FindByUid), uid)
-}
-
-// GenerateRandomPasswd mocks base method.
-func (m *MockUserUsecase) GenerateRandomPasswd(l int) string {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateRandomPasswd", l)
-	ret0, _ := ret[0].(string)
-	return ret0
-}
-
-// GenerateRandomPasswd indicates an expected call of GenerateRandomPasswd.
-func (mr *MockUserUsecaseMockRecorder) GenerateRandomPasswd(l interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRandomPasswd", reflect.TypeOf((*MockUserUsecase)(nil).GenerateRandomPasswd), l)
 }
 
 // GetCompletionCode mocks base method.

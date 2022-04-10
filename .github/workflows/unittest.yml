@@ -45,9 +45,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - 
+      -
         uses: actions/checkout@v2
-      - 
+      -
         name: Setup Go environment
         uses: actions/setup-go@v2.1.5
         with:
@@ -60,7 +60,7 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - 
+      -
         name: Get dependencies
         run: go get -v -t -d ./...
         working-directory: ./app
@@ -72,15 +72,15 @@ jobs:
             mysql --protocol=tcp -h localhost -P ${{secrets.MYSQL_PORT}} -u root -p${{secrets.MYSQL_PASS}} ${{secrets.MYSQL_DBNAME}} < $file
           done
         working-directory: ./db/mysql/init.d
-      - 
+      -
         name: Test infrastructure layer code
-        run: go test ./src/infra/...
+        run: go test ./infra/...
         working-directory: ./app
-      - 
+      -
         name: Test usecase layer code
-        run: go test ./src/usecase/...
+        run: go test ./usecase/...
         working-directory: ./app
-      - 
+      -
         name: Test handler layer code
-        run: go test ./src/handler/...
+        run: go test ./handler/...
         working-directory: ./app

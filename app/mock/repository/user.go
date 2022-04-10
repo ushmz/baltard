@@ -5,7 +5,7 @@
 package mock_repository
 
 import (
-	model "ratri/src/domain/model"
+	model "ratri/domain/model"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -49,18 +49,18 @@ func (mr *MockUserRepositoryMockRecorder) AddCompletionCode(userId, code interfa
 }
 
 // Create mocks base method.
-func (m *MockUserRepository) Create(uid, secret string) (model.User, error) {
+func (m *MockUserRepository) Create(uid string) (model.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", uid, secret)
+	ret := m.ctrl.Call(m, "Create", uid)
 	ret0, _ := ret[0].(model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockUserRepositoryMockRecorder) Create(uid, secret interface{}) *gomock.Call {
+func (mr *MockUserRepositoryMockRecorder) Create(uid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUserRepository)(nil).Create), uid, secret)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUserRepository)(nil).Create), uid)
 }
 
 // FindById mocks base method.
