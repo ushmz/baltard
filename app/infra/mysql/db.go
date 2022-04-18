@@ -1,17 +1,15 @@
 package mysql
 
 import (
+	"errors"
 	"fmt"
 	"log"
-	"os"
+	"ratri/config"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 	migrate "github.com/rubenv/sql-migrate"
 )
-
-var db *sqlx.DB
-var mySQLConnectionData *MySQLConnectionEnv
 
 var (
 	migrations = &migrate.FileMigrationSource{
@@ -19,42 +17,24 @@ var (
 	}
 )
 
-type MySQLConnectionEnv struct {
-	Host           string
-	Port           string
-	User           string
-	DBName         string
-	Password       string
-	ConnectionName string
-}
+// ConnectDB : Return MySQL connection object with a timeout (30 sec.)
+func connectDB() (*sqlx.DB, error) {
+	conf := config.GetConfig()
 
-func NewMySQLConnectionEnv() *MySQLConnectionEnv {
-	return &MySQLConnectionEnv{
-		Host:           getEnv("MYSQL_HOST", "ratri-mysql"),
-		Port:           getEnv("MYSQL_PORT", "3306"),
-		User:           getEnv("MYSQL_USER", "ratri"),
-		DBName:         getEnv("MYSQL_DBNAME", "ratri"),
-		Password:       getEnv("MYSQL_PASS", "ratri"),
-		ConnectionName: getEnv("CONNECTION_NAME", "default"),
-	}
-}
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		conf.GetString("db.user"),
+		conf.GetString("db.password"),
+		conf.GetString("db.host"),
+		conf.GetString("db.port"),
+		conf.GetString("db.database"),
+	)
 
-func getEnv(key, defaultValue string) string {
-	val := os.Getenv(key)
-	if val != "" {
-		return val
-	}
-	return defaultValue
-}
-
-func (mc *MySQLConnectionEnv) ConnectDB() (*sqlx.DB, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", mc.User, mc.Password, mc.Host, mc.Port, mc.DBName)
 	db, err := sqlx.Open("mysql", dsn)
 	if err != nil {
 		return nil, err
 	}
 
-	for {
+	for i := 0; i < 30; i++ {
 		err = db.Ping()
 		if err != nil {
 			log.Println("DB is not ready. Retry connecting...")
@@ -64,17 +44,20 @@ func (mc *MySQLConnectionEnv) ConnectDB() (*sqlx.DB, error) {
 		log.Println("Success to connect DB")
 		return db, nil
 	}
+
+	return nil, errors.New("Connection timeout")
 }
 
-func New() *sqlx.DB {
-	mySQLConnectionData = NewMySQLConnectionEnv()
-
-	db, err := mySQLConnectionData.ConnectDB()
+// New : Apply migration if it runs in production stage, then return DB connection
+func New() (*sqlx.DB, error) {
+	db, err := connectDB()
 	if err != nil {
 		log.Printf("DB connection failed: %v", err)
+		return nil, err
 	}
 
-	if getEnv("ENV", "") == "prd" {
+	conf := config.GetConfig()
+	if conf.GetString("env") == "prod" {
 		appliedCount, err := migrate.Exec(db.DB, "mysql", migrations, migrate.Up)
 		if err != nil {
 			log.Printf("DB migration failed: %v", err)
@@ -82,9 +65,7 @@ func New() *sqlx.DB {
 		log.Printf("Applied %v migrations", appliedCount)
 	}
 
-	db.Exec("USE baltard")
-
 	db.SetMaxOpenConns(25500)
 	db.SetMaxIdleConns(25500)
-	return db
+	return db, nil
 }
