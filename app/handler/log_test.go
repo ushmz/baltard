@@ -19,14 +19,14 @@ import (
 var (
 	serpViewLogs = []struct {
 		name      string
-		in        model.SerpViewingLogParam
+		in        model.SerpDwellTimeLogParam
 		want      int
 		wantError bool
 		err       error
 	}{
 		{
 			"name",
-			model.SerpViewingLogParam{UserID: 999, TaskID: 5, ConditionId: 3},
+			model.SerpDwellTimeLogParam{UserID: 999, TaskID: 5, ConditionID: 3},
 			201,
 			false,
 			nil,
@@ -34,14 +34,14 @@ var (
 	}
 	pageViewLogs = []struct {
 		name      string
-		in        model.PageViewingLogParam
+		in        model.PageDwellTimeLogParam
 		want      int
 		wantError bool
 		err       error
 	}{
 		{
 			"name",
-			model.PageViewingLogParam{UserID: 999, TaskID: 5, ConditionID: 3, PageID: 356},
+			model.PageDwellTimeLogParam{UserID: 999, TaskID: 5, ConditionID: 3, PageID: 356},
 			201,
 			false,
 			nil,

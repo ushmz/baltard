@@ -59,22 +59,22 @@ func TestUpdateTaskAllocation(t *testing.T) {
 
 func TestGetTaskIdsByGroupId(t *testing.T) {
 	// 1 - 6
-	if _, err := taskDao.GetTaskIdsByGroupId(3); err != nil {
+	if _, err := taskDao.GetTaskIDsByGroupID(3); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestGetConditionIdByGroupId(t *testing.T) {
-	if _, err := taskDao.GetConditionIdByGroupId(1); err != nil {
+	if _, err := taskDao.GetConditionIDByGroupID(1); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestCreateTaskAnswer(t *testing.T) {
 	p := model.Answer{
-		UserId:      42,
-		TaskId:      5,
-		ConditionId: 5,
+		UserID:      42,
+		TaskID:      5,
+		ConditionID: 5,
 		Answer:      "",
 		Reason:      "",
 	}

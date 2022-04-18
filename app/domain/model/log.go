@@ -2,19 +2,20 @@ package model
 
 import "time"
 
-// SerpViewingLogParam : Struct for task viewing time log request body
-type SerpViewingLogParam struct {
+// SerpDwellTimeLogParam : Struct for task viewing time log request body
+type SerpDwellTimeLogParam struct {
 	// UserID : The ID of user (worker)
 	UserID int `db:"user_id" json:"user"`
 
 	// TaskID : The ID of task that user working.
 	TaskID int `db:"task_id" json:"task"`
 
-	// ConditionId : User's condition ID that means group and task category.
-	ConditionId int `db:"condition_id" json:"condition"`
+	// ConditionID : User's condition ID that means group and task category.
+	ConditionID int `db:"condition_id" json:"condition"`
 }
 
-type SerpViewingLog struct {
+// SerpDwellTimeLog : This shows how long each participant views the SERP.
+type SerpDwellTimeLog struct {
 	// UserID : The ID of user (worker)
 	UserID int `db:"user_id" json:"user"`
 
@@ -24,18 +25,18 @@ type SerpViewingLog struct {
 	// ConditionId : User's condition ID that means group and task category.
 	ConditionID int `db:"condition_id" json:"condition"`
 
-	// DwellTime : Time(sec.) that the user spend in SERP
+	// DwellTime : Time(sec.) that the user spend in SERP.
 	DwellTime int `db:"time_on_page" json:"dwell_time"`
 
-	// CreatedAt :
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
+	// Created : Timestamp that this record is created.
+	Created time.Time `db:"created_at" json:"created_at"`
 
-	// UpdatedAt :
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+	// Updated : Timestamp that this record is updated.
+	Updated time.Time `db:"updated_at" json:"updated_at"`
 }
 
-// PageViewingLogParam : Struct for each search result page viewing time log request body
-type PageViewingLogParam struct {
+// PageDwellTimeLogParam : Struct for each search result page viewing time log request body
+type PageDwellTimeLogParam struct {
 	// UserID : The ID of user (worker)
 	UserID int `db:"user_id" json:"user"`
 
@@ -49,7 +50,8 @@ type PageViewingLogParam struct {
 	PageID int `db:"page_id" json:"page"`
 }
 
-type PageViewingLog struct {
+// PageDwellTimeLog : This shows how long each participant views the result page.
+type PageDwellTimeLog struct {
 	// UserID : The ID of user (worker)
 	UserID int `db:"user_id" json:"user"`
 
@@ -65,11 +67,11 @@ type PageViewingLog struct {
 	// DwellTime : Time(sec.) that the user spend in SERP
 	DwellTime int `db:"time_on_page" json:"dwell_time"`
 
-	// CreatedAt :
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
+	// Created : Timestamp that this record is created.
+	Created time.Time `db:"created_at" json:"created_at"`
 
-	// UpdatedAt :
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+	// Updated : Timestamp that this record is updated.
+	Updated time.Time `db:"updated_at" json:"updated_at"`
 }
 
 // SearchPageEventLogParam : Struct for page click log request body.
@@ -102,6 +104,7 @@ type SearchPageEventLogParam struct {
 	Event string `db:"event" json:"event"`
 }
 
+// SearchPageEventLog : This shows when each participant take an action.
 type SearchPageEventLog struct {
 	// ID : The ID of each log record.
 	ID string `db:"id" json:"id"`
@@ -130,11 +133,11 @@ type SearchPageEventLog struct {
 	// Event : It is expected to be "click", "hover" or "paginate"
 	Event string `db:"event" json:"event"`
 
-	// CreatedAt :
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
+	// Created : Timestamp that this record is created.
+	Created time.Time `db:"created_at" json:"created_at"`
 
-	// UpdatedAt :
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+	// Updated : Timestamp that this record is updated.
+	Updated time.Time `db:"updated_at" json:"updated_at"`
 }
 
 // SearchSessionParam : Struct fot search session request body.
@@ -149,6 +152,7 @@ type SearchSessionParam struct {
 	ConditionID int `db:"condition_id" json:"condition"`
 }
 
+// SearchSession : How long each participant takes for the task.
 type SearchSession struct {
 	// UserID : Assigned ID of user (worker)
 	UserID int `db:"user_id" json:"user"`
@@ -159,9 +163,9 @@ type SearchSession struct {
 	// ConditionID : User's condition ID that means group and task category.
 	ConditionID int `db:"condition_id" json:"condition"`
 
-	// StartedAt :
-	StartedAt time.Time `db:"started_at" json:"started_at"`
+	// Started : Timestamp that the participant starts the task.
+	Started time.Time `db:"started_at" json:"started_at"`
 
-	// EndedAt :
-	EndedAt time.Time `db:"ended_at" json:"ended_at"`
+	// Ended : Timestamp that the participant ends the task.
+	Ended time.Time `db:"ended_at" json:"ended_at"`
 }

@@ -5,11 +5,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/SporkHubr/echo-http-cache"
+	cache "github.com/SporkHubr/echo-http-cache"
 	"github.com/SporkHubr/echo-http-cache/adapter/memory"
 	"github.com/labstack/echo/v4"
 )
 
+// CacheAdapter : Enable cache in application level
 func CacheAdapter() echo.MiddlewareFunc {
 	memcached, err := memory.NewAdapter(
 		memory.AdapterWithAlgorithm(memory.LRU),

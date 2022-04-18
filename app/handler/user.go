@@ -3,10 +3,10 @@ package handler
 import (
 	"database/sql"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
+	"ratri/config"
 	"ratri/domain/model"
 	"ratri/usecase"
 
@@ -14,10 +14,12 @@ import (
 	"github.com/pkg/errors"
 )
 
+// User : Implemention of user handler
 type User struct {
 	usecase usecase.UserUsecase
 }
 
+// NewUserHandler : Return new user handler
 func NewUserHandler(user usecase.UserUsecase) *User {
 	return &User{usecase: user}
 }
@@ -42,11 +44,11 @@ func (u *User) CreateUser(c echo.Context) error {
 	}
 
 	// exist : Given uid is already exist or not
-	user, err := u.usecase.FindByUid(p.Uid)
+	user, err := u.usecase.FindByUID(p.UID)
 	if err != nil {
 		switch errors.Cause(err) {
 		case model.ErrNoSuchData:
-			user, err = u.usecase.CreateUser(p.Uid)
+			user, err = u.usecase.CreateUser(p.UID)
 			if err != nil {
 				return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
 					Message: "Failed to create new user.",
@@ -68,15 +70,16 @@ func (u *User) CreateUser(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, model.UserResponse{
 		Token:       user.Token,
-		UserId:      user.Id,
-		TaskIds:     info.TaskIds,
-		ConditionId: info.ConditionId,
-		GroupId:     info.GroupId,
+		UserID:      user.ID,
+		TaskIDs:     info.TaskIDs,
+		ConditionID: info.ConditionID,
+		GroupID:     info.GroupID,
 	})
 }
 
 func createCookie(name string, val string) *http.Cookie {
-	isProd := os.Getenv("ENV") == "prod"
+	conf := config.GetConfig()
+	isProd := conf.GetString("env") != "dev"
 	c := new(http.Cookie)
 	c.HttpOnly = true
 	c.Secure = isProd
@@ -87,10 +90,12 @@ func createCookie(name string, val string) *http.Cookie {
 	return c
 }
 
+// CreateSessionParameter : Request parameters for `CreateSession`
 type CreateSessionParameter struct {
 	IDToken string `json:"token"`
 }
 
+// CreateSession : Generate session token by idToken
 func (u *User) CreateSession(c echo.Context) error {
 	if u == nil {
 		return c.JSON(http.StatusInternalServerError, nil)
@@ -125,16 +130,16 @@ func (u *User) CreateSession(c echo.Context) error {
 func (u *User) GetCompletionCode(c echo.Context) error {
 	// id : Get id from path parameter
 	id := c.Param("id")
-	userId, err := strconv.Atoi(id)
+	userID, err := strconv.Atoi(id)
 	if err != nil {
 		msg := model.ErrorMessage{
-			Message: "Parameter `userId` must be number",
+			Message: "Parameter `userID` must be number",
 		}
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
 	// Fetch completion code by uid from DB
-	code, err := u.usecase.GetCompletionCode(userId)
+	code, err := u.usecase.GetCompletionCode(userID)
 	if err != nil {
 		// If given uid not found in DB
 		if err == sql.ErrNoRows {

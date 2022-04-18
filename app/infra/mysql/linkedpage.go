@@ -10,16 +10,18 @@ import (
 	repo "ratri/domain/repository"
 )
 
+// LinkedPageRepositoryImpl : Implemention of LinkedPage repository
 type LinkedPageRepositoryImpl struct {
 	DB *sqlx.DB
 }
 
+// NewLinkedPageRepository : Return new LinkedPage repository struct
 func NewLinkedPageRepository(db *sqlx.DB) repo.LinkedPageRepository {
 	return &LinkedPageRepositoryImpl{DB: db}
 }
 
 // Get gets a `LinkedPage` records specified with `linkedPageId`.
-func (r *LinkedPageRepositoryImpl) Get(linkedPageId int) (model.LinkedPage, error) {
+func (r *LinkedPageRepositoryImpl) Get(linkedPageID int) (model.LinkedPage, error) {
 	linked := model.LinkedPage{}
 
 	q := `
@@ -36,7 +38,7 @@ func (r *LinkedPageRepositoryImpl) Get(linkedPageId int) (model.LinkedPage, erro
 		WHERE
 			s.id = ?
 	`
-	if err := r.DB.Get(&linked, q, linkedPageId); err != nil {
+	if err := r.DB.Get(&linked, q, linkedPageID); err != nil {
 		if err == sql.ErrNoRows {
 			return linked, model.NoSuchDataError{}
 		}
@@ -45,7 +47,8 @@ func (r *LinkedPageRepositoryImpl) Get(linkedPageId int) (model.LinkedPage, erro
 	return linked, nil
 }
 
-func (r *LinkedPageRepositoryImpl) GetBySearchPageIds(pageId []int, taskId, top int) (*[]model.SearchPageWithLinkedPage, error) {
+// GetBySearchPageIDs : Get linked pages for the Icon UI by given search page IDs
+func (r *LinkedPageRepositoryImpl) GetBySearchPageIDs(pageID []int, taskID, top int) (*[]model.SearchPageWithLinkedPage, error) {
 	linked := []model.SearchPageWithLinkedPage{}
 
 	q := `
@@ -67,7 +70,7 @@ func (r *LinkedPageRepositoryImpl) GetBySearchPageIds(pageId []int, taskId, top 
 				FROM
 					search_page_similarweb_relation
 				WHERE
-					page_id IN( ?` + strings.Repeat(", ?", len(pageId)-1) + `)
+					page_id IN( ?` + strings.Repeat(", ?", len(pageID)-1) + `)
 					AND task_id = ?
 				ORDER BY
 					page_id ASC
@@ -79,10 +82,10 @@ func (r *LinkedPageRepositoryImpl) GetBySearchPageIds(pageId []int, taskId, top 
 	`
 
 	a := []interface{}{}
-	for _, v := range pageId {
+	for _, v := range pageID {
 		a = append(a, v)
 	}
-	a = append(a, taskId)
+	a = append(a, taskID)
 	a = append(a, top)
 
 	if err := r.DB.Select(&linked, q, a...); err != nil {
@@ -92,7 +95,8 @@ func (r *LinkedPageRepositoryImpl) GetBySearchPageIds(pageId []int, taskId, top 
 	return &linked, nil
 }
 
-func (r *LinkedPageRepositoryImpl) GetRatioBySearchPageIds(pageIds []int, taskId int) (*[]model.SearchPageWithLinkedPageRatio, error) {
+// GetRatioBySearchPageIDs : Get Ratio information for the Ratio UI by given search page IDs
+func (r *LinkedPageRepositoryImpl) GetRatioBySearchPageIDs(pageIds []int, taskID int) (*[]model.SearchPageWithLinkedPageRatio, error) {
 	linked := []model.SearchPageWithLinkedPageRatio{}
 
 	q := `
@@ -113,7 +117,7 @@ func (r *LinkedPageRepositoryImpl) GetRatioBySearchPageIds(pageIds []int, taskId
 	`
 
 	a := []interface{}{}
-	a = append(a, taskId)
+	a = append(a, taskID)
 	for _, v := range pageIds {
 		a = append(a, v)
 	}
@@ -128,7 +132,7 @@ func (r *LinkedPageRepositoryImpl) GetRatioBySearchPageIds(pageIds []int, taskId
 // Select gets listed `LinkedPage` specified with argument `linkedPageIds`.
 // [TODO] Which is better?
 // - Take only `[]int` argument and cast it to `[]interface{}`.
-// - It implicitly assume that passed argument `linkedPageIds` is list of number
+// - It implicitly assume that passed argument `linkedPageIDs` is list of number
 //   (or check argument type and if it's not int value, return error)
 //   and make argument type as `[]interface{}`
 func (r *LinkedPageRepositoryImpl) Select(linkedPageIds []int) (*[]model.LinkedPage, error) {

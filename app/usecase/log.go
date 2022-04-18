@@ -9,41 +9,47 @@ import (
 	"ratri/domain/store"
 )
 
+// LogUsecase : Abstract operations that log usecase should have
 type LogUsecase interface {
-	CumulateSerpViewingTime(model.SerpViewingLogParam) error
-	CumulatePageViewingTime(model.PageViewingLogParam) error
+	CumulateSerpDwellTime(model.SerpDwellTimeLogParam) error
+	CumulatePageDwellTime(model.PageDwellTimeLogParam) error
 	StoreSerpEventLog(model.SearchPageEventLogParam) error
 	StoreSearchSeeion(model.SearchSessionParam) error
 
-	ExportSerpViewingTimeLog(bool, store.FileType) (*bytes.Buffer, error)
-	ExportPageViewingTimeLog(bool, store.FileType) (*bytes.Buffer, error)
+	ExportSerpDwellTimeLog(bool, store.FileType) (*bytes.Buffer, error)
+	ExportPageDwellTimeLog(bool, store.FileType) (*bytes.Buffer, error)
 	ExportSerpEventLog(bool, store.FileType) (*bytes.Buffer, error)
 	ExportSearchSeeion(bool, store.FileType) (*bytes.Buffer, error)
 }
 
+// LogImpl : Implemention of log usecase
 type LogImpl struct {
 	repository repo.LogRepository
 	store      store.LogStore
 }
 
+// NewLogUsecase : Return new log usecase
 func NewLogUsecase(logRepository repo.LogRepository, store store.LogStore) LogUsecase {
 	return &LogImpl{repository: logRepository, store: store}
 }
 
-func (l *LogImpl) CumulateSerpViewingTime(p model.SerpViewingLogParam) error {
+// CumulateSerpDwellTime : Count up dwell time in SERP
+func (l *LogImpl) CumulateSerpDwellTime(p model.SerpDwellTimeLogParam) error {
 	if l == nil {
 		return errors.New("LogImpl is nil")
 	}
-	return l.repository.CumulateSerpViewingTime(p)
+	return l.repository.CumulateSerpDwellTime(p)
 }
 
-func (l *LogImpl) CumulatePageViewingTime(p model.PageViewingLogParam) error {
+// CumulatePageDwellTime : Count up dwell time in result page
+func (l *LogImpl) CumulatePageDwellTime(p model.PageDwellTimeLogParam) error {
 	if l == nil {
 		return errors.New("LogImpl is nil")
 	}
-	return l.repository.CumulatePageViewingTime(p)
+	return l.repository.CumulatePageDwellTime(p)
 }
 
+// StoreSerpEventLog : Store events in SERP
 func (l *LogImpl) StoreSerpEventLog(p model.SearchPageEventLogParam) error {
 	if l == nil {
 		return errors.New("LogImpl is nil")
@@ -51,6 +57,7 @@ func (l *LogImpl) StoreSerpEventLog(p model.SearchPageEventLogParam) error {
 	return l.repository.StoreSerpEventLog(p)
 }
 
+// StoreSearchSeeion : Store search task session
 func (l *LogImpl) StoreSearchSeeion(p model.SearchSessionParam) error {
 	if l == nil {
 		return errors.New("LogImpl is nil")
@@ -58,17 +65,18 @@ func (l *LogImpl) StoreSearchSeeion(p model.SearchSessionParam) error {
 	return l.repository.StoreSearchSeeion(p)
 }
 
-func (l *LogImpl) ExportSerpViewingTimeLog(header bool, filetype store.FileType) (*bytes.Buffer, error) {
+// ExportSerpDwellTimeLog : Export SERP dwell time logs
+func (l *LogImpl) ExportSerpDwellTimeLog(header bool, filetype store.FileType) (*bytes.Buffer, error) {
 	if l == nil {
 		return nil, errors.New("LogImpl is nil")
 	}
 
-	data, err := l.repository.FetchAllSerpViewingTimeLogs()
+	data, err := l.repository.FetchAllSerpDwellTimeLogs()
 	if err != nil {
 		return nil, err
 	}
 
-	b, err := l.store.ExportSerpViewingTimeLog(data, header, filetype)
+	b, err := l.store.ExportSerpDwellTimeLog(data, header, filetype)
 	if err != nil {
 		return nil, err
 	}
@@ -77,17 +85,18 @@ func (l *LogImpl) ExportSerpViewingTimeLog(header bool, filetype store.FileType)
 
 }
 
-func (l *LogImpl) ExportPageViewingTimeLog(header bool, filetype store.FileType) (*bytes.Buffer, error) {
+// ExportPageDwellTimeLog : Export result page dwell time logs
+func (l *LogImpl) ExportPageDwellTimeLog(header bool, filetype store.FileType) (*bytes.Buffer, error) {
 	if l == nil {
 		return nil, errors.New("LogImpl is nil")
 	}
 
-	data, err := l.repository.FetchAllPageViewingTimeLogs()
+	data, err := l.repository.FetchAllPageDwellTimeLogs()
 	if err != nil {
 		return nil, err
 	}
 
-	b, err := l.store.ExportPageViewingTimeLog(data, header, filetype)
+	b, err := l.store.ExportPageDwellTimeLog(data, header, filetype)
 	if err != nil {
 		return nil, err
 	}
@@ -95,6 +104,7 @@ func (l *LogImpl) ExportPageViewingTimeLog(header bool, filetype store.FileType)
 	return b, nil
 }
 
+// ExportSerpEventLog : Export SERP event logs
 func (l *LogImpl) ExportSerpEventLog(header bool, filetype store.FileType) (*bytes.Buffer, error) {
 	if l == nil {
 		return nil, errors.New("LogImpl is nil")
@@ -113,6 +123,7 @@ func (l *LogImpl) ExportSerpEventLog(header bool, filetype store.FileType) (*byt
 	return b, nil
 }
 
+// ExportSearchSeeion : Export search session logs
 func (l *LogImpl) ExportSearchSeeion(header bool, filetype store.FileType) (*bytes.Buffer, error) {
 	if l == nil {
 		return nil, errors.New("LogImpl is nil")

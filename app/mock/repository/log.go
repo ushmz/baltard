@@ -35,7 +35,7 @@ func (m *MockLogRepository) EXPECT() *MockLogRepositoryMockRecorder {
 }
 
 // CumulatePageViewingTime mocks base method.
-func (m *MockLogRepository) CumulatePageViewingTime(arg0 model.PageViewingLogParam) error {
+func (m *MockLogRepository) CumulatePageViewingTime(arg0 model.PageDwellTimeLogParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CumulatePageViewingTime", arg0)
 	ret0, _ := ret[0].(error)
@@ -49,7 +49,7 @@ func (mr *MockLogRepositoryMockRecorder) CumulatePageViewingTime(arg0 interface{
 }
 
 // CumulateSerpViewingTime mocks base method.
-func (m *MockLogRepository) CumulateSerpViewingTime(arg0 model.SerpViewingLogParam) error {
+func (m *MockLogRepository) CumulateSerpViewingTime(arg0 model.SerpDwellTimeLogParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CumulateSerpViewingTime", arg0)
 	ret0, _ := ret[0].(error)
@@ -63,10 +63,10 @@ func (mr *MockLogRepositoryMockRecorder) CumulateSerpViewingTime(arg0 interface{
 }
 
 // FetchAllPageViewingTimeLogs mocks base method.
-func (m *MockLogRepository) FetchAllPageViewingTimeLogs() ([]model.PageViewingLog, error) {
+func (m *MockLogRepository) FetchAllPageViewingTimeLogs() ([]model.PageDwellTimeLog, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FetchAllPageViewingTimeLogs")
-	ret0, _ := ret[0].([]model.PageViewingLog)
+	ret0, _ := ret[0].([]model.PageDwellTimeLog)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -108,10 +108,10 @@ func (mr *MockLogRepositoryMockRecorder) FetchAllSerpEventLogs() *gomock.Call {
 }
 
 // FetchAllSerpViewingTimeLogs mocks base method.
-func (m *MockLogRepository) FetchAllSerpViewingTimeLogs() ([]model.SerpViewingLog, error) {
+func (m *MockLogRepository) FetchAllSerpViewingTimeLogs() ([]model.SerpDwellTimeLog, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FetchAllSerpViewingTimeLogs")
-	ret0, _ := ret[0].([]model.SerpViewingLog)
+	ret0, _ := ret[0].([]model.SerpDwellTimeLog)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

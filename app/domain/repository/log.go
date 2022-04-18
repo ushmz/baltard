@@ -5,14 +5,15 @@ import (
 	"ratri/domain/model"
 )
 
+// LogRepository : Abstract operations that `Log` model should have.
 type LogRepository interface {
-	// FetchAllSerpViewingTimeLogs : Fetch all `SerpViewingLog` data.
+	// FetchAllSerpDwellTimeLogs : Fetch all `SerpDwellLog` data.
 	// Please make sure that this method is used only for exporting data.
-	FetchAllSerpViewingTimeLogs() ([]model.SerpViewingLog, error)
+	FetchAllSerpDwellTimeLogs() ([]model.SerpDwellTimeLog, error)
 
-	// FetchAllPageViewingTimeLogs : Fetch all `PageViewingLog` data.
+	// FetchAllPageDwellTimeLogs : Fetch all `PageDwellLog` data.
 	// Please make sure that this method is used only for exporting data.
-	FetchAllPageViewingTimeLogs() ([]model.PageViewingLog, error)
+	FetchAllPageDwellTimeLogs() ([]model.PageDwellTimeLog, error)
 
 	// FetchAllSerpEventLogs : Fetch all `SerpEventLog` data.
 	// Please make sure that this method is used only for exporting data.
@@ -22,11 +23,11 @@ type LogRepository interface {
 	// Please make sure that this method is used only for exporting data.
 	FetchAllSearchSessions() ([]model.SearchSession, error)
 
-	// CumulateSerpViewingTime : Upsert serp viewing time log.
-	CumulateSerpViewingTime(model.SerpViewingLogParam) error
+	// CumulateSerpDwellTime : Upsert serp viewing time log.
+	CumulateSerpDwellTime(model.SerpDwellTimeLogParam) error
 
-	// CumulatePageViewingTime : Upsert page viewing time log.
-	CumulatePageViewingTime(model.PageViewingLogParam) error
+	// CumulatePageDwellTime : Upsert page viewing time log.
+	CumulatePageDwellTime(model.PageDwellTimeLogParam) error
 
 	// StoreSerpEventLog: Insert event log (such as click, paginate ...).
 	StoreSerpEventLog(model.SearchPageEventLogParam) error

@@ -6,26 +6,26 @@ import (
 )
 
 func TestCumulateSerpViewingTime(t *testing.T) {
-	p := model.SerpViewingLogParam{
+	p := model.SerpDwellTimeLogParam{
 		UserID:      42,
 		TaskID:      5,
-		ConditionId: 5,
+		ConditionID: 5,
 	}
 
-	if err := logDao.CumulateSerpViewingTime(p); err != nil {
+	if err := logDao.CumulateSerpDwellTime(p); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestCumulatePageViewingTime(t *testing.T) {
-	p := model.PageViewingLogParam{
+	p := model.PageDwellTimeLogParam{
 		UserID:      42,
 		TaskID:      5,
 		ConditionID: 5,
 		PageID:      432,
 	}
 
-	if err := logDao.CumulatePageViewingTime(p); err != nil {
+	if err := logDao.CumulatePageDwellTime(p); err != nil {
 		t.Fatal(err)
 	}
 }

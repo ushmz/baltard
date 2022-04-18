@@ -17,10 +17,10 @@ func NewLogRepository(db *sqlx.DB) repo.LogRepository {
 	return &LogRepositoryImpl{DB: db}
 }
 
-// FetchAllSerpViewingTimeLogs : Fetch all `SerpViewingLog` data.
+// FetchAllSerpDwellTimeLogs : Fetch all `SerpDwellLog` data.
 // Please make sure that this method is used only for exporting data.
-func (l *LogRepositoryImpl) FetchAllSerpViewingTimeLogs() ([]model.SerpViewingLog, error) {
-	data := []model.SerpViewingLog{}
+func (l *LogRepositoryImpl) FetchAllSerpDwellTimeLogs() ([]model.SerpDwellTimeLog, error) {
+	data := []model.SerpDwellTimeLog{}
 	err := l.DB.Select(&data, "SELECT * FROM logs_serp_dwell_time")
 	if err != nil {
 		return data, err
@@ -28,10 +28,10 @@ func (l *LogRepositoryImpl) FetchAllSerpViewingTimeLogs() ([]model.SerpViewingLo
 	return data, nil
 }
 
-// FetchAllPageViewingTimeLogs : Fetch all `PageViewingLog` data.
+// FetchAllPageDwellTimeLogs : Fetch all `PageDwellLog` data.
 // Please make sure that this method is used only for exporting data.
-func (l *LogRepositoryImpl) FetchAllPageViewingTimeLogs() ([]model.PageViewingLog, error) {
-	data := []model.PageViewingLog{}
+func (l *LogRepositoryImpl) FetchAllPageDwellTimeLogs() ([]model.PageDwellTimeLog, error) {
+	data := []model.PageDwellTimeLog{}
 	err := l.DB.Select(&data, "SELECT * FROM logs_page_dwell_time")
 	if err != nil {
 		return data, err
@@ -61,10 +61,10 @@ func (l *LogRepositoryImpl) FetchAllSearchSessions() ([]model.SearchSession, err
 	return data, nil
 }
 
-// CumulateSerpViewingTime : "Upsert" serp viewing time log.
+// CumulateSerpDwellTime : "Upsert" serp viewing time log.
 // Key (pair of user_id and task_id) doesn't exist, insert new record.
 // Key exists, increment `time_on_page` value.
-func (l *LogRepositoryImpl) CumulateSerpViewingTime(p model.SerpViewingLogParam) error {
+func (l *LogRepositoryImpl) CumulateSerpDwellTime(p model.SerpDwellTimeLogParam) error {
 	_, err := l.DB.NamedExec(`
 		INSERT INTO
 			logs_serp_dwell_time (
@@ -88,10 +88,10 @@ func (l *LogRepositoryImpl) CumulateSerpViewingTime(p model.SerpViewingLogParam)
 	return nil
 }
 
-// CumulatePageViewingTime : "Upsert" page viewing time log.
+// CumulatePageDwellTime : "Upsert" page viewing time log.
 // Key (pair of user_id, task_id and page_id) doesn't exist, insert new record.
 // Key exists, increment `time_on_page` value.
-func (l *LogRepositoryImpl) CumulatePageViewingTime(p model.PageViewingLogParam) error {
+func (l *LogRepositoryImpl) CumulatePageDwellTime(p model.PageDwellTimeLogParam) error {
 	_, err := l.DB.NamedExec(`
 		INSERT INTO
 			logs_page_dwell_time (
@@ -117,6 +117,7 @@ func (l *LogRepositoryImpl) CumulatePageViewingTime(p model.PageViewingLogParam)
 	return nil
 }
 
+// StoreSerpEventLog : Insert new SERP event logs
 func (l *LogRepositoryImpl) StoreSerpEventLog(p model.SearchPageEventLogParam) error {
 	_, err := l.DB.NamedExec(`
 		INSERT INTO

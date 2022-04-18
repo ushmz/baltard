@@ -37,7 +37,7 @@ func (m *MockLogUsecase) EXPECT() *MockLogUsecaseMockRecorder {
 }
 
 // CumulatePageViewingTime mocks base method.
-func (m *MockLogUsecase) CumulatePageViewingTime(arg0 model.PageViewingLogParam) error {
+func (m *MockLogUsecase) CumulatePageViewingTime(arg0 model.PageDwellTimeLogParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CumulatePageViewingTime", arg0)
 	ret0, _ := ret[0].(error)
@@ -51,7 +51,7 @@ func (mr *MockLogUsecaseMockRecorder) CumulatePageViewingTime(arg0 interface{}) 
 }
 
 // CumulateSerpViewingTime mocks base method.
-func (m *MockLogUsecase) CumulateSerpViewingTime(arg0 model.SerpViewingLogParam) error {
+func (m *MockLogUsecase) CumulateSerpViewingTime(arg0 model.SerpDwellTimeLogParam) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CumulateSerpViewingTime", arg0)
 	ret0, _ := ret[0].(error)

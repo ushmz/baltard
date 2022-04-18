@@ -24,7 +24,7 @@ func NewUserAuthenticationImpl(app *firebase.App) authentication.UserAuthenticat
 // RegisterUser : Register user with externalID and password.
 func (u *UserAuthenticationImpl) RegisterUser(externalID, secret string) error {
 	if u == nil {
-		return model.ErrNilReciever
+		return model.ErrNilReceiver
 	}
 
 	ctx := context.Background()
@@ -52,7 +52,7 @@ func (u *UserAuthenticationImpl) RegisterUser(externalID, secret string) error {
 // DeleteUser : Delete user from application.
 func (u *UserAuthenticationImpl) DeleteUser(externalID string) error {
 	if u == nil {
-		return errors.WithStack(model.ErrNilReciever)
+		return errors.WithStack(model.ErrNilReceiver)
 	}
 
 	ctx := context.Background()
@@ -70,7 +70,7 @@ func (u *UserAuthenticationImpl) DeleteUser(externalID string) error {
 // GenerateToken : Generate new token with externalID as an UID.
 func (u *UserAuthenticationImpl) GenerateToken(externalID string) (string, error) {
 	if u == nil {
-		return "", errors.WithStack(model.ErrNilReciever)
+		return "", errors.WithStack(model.ErrNilReceiver)
 	}
 
 	ctx := context.Background()
@@ -89,7 +89,7 @@ func (u *UserAuthenticationImpl) GenerateToken(externalID string) (string, error
 // GenerateSessionCookie : Generate new session cookie with externalID as an UID.
 func (u *UserAuthenticationImpl) GenerateSessionCookie(idToken string, expiresIn time.Duration) (string, error) {
 	if u == nil {
-		return "", errors.WithStack(model.ErrNilReciever)
+		return "", errors.WithStack(model.ErrNilReceiver)
 	}
 
 	ctx := context.Background()
@@ -108,7 +108,7 @@ func (u *UserAuthenticationImpl) GenerateSessionCookie(idToken string, expiresIn
 // RevokeToken : Revoke generated token with externalID as an UID.
 func (u *UserAuthenticationImpl) RevokeToken(externalID string) error {
 	if u == nil {
-		return errors.WithStack(model.ErrNilReciever)
+		return errors.WithStack(model.ErrNilReceiver)
 	}
 
 	ctx := context.Background()

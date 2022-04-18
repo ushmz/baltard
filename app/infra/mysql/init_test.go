@@ -19,8 +19,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	cenv := mysql.NewMySQLConnectionEnv()
-	db, err := cenv.ConnectDB()
+	db, err := mysql.New()
 	if err != nil {
 		panic(err)
 	}

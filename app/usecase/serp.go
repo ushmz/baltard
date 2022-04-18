@@ -7,30 +7,35 @@ import (
 	"sort"
 )
 
+// SerpUsecase : Abstract operations that SERP usecase should have.
 type SerpUsecase interface {
-	FetchSerp(taskId, offset int) (*[]model.SearchPage, error)
-	FetchSerpWithIcon(taskId, offset, top int) (*[]model.SerpWithIcon, error)
-	FetchSerpWithRatio(taskId, offset, top int) (*[]model.SerpWithRatio, error)
+	FetchSerp(taskID, offset int) (*[]model.SearchPage, error)
+	FetchSerpWithIcon(taskID, offset, top int) (*[]model.SerpWithIcon, error)
+	FetchSerpWithRatio(taskID, offset, top int) (*[]model.SerpWithRatio, error)
 }
 
+// SerpImpl : Struct for serp usecase
 type SerpImpl struct {
 	lpRepo   repo.LinkedPageRepository
 	serpRepo repo.SerpRepository
 }
 
+// NewSerpUsecase : Return new serp usecase struct
 func NewSerpUsecase(serpRepository repo.SerpRepository, linkedPageRepository repo.LinkedPageRepository) SerpUsecase {
 	return &SerpImpl{lpRepo: linkedPageRepository, serpRepo: serpRepository}
 }
 
-func (s *SerpImpl) FetchSerp(taskId, offset int) (*[]model.SearchPage, error) {
-	return s.serpRepo.FetchSerpByTaskID(taskId, offset)
+// FetchSerp : Get search results by taskID
+func (s *SerpImpl) FetchSerp(taskID, offset int) (*[]model.SearchPage, error) {
+	return s.serpRepo.FetchSerpByTaskID(taskID, offset)
 }
 
-func (s *SerpImpl) FetchSerpWithIcon(taskId, offset, top int) (*[]model.SerpWithIcon, error) {
+// FetchSerpWithIcon : Get search results for Icon UI by taskID
+func (s *SerpImpl) FetchSerpWithIcon(taskID, offset, top int) (*[]model.SerpWithIcon, error) {
 	// serp : Return struct of this method
 	serp := []model.SerpWithIcon{}
 
-	srp, err := s.serpRepo.FetchSerpByTaskID(taskId, offset)
+	srp, err := s.serpRepo.FetchSerpByTaskID(taskID, offset)
 	if err != nil {
 		return &serp, err
 	}
@@ -40,31 +45,31 @@ func (s *SerpImpl) FetchSerpWithIcon(taskId, offset, top int) (*[]model.SerpWith
 	serpMap := map[int]model.SerpWithIcon{}
 
 	for _, v := range *srp {
-		pageIds = append(pageIds, v.PageId)
-		serpMap[v.PageId] = model.SerpWithIcon{
-			PageId:  v.PageId,
+		pageIds = append(pageIds, v.PageID)
+		serpMap[v.PageID] = model.SerpWithIcon{
+			PageID:  v.PageID,
 			Title:   v.Title,
-			Url:     v.Url,
+			URL:     v.URL,
 			Snippet: v.Snippet,
 			Linked:  []model.LinkedPage{},
 		}
 	}
 
-	linked, err := s.lpRepo.GetBySearchPageIds(pageIds, taskId, top)
+	linked, err := s.lpRepo.GetBySearchPageIDs(pageIds, taskID, top)
 	if err != nil {
 		return &serp, err
 	}
 
 	for _, v := range *linked {
-		tempSerp := serpMap[v.PageId]
+		tempSerp := serpMap[v.PageID]
 		tempSerp.Linked = append(tempSerp.Linked, model.LinkedPage{
-			Id:       v.Id,
+			ID:       v.ID,
 			Title:    v.Title,
-			Url:      v.Url,
+			URL:      v.URL,
 			Icon:     v.Icon,
 			Category: v.Category,
 		})
-		serpMap[v.PageId] = tempSerp
+		serpMap[v.PageID] = tempSerp
 	}
 
 	// To fix the order of search result page, sort pageIds
@@ -80,11 +85,12 @@ func (s *SerpImpl) FetchSerpWithIcon(taskId, offset, top int) (*[]model.SerpWith
 	return &serp, nil
 }
 
-func (s *SerpImpl) FetchSerpWithRatio(taskId, offset, top int) (*[]model.SerpWithRatio, error) {
+// FetchSerpWithRatio : Get search results for Ratio UI by taskID
+func (s *SerpImpl) FetchSerpWithRatio(taskID, offset, top int) (*[]model.SerpWithRatio, error) {
 	// serp : Return struct of this method
 	serp := []model.SerpWithRatio{}
 
-	srp, err := s.serpRepo.FetchSerpByTaskID(taskId, offset)
+	srp, err := s.serpRepo.FetchSerpByTaskID(taskID, offset)
 	if err != nil {
 		return &serp, err
 	}
@@ -94,24 +100,24 @@ func (s *SerpImpl) FetchSerpWithRatio(taskId, offset, top int) (*[]model.SerpWit
 	serpMap := map[int]model.SerpWithRatio{}
 
 	for _, v := range *srp {
-		pageIds = append(pageIds, v.PageId)
-		serpMap[v.PageId] = model.SerpWithRatio{
-			PageId:       v.PageId,
+		pageIds = append(pageIds, v.PageID)
+		serpMap[v.PageID] = model.SerpWithRatio{
+			PageID:       v.PageID,
 			Title:        v.Title,
-			Url:          v.Url,
+			URL:          v.URL,
 			Snippet:      v.Snippet,
 			Total:        0,
 			Distribution: []model.CategoryCount{},
 		}
 	}
 
-	linked, err := s.lpRepo.GetRatioBySearchPageIds(pageIds, taskId)
+	linked, err := s.lpRepo.GetRatioBySearchPageIDs(pageIds, taskID)
 	if err != nil {
 		return &serp, err
 	}
 
 	for _, v := range *linked {
-		tempSerp := serpMap[v.PageId]
+		tempSerp := serpMap[v.PageID]
 		tempSerp.Total += v.CategoryCount
 		if len(tempSerp.Distribution) < top {
 			tempSerp.Distribution = append(tempSerp.Distribution, model.CategoryCount{
@@ -119,7 +125,7 @@ func (s *SerpImpl) FetchSerpWithRatio(taskId, offset, top int) (*[]model.SerpWit
 				Count:    v.CategoryCount,
 			})
 		}
-		serpMap[v.PageId] = tempSerp
+		serpMap[v.PageID] = tempSerp
 	}
 
 	sort.Ints(pageIds)

@@ -12,10 +12,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// Task : Implemention of task handler
 type Task struct {
 	usecase usecase.TaskUsecase
 }
 
+// NewTaskHandler : Return new task handler
 func NewTaskHandler(task usecase.TaskUsecase) *Task {
 	return &Task{usecase: task}
 }
@@ -33,9 +35,9 @@ func NewTaskHandler(task usecase.TaskUsecase) *Task {
 // @Router /v1/task/{id} [GET]
 func (t *Task) FetchTaskInfo(c echo.Context) error {
 
-	// taskId : Get task Id from path parameter.
-	taskId := c.Param("id")
-	task, err := strconv.Atoi(taskId)
+	// taskID : Get task Id from path parameter.
+	taskID := c.Param("id")
+	task, err := strconv.Atoi(taskID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
 			Message: "Parameter `id` must be number",
@@ -47,7 +49,7 @@ func (t *Task) FetchTaskInfo(c echo.Context) error {
 	if err != nil {
 		if errors.Is(err, model.NoSuchDataError{}) {
 			return c.JSON(http.StatusNotFound, model.ErrorMessage{
-				Message: fmt.Sprintf("TaskId %v not found", taskId),
+				Message: fmt.Sprintf("TaskId %v not found", taskID),
 			})
 		}
 		return c.NoContent(http.StatusInternalServerError)

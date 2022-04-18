@@ -5,10 +5,11 @@ import (
 	"ratri/domain/model"
 )
 
+// UserRepository : Abstract operations that `User` model should have.
 type UserRepository interface {
 	Create(uid string) (model.User, error)
-	FindById(UserId int) (model.User, error)
-	FindByUid(uid string) (model.User, error)
-	AddCompletionCode(userId, code int) error
-	GetCompletionCodeById(userId int) (int, error)
+	FindByID(UserID int) (model.User, error)
+	FindByUID(uid string) (model.User, error)
+	AddCompletionCode(userID, code int) error
+	GetCompletionCodeByID(userID int) (int, error)
 }

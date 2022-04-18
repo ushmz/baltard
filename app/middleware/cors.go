@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+// CORSConfig : CORS configuration middleware
 func CORSConfig(origins []string) echo.MiddlewareFunc {
 	return middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowCredentials: true,
@@ -17,11 +18,7 @@ func CORSConfig(origins []string) echo.MiddlewareFunc {
 		},
 		AllowMethods: []string{
 			echo.GET,
-			echo.HEAD,
-			echo.PUT,
-			echo.PATCH,
 			echo.POST,
-			echo.DELETE,
 		},
 	})
 }
