@@ -8,13 +8,16 @@ import (
 	"strconv"
 )
 
+// LogStore : Implemention of log exporting
 type LogStore struct{}
 
+// NewLogStore : Return new log exporting struct
 func NewLogStore() *LogStore {
 	return &LogStore{}
 }
 
-func (l *LogStore) ExportSerpViewingTimeLog(data []model.SerpViewingLog, header bool, filetype store.FileType) (*bytes.Buffer, error) {
+// ExportSerpDwellTimeLog : Write all SERP dwell time log to buffer
+func (l *LogStore) ExportSerpDwellTimeLog(data []model.SerpDwellTimeLog, header bool, filetype store.FileType) (*bytes.Buffer, error) {
 	content := [][]string{}
 	if header {
 		content = append(content, []string{
@@ -32,8 +35,8 @@ func (l *LogStore) ExportSerpViewingTimeLog(data []model.SerpViewingLog, header 
 			strconv.Itoa(v.TaskID),
 			strconv.Itoa(v.ConditionID),
 			strconv.Itoa(v.DwellTime),
-			v.CreatedAt.Format("2006-01-02 13:34:56"),
-			v.UpdatedAt.Format("2006-01-02 13:34:56"),
+			v.Created.Format("2006-01-02 13:34:56"),
+			v.Updated.Format("2006-01-02 13:34:56"),
 		})
 	}
 	b := new(bytes.Buffer)
@@ -48,7 +51,8 @@ func (l *LogStore) ExportSerpViewingTimeLog(data []model.SerpViewingLog, header 
 	return b, nil
 }
 
-func (l *LogStore) ExportPageViewingTimeLog(data []model.PageViewingLog, header bool, filetype store.FileType) (*bytes.Buffer, error) {
+// ExportPageDwellTimeLog : Write all result page dwell time log to buffer
+func (l *LogStore) ExportPageDwellTimeLog(data []model.PageDwellTimeLog, header bool, filetype store.FileType) (*bytes.Buffer, error) {
 	content := [][]string{}
 	if header {
 		content = append(content, []string{
@@ -68,8 +72,8 @@ func (l *LogStore) ExportPageViewingTimeLog(data []model.PageViewingLog, header 
 			strconv.Itoa(v.PageID),
 			strconv.Itoa(v.ConditionID),
 			strconv.Itoa(v.DwellTime),
-			v.CreatedAt.Format("2006-01-02 13:34:56"),
-			v.UpdatedAt.Format("2006-01-02 13:34:56"),
+			v.Created.Format("2006-01-02 13:34:56"),
+			v.Updated.Format("2006-01-02 13:34:56"),
 		})
 	}
 	b := new(bytes.Buffer)
@@ -84,6 +88,7 @@ func (l *LogStore) ExportPageViewingTimeLog(data []model.PageViewingLog, header 
 	return b, nil
 }
 
+// ExportSerpEventLog : Write all SERP event log to file
 func (l *LogStore) ExportSerpEventLog(data []model.SearchPageEventLog, header bool, filetype store.FileType) (*bytes.Buffer, error) {
 	content := [][]string{}
 	if header {
@@ -109,8 +114,8 @@ func (l *LogStore) ExportSerpEventLog(data []model.SearchPageEventLog, header bo
 			strconv.Itoa(v.Rank),
 			strconv.FormatBool(v.IsVisible),
 			v.Event,
-			v.CreatedAt.Format("2006-01-02 13:34:56"),
-			v.UpdatedAt.Format("2006-01-02 13:34:56"),
+			v.Created.Format("2006-01-02 13:34:56"),
+			v.Updated.Format("2006-01-02 13:34:56"),
 		})
 	}
 	b := new(bytes.Buffer)
@@ -125,6 +130,7 @@ func (l *LogStore) ExportSerpEventLog(data []model.SearchPageEventLog, header bo
 	return b, nil
 }
 
+// ExportSearchSessionLog : Write all search session logs to buffer
 func (l *LogStore) ExportSearchSessionLog(data []model.SearchSession, header bool, filetype store.FileType) (*bytes.Buffer, error) {
 	content := [][]string{}
 	if header {
@@ -144,8 +150,8 @@ func (l *LogStore) ExportSearchSessionLog(data []model.SearchSession, header boo
 			strconv.Itoa(v.UserID),
 			strconv.Itoa(v.TaskID),
 			strconv.Itoa(v.ConditionID),
-			v.StartedAt.Format("2006-01-02 13:34:56"),
-			v.EndedAt.Format("2006-01-02 13:34:56"),
+			v.Started.Format("2006-01-02 13:34:56"),
+			v.Ended.Format("2006-01-02 13:34:56"),
 		})
 	}
 	b := new(bytes.Buffer)

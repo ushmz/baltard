@@ -42,9 +42,9 @@ var (
 		err       error
 	}{
 		{"Want no error", model.Answer{
-			UserId:      42,
-			TaskId:      5,
-			ConditionId: 3,
+			UserID:      42,
+			TaskID:      5,
+			ConditionID: 3,
 			Answer:      "",
 			Reason:      "",
 		}, 201, false, nil},

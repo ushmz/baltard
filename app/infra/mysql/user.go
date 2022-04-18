@@ -10,14 +10,17 @@ import (
 	"github.com/pkg/errors"
 )
 
+// UserRepositoryImpl : Struct for use repository
 type UserRepositoryImpl struct {
 	DB *sqlx.DB
 }
 
+// NewUserRepository : Return new UserRepository
 func NewUserRepository(db *sqlx.DB) repo.UserRepository {
 	return &UserRepositoryImpl{DB: db}
 }
 
+// Create : Create new user
 func (u *UserRepositoryImpl) Create(uid string) (model.User, error) {
 	user := model.User{}
 	// [TODO] Save completion code at the same time
@@ -26,21 +29,22 @@ func (u *UserRepositoryImpl) Create(uid string) (model.User, error) {
 		return user, err
 	}
 
-	insertedId, err := rows.LastInsertId()
+	insertedID, err := rows.LastInsertId()
 	if err != nil {
 		return user, err
 	}
 
 	user = model.User{
-		Id:  int(insertedId),
-		Uid: uid,
+		ID:  int(insertedID),
+		UID: uid,
 	}
 	return user, nil
 }
 
-func (u *UserRepositoryImpl) FindById(userId int) (model.User, error) {
+// FindByID : Find an user by ID
+func (u *UserRepositoryImpl) FindByID(userID int) (model.User, error) {
 	user := model.User{}
-	row := u.DB.QueryRowx(`SELECT id, uid FROM users WHERE id = ?`, userId)
+	row := u.DB.QueryRowx(`SELECT id, uid FROM users WHERE id = ?`, userID)
 	if err := row.StructScan(&user); err != nil {
 		if err == sql.ErrNoRows {
 			return user, model.ErrNoSuchData
@@ -50,7 +54,8 @@ func (u *UserRepositoryImpl) FindById(userId int) (model.User, error) {
 	return user, nil
 }
 
-func (u *UserRepositoryImpl) FindByUid(uid string) (model.User, error) {
+// FindByUID : Find an user by UID
+func (u *UserRepositoryImpl) FindByUID(uid string) (model.User, error) {
 	user := model.User{}
 	err := u.DB.Get(&user, `SELECT id, uid FROM users WHERE uid = ?`, uid)
 	if err != nil {
@@ -62,7 +67,8 @@ func (u *UserRepositoryImpl) FindByUid(uid string) (model.User, error) {
 	return user, nil
 }
 
-func (u *UserRepositoryImpl) AddCompletionCode(userId, code int) error {
+// AddCompletionCode : Add completion code
+func (u *UserRepositoryImpl) AddCompletionCode(userID, code int) error {
 	_, err := u.DB.Exec(`
 		INSERT INTO 
 			completion_codes (
@@ -70,7 +76,7 @@ func (u *UserRepositoryImpl) AddCompletionCode(userId, code int) error {
 				completion_code
 			)
 		VALUES (?, ?)`,
-		userId,
+		userID,
 		code,
 	)
 	if err != nil {
@@ -79,7 +85,8 @@ func (u *UserRepositoryImpl) AddCompletionCode(userId, code int) error {
 	return nil
 }
 
-func (u *UserRepositoryImpl) GetCompletionCodeById(userId int) (int, error) {
+// GetCompletionCodeByID : Get task completion code by user ID
+func (u *UserRepositoryImpl) GetCompletionCodeByID(userID int) (int, error) {
 	var code sql.NullInt64
 	row := u.DB.QueryRow(`
 		SELECT
@@ -88,7 +95,7 @@ func (u *UserRepositoryImpl) GetCompletionCodeById(userId int) (int, error) {
 			completion_codes
 		WHERE
 			user_id = ?
-	`, userId)
+	`, userID)
 
 	if err := row.Scan(&code); err != nil {
 		if err == sql.ErrNoRows {

@@ -5,6 +5,7 @@ import (
 	"ratri/domain/model"
 )
 
+// SerpRepository : Abstract operations that `Serp` model should have.
 type SerpRepository interface {
-	FetchSerpByTaskID(taskId, offset int) (*[]model.SearchPage, error)
+	FetchSerpByTaskID(taskID, offset int) (*[]model.SearchPage, error)
 }

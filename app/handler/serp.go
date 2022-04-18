@@ -11,10 +11,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// Serp : Implemention of SERP handler
 type Serp struct {
 	usecase usecase.SerpUsecase
 }
 
+// NewSerpHandler : Return new SERP handler
 func NewSerpHandler(serp usecase.SerpUsecase) *Serp {
 	return &Serp{usecase: serp}
 }
@@ -33,9 +35,9 @@ func NewSerpHandler(serp usecase.SerpUsecase) *Serp {
 // @Failure 500
 // @Router /v1/serp/{taskId}/ratio [GET]
 func (s *Serp) FetchSerpWithRatioByID(c echo.Context) error {
-	// taskId : Get task Id from path parameter.
-	taskId := c.Param("id")
-	task, err := strconv.Atoi(taskId)
+	// taskID : Get task Id from path parameter.
+	taskID := c.Param("id")
+	task, err := strconv.Atoi(taskID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
 			Message: "Parameter `id` must be number",
@@ -94,9 +96,9 @@ func (s *Serp) FetchSerpWithRatioByID(c echo.Context) error {
 // @Failure 500
 // @Router /v1/serp/{taskId}/icon [GET]
 func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
-	// taskId : Get task Id from path parameter.
-	taskId := c.Param("id")
-	task, err := strconv.Atoi(taskId)
+	// taskID : Get task Id from path parameter.
+	taskID := c.Param("id")
+	task, err := strconv.Atoi(taskID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
 			Message: "Parameter `id` must be number",
@@ -156,9 +158,9 @@ func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
 // @Failure 500
 // @Router /v1/serp/{taskId} [GET]
 func (s *Serp) FetchSerpByID(c echo.Context) error {
-	// taskId : Get task Id from path parameter.
-	taskId := c.Param("id")
-	task, err := strconv.Atoi(taskId)
+	// taskID : Get task Id from path parameter.
+	taskID := c.Param("id")
+	task, err := strconv.Atoi(taskID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
 			Message: "Parameter `id` must be number",

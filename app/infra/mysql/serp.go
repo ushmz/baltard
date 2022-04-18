@@ -8,15 +8,18 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// SerpReporitoryImpl : Implemention of SERP repository
 type SerpReporitoryImpl struct {
 	DB *sqlx.DB
 }
 
+// NewSerpRepository : Return new SERP repository struct
 func NewSerpRepository(db *sqlx.DB) repo.SerpRepository {
 	return &SerpReporitoryImpl{DB: db}
 }
 
-func (s *SerpReporitoryImpl) FetchSerpByTaskID(taskId, offset int) (*[]model.SearchPage, error) {
+// FetchSerpByTaskID : Get result pages by task ID
+func (s *SerpReporitoryImpl) FetchSerpByTaskID(taskID, offset int) (*[]model.SearchPage, error) {
 	srp := []model.SearchPage{}
 	err := s.DB.Select(&srp, `
 		SELECT
@@ -30,7 +33,7 @@ func (s *SerpReporitoryImpl) FetchSerpByTaskID(taskId, offset int) (*[]model.Sea
 			task_id = ?
 		LIMIT
 			?, 10
-	`, taskId, offset*10)
+	`, taskID, offset*10)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return &srp, model.NoSuchDataError{}

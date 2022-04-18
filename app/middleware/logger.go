@@ -32,6 +32,7 @@ func logFormat() string {
 	return format
 }
 
+// Logger : Logging middleware
 func Logger() echo.MiddlewareFunc {
 
 	ts := time.Now().Format("2006-01-02--15-04-05")

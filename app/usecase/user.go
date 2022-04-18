@@ -13,20 +13,23 @@ import (
 	"github.com/pkg/errors"
 )
 
+// UserUsecase : Abstract operations that user usecase should have
 type UserUsecase interface {
-	FindByUid(uid string) (model.User, error)
+	FindByUID(uid string) (model.User, error)
 	CreateUser(uid string) (model.User, error)
 	CreateSession(idToken string) (string, error)
 	AllocateTask() (model.TaskInfo, error)
-	GetCompletionCode(userId int) (int, error)
+	GetCompletionCode(userID int) (int, error)
 }
 
+// UserImpl : Implemention of user usecase
 type UserImpl struct {
 	userRepository repo.UserRepository
 	taskRepository repo.TaskRepository
 	userAuth       authentication.UserAuthentication
 }
 
+// NewUserUsecase : Return new user usecase struct
 func NewUserUsecase(
 	userRepository repo.UserRepository,
 	taskRepository repo.TaskRepository,
@@ -85,12 +88,13 @@ func generateSecret(length, lower, upper, digits, symbols int) string {
 	return string(inRune)
 }
 
-func (u *UserImpl) FindByUid(uid string) (model.User, error) {
+// FindByUID : Get a user by UID
+func (u *UserImpl) FindByUID(uid string) (model.User, error) {
 	if u == nil {
-		return model.User{}, errors.WithStack(model.ErrNilReciever)
+		return model.User{}, errors.WithStack(model.ErrNilReceiver)
 	}
 
-	user, err := u.userRepository.FindByUid(uid)
+	user, err := u.userRepository.FindByUID(uid)
 	if err != nil {
 		return model.User{}, errors.WithStack(err)
 	}
@@ -99,9 +103,10 @@ func (u *UserImpl) FindByUid(uid string) (model.User, error) {
 
 }
 
+// CreateUser : Create new user on this system
 func (u *UserImpl) CreateUser(uid string) (model.User, error) {
 	if u == nil {
-		return model.User{}, errors.WithStack(model.ErrNilReciever)
+		return model.User{}, errors.WithStack(model.ErrNilReceiver)
 	}
 
 	rand.Seed(time.Now().UnixNano())
@@ -120,7 +125,7 @@ func (u *UserImpl) CreateUser(uid string) (model.User, error) {
 	}
 
 	// Insert completion code
-	if u.userRepository.AddCompletionCode(user.Id, randomNumber); err != nil {
+	if u.userRepository.AddCompletionCode(user.ID, randomNumber); err != nil {
 		return model.User{}, err
 	}
 
@@ -134,9 +139,10 @@ func (u *UserImpl) CreateUser(uid string) (model.User, error) {
 	return user, nil
 }
 
+// CreateSession : Create session cookie
 func (u *UserImpl) CreateSession(idToken string) (string, error) {
 	if u == nil {
-		return "", errors.WithStack(model.ErrNilReciever)
+		return "", errors.WithStack(model.ErrNilReceiver)
 	}
 
 	cookie, err := u.userAuth.GenerateSessionCookie(idToken, 1*time.Hour)
@@ -146,36 +152,38 @@ func (u *UserImpl) CreateSession(idToken string) (string, error) {
 	return cookie, nil
 }
 
+// AllocateTask : Allocate tasks to user
 func (u *UserImpl) AllocateTask() (model.TaskInfo, error) {
 	if u == nil {
-		return model.TaskInfo{}, errors.WithStack(model.ErrNilReciever)
+		return model.TaskInfo{}, errors.WithStack(model.ErrNilReceiver)
 	}
 
-	// groupId : Allocated group ID (consists of task IDs and condition ID)
-	groupId, err := u.taskRepository.UpdateTaskAllocation()
+	// groupID : Allocated group ID (consists of task IDs and condition ID)
+	groupID, err := u.taskRepository.UpdateTaskAllocation()
 	if err != nil {
 		return model.TaskInfo{}, err
 	}
 
-	// taskIds : Allocated task IDs
-	taskIds, err := u.taskRepository.GetTaskIdsByGroupId(groupId)
+	// taskIDs : Allocated task IDs
+	taskIDs, err := u.taskRepository.GetTaskIDsByGroupID(groupID)
 	if err != nil {
 		return model.TaskInfo{}, err
 	}
 
-	// conditionId : Allocated condition ID
-	conditionId, err := u.taskRepository.GetConditionIdByGroupId(groupId)
+	// conditionID : Allocated condition ID
+	conditionID, err := u.taskRepository.GetConditionIDByGroupID(groupID)
 	if err != nil {
 		return model.TaskInfo{}, err
 	}
 
-	return model.TaskInfo{ConditionId: conditionId, GroupId: groupId, TaskIds: taskIds}, nil
+	return model.TaskInfo{ConditionID: conditionID, GroupID: groupID, TaskIDs: taskIDs}, nil
 }
 
-func (u *UserImpl) GetCompletionCode(userId int) (int, error) {
+// GetCompletionCode : Get user task completion code
+func (u *UserImpl) GetCompletionCode(userID int) (int, error) {
 	if u == nil {
-		return 0, errors.WithStack(model.ErrNilReciever)
+		return 0, errors.WithStack(model.ErrNilReceiver)
 	}
 
-	return u.userRepository.GetCompletionCodeById(userId)
+	return u.userRepository.GetCompletionCodeByID(userID)
 }

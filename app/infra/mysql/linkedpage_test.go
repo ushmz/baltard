@@ -11,13 +11,13 @@ func TestLinkedPageGet(t *testing.T) {
 }
 
 func TestGetBySearchPageId(t *testing.T) {
-	if _, err := linkedPageDao.GetBySearchPageIds([]int{381, 382, 383, 384, 385}, 5, 10); err != nil {
+	if _, err := linkedPageDao.GetBySearchPageIDs([]int{381, 382, 383, 384, 385}, 5, 10); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestGetRatioBySearchPageId(t *testing.T) {
-	if _, err := linkedPageDao.GetRatioBySearchPageIds([]int{381, 382, 383, 384, 385}, 5); err != nil {
+	if _, err := linkedPageDao.GetRatioBySearchPageIDs([]int{381, 382, 383, 384, 385}, 5); err != nil {
 		t.Fatal(err)
 	}
 }

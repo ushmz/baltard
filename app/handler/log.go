@@ -11,27 +11,29 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// Log : Implemention of log handler
 type Log struct {
 	usecase usecase.LogUsecase
 }
 
+// NewLogHandler : Return new log handler
 func NewLogHandler(log usecase.LogUsecase) *Log {
 	return &Log{usecase: log}
 }
 
-// CumulateSerpViewingTime : Create task time log. Task time is counted by cumulating requests that should be sended once/sec.
+// CumulateSerpDwellTime : Create task time log. Task time is counted by cumulating requests that should be sended once/sec.
 // @Id cumulate_task_time_log
 // @Summary Store task time log
 // @Description Create task time log. Task time is measured by cumulating number of requests that should be sended once/sec.
 // @Accept json
 // @Produce json
-// @Param param body model.SerpViewingLogParam true "Log parameter"
+// @Param param body model.SerpDwellLogParam true "Log parameter"
 // @Success 200
 // @Failure 400 "Error with message"
 // @Failure 500 "Error with message"
 // @Router /v1/logs/serp [POST]
-func (l *Log) CumulateSerpViewingTime(c echo.Context) error {
-	p := model.SerpViewingLogParam{}
+func (l *Log) CumulateSerpDwellTime(c echo.Context) error {
+	p := model.SerpDwellTimeLogParam{}
 	if err := c.Bind(&p); err != nil {
 		msg := model.ErrorMessage{
 			Message: fmt.Sprintf("Cannot bind request body : %v", err),
@@ -39,7 +41,7 @@ func (l *Log) CumulateSerpViewingTime(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	err := l.usecase.CumulateSerpViewingTime(p)
+	err := l.usecase.CumulateSerpDwellTime(p)
 	if err != nil {
 		msg := model.ErrorMessage{
 			Message: "Database Execution error.",
@@ -50,12 +52,13 @@ func (l *Log) CumulateSerpViewingTime(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
+// FileExportParam : Request parameters for exporting endpoints
 type FileExportParam struct {
 	Header   bool           `json:"header" query:"header"`
 	FileType store.FileType `json:"type" query:"type"`
 }
 
-// ExportSerpViewingTime : Export all task time log.
+// ExportSerpDwellTime : Export all task time log.
 // @Id export_task_time_log
 // @Summary Export task time log
 // @Description Export all task time log.
@@ -66,8 +69,7 @@ type FileExportParam struct {
 // @Failure 400 "Error with message"
 // @Failure 500 "Error with message"
 // @Router /v1/logs/serp/export [GET]
-func (l *Log) ExportSerpViewingTime(c echo.Context) error {
-	// param : Bind request body to struct.
+func (l *Log) ExportSerpDwellTime(c echo.Context) error {
 	p := FileExportParam{}
 	if err := c.Bind(&p); err != nil {
 		msg := model.ErrorMessage{
@@ -76,7 +78,7 @@ func (l *Log) ExportSerpViewingTime(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	b, err := l.usecase.ExportPageViewingTimeLog(p.Header, p.FileType)
+	b, err := l.usecase.ExportPageDwellTimeLog(p.Header, p.FileType)
 	if err != nil {
 		msg := model.ErrorMessage{
 			Message: "Failed to export data.",
@@ -93,19 +95,19 @@ func (l *Log) ExportSerpViewingTime(c echo.Context) error {
 	return c.JSONBlob(http.StatusOK, b.Bytes())
 }
 
-// CumulatePageViewingTime : Create page viewing time log. Viewing time is counted by cumulating requests that should be sended once/sec.
+// CumulatePageDwellTime : Create page viewing time log. Dwell time is counted by cumulating requests that should be sended once/sec.
 // @Id cumulate_page_viewing_time
 // @Summary Store page viewing time log
-// @Description Create page viewing time log. Viewing time is measured by cumulating number of requests that should be sended once/sec.
+// @Description Create page viewing time log. Dwell time is measured by cumulating number of requests that should be sended once/sec.
 // @Accept json
 // @Produce json
-// @Param param body model.PageViewingLogParam true "Log parameter"
+// @Param param body model.PageDwellLogParam true "Log parameter"
 // @Success 200
 // @Failure 400 "Error with message"
 // @Failure 500 "Error with message"
 // @Router /v1/logs/pageview [POST]
-func (l *Log) CumulatePageViewingTime(c echo.Context) error {
-	p := model.PageViewingLogParam{}
+func (l *Log) CumulatePageDwellTime(c echo.Context) error {
+	p := model.PageDwellTimeLogParam{}
 	if err := c.Bind(&p); err != nil {
 		msg := model.ErrorMessage{
 			Message: fmt.Sprintf("Cannot bind request body : %v", err),
@@ -113,7 +115,7 @@ func (l *Log) CumulatePageViewingTime(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	err := l.usecase.CumulatePageViewingTime(p)
+	err := l.usecase.CumulatePageDwellTime(p)
 	if err != nil {
 		msg := model.ErrorMessage{
 			Message: "Database Execution error.",
@@ -124,7 +126,8 @@ func (l *Log) CumulatePageViewingTime(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
-func (l *Log) ExportPageViewingTime(c echo.Context) error {
+// ExportPageDwellTime : Export all page dwell time logs to file
+func (l *Log) ExportPageDwellTime(c echo.Context) error {
 	p := FileExportParam{}
 	if err := c.Bind(&p); err != nil {
 		msg := model.ErrorMessage{
@@ -133,7 +136,7 @@ func (l *Log) ExportPageViewingTime(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, msg)
 	}
 
-	b, err := l.usecase.ExportPageViewingTimeLog(p.Header, p.FileType)
+	b, err := l.usecase.ExportPageDwellTimeLog(p.Header, p.FileType)
 	if err != nil {
 		msg := model.ErrorMessage{
 			Message: "Failed to export log.",
@@ -181,6 +184,7 @@ func (l *Log) CreateSerpEventLog(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
+// ExportSerpEventLog : Export all SERP event logs to file
 func (l *Log) ExportSerpEventLog(c echo.Context) error {
 	p := FileExportParam{}
 	if err := c.Bind(&p); err != nil {
@@ -238,6 +242,7 @@ func (l *Log) StoreSearchSeeion(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
+// ExportSearchSeeion : Export all search sessions to file
 func (l *Log) ExportSearchSeeion(c echo.Context) error {
 	p := FileExportParam{}
 	if err := c.Bind(&p); err != nil {

@@ -8,16 +8,18 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// TaskRepositoryImpl : Implemention of task repository
 type TaskRepositoryImpl struct {
 	DB *sqlx.DB
 }
 
+// NewTaskRepository : Return new task repository struct
 func NewTaskRepository(db *sqlx.DB) repo.TaskRepository {
 	return &TaskRepositoryImpl{DB: db}
 }
 
 // FetchTaskInfo : Fetch task info by task id
-func (t *TaskRepositoryImpl) FetchTaskInfo(taskId int) (model.Task, error) {
+func (t *TaskRepositoryImpl) FetchTaskInfo(taskID int) (model.Task, error) {
 	task := model.Task{}
 	row := t.DB.QueryRowx(`
 		SELECT
@@ -30,7 +32,7 @@ func (t *TaskRepositoryImpl) FetchTaskInfo(taskId int) (model.Task, error) {
 			tasks
 		WHERE
 			id = ?
-		`, taskId)
+		`, taskID)
 
 	if err := row.StructScan(&task); err != nil {
 		if err == sql.ErrNoRows {
@@ -42,6 +44,7 @@ func (t *TaskRepositoryImpl) FetchTaskInfo(taskId int) (model.Task, error) {
 	return task, nil
 }
 
+// UpdateTaskAllocation : Get task ID that the fewest perticipants are allocated
 func (t *TaskRepositoryImpl) UpdateTaskAllocation() (int, error) {
 	tx := t.DB.MustBegin()
 	gc := model.GroupCounts{}
@@ -73,7 +76,7 @@ func (t *TaskRepositoryImpl) UpdateTaskAllocation() (int, error) {
 		"   `count`"+` = ?
 		WHERE
 			group_id = ?
-	`, gc.Count+1, gc.GroupId)
+	`, gc.Count+1, gc.GroupID)
 	if err != nil {
 		tx.Rollback()
 		return 0, nil
@@ -82,10 +85,11 @@ func (t *TaskRepositoryImpl) UpdateTaskAllocation() (int, error) {
 	// [TODO] How to handle this error?
 	tx.Commit()
 
-	return gc.GroupId, nil
+	return gc.GroupID, nil
 }
 
-func (t *TaskRepositoryImpl) GetTaskIdsByGroupId(groupId int) ([]int, error) {
+// GetTaskIDsByGroupID : Get task IDs by group ID
+func (t *TaskRepositoryImpl) GetTaskIDsByGroupID(groupID int) ([]int, error) {
 	taskIds := []int{}
 	err := t.DB.Select(&taskIds, `
 		SELECT
@@ -94,7 +98,7 @@ func (t *TaskRepositoryImpl) GetTaskIdsByGroupId(groupId int) ([]int, error) {
 			task_condition_relations
 		WHERE
 			group_id = ?
-	`, groupId)
+	`, groupID)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -106,7 +110,8 @@ func (t *TaskRepositoryImpl) GetTaskIdsByGroupId(groupId int) ([]int, error) {
 	return taskIds, nil
 }
 
-func (t *TaskRepositoryImpl) GetConditionIdByGroupId(groupId int) (int, error) {
+// GetConditionIDByGroupID : Get condition ID by group ID
+func (t *TaskRepositoryImpl) GetConditionIDByGroupID(groupID int) (int, error) {
 	var condition int
 	row := t.DB.QueryRow(`
 		SELECT
@@ -116,7 +121,7 @@ func (t *TaskRepositoryImpl) GetConditionIdByGroupId(groupId int) (int, error) {
 		WHERE
 			group_id = ?
 
-	`, groupId)
+	`, groupID)
 
 	if err := row.Scan(&condition); err != nil {
 		if err == sql.ErrNoRows {
@@ -128,8 +133,9 @@ func (t *TaskRepositoryImpl) GetConditionIdByGroupId(groupId int) (int, error) {
 	return condition, nil
 }
 
-func (a *TaskRepositoryImpl) CreateTaskAnswer(answer *model.Answer) error {
-	_, err := a.DB.NamedExec(`
+// CreateTaskAnswer : Create new answer for the task
+func (t *TaskRepositoryImpl) CreateTaskAnswer(answer *model.Answer) error {
+	_, err := t.DB.NamedExec(`
 		INSERT INTO
 			answers (
 				user_id,

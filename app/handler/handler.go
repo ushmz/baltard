@@ -10,6 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// Handler : Handle HTTP requests
 type Handler struct {
 	Log  *Log
 	Serp *Serp
@@ -17,6 +18,7 @@ type Handler struct {
 	User *User
 }
 
+// NewHandler : Return new handler struct
 func NewHandler(dbx *sqlx.DB, app *firebase.App) *Handler {
 	linkedPage := db.NewLinkedPageRepository(dbx)
 	log := db.NewLogRepository(dbx)

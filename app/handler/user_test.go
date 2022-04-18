@@ -18,9 +18,9 @@ import (
 
 var (
 	task = model.TaskInfo{
-		GroupId:     3,
-		ConditionId: 2,
-		TaskIds:     []int{5, 7},
+		GroupID:     3,
+		ConditionID: 2,
+		TaskIDs:     []int{5, 7},
 	}
 	userTests = []struct {
 		name      string
@@ -29,7 +29,7 @@ var (
 		wantError bool
 		err       error
 	}{
-		{"Want no error", model.UserParam{Uid: "test42"}, 200, false, nil},
+		{"Want no error", model.UserParam{UID: "test42"}, 200, false, nil},
 	}
 
 	completionTest = []struct {
@@ -51,7 +51,7 @@ func TestCreateUser(t *testing.T) {
 	mck := mock.NewMockUserUsecase(ctrl)
 	for _, tt := range userTests {
 		t.Run(tt.name, func(t *testing.T) {
-			mck.EXPECT().FindByUid(tt.in.Uid).Return(model.User{}, nil)
+			mck.EXPECT().FindByUid(tt.in.UID).Return(model.User{}, nil)
 			// mck.EXPECT().CreateUser(tt.in.Uid).Return(model.User{}, nil)
 			mck.EXPECT().AllocateTask().Return(task, nil)
 
