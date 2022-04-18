@@ -7,14 +7,16 @@ import (
 var c *viper.Viper
 
 // Init : Reads configuration files.
-func Init(env string) {
+func Init() error {
 	c = viper.New()
-	c.SetConfigFile("yaml")
-	c.SetConfigName(env)
-	c.AddConfigPath("config/environments/")
+	c.SetConfigName("env")
+	c.SetConfigType("yaml")
+	c.AddConfigPath(".")
+	c.AutomaticEnv()
 	if err := c.ReadInConfig(); err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
 // GetConfig : Returns configuration values.

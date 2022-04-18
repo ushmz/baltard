@@ -20,12 +20,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var (
-	conf = config.GetConfig()
-)
-
 func main() {
 	d := db.New()
+	// Initialize config values
+	if err := config.Init(); err != nil {
+		panic(fmt.Sprintf("Failed to get env.yaml : %+v\n", err))
+	}
+
 	defer d.Close()
 
 	// Set up firebase SDK
