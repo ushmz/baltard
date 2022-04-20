@@ -45,14 +45,20 @@ func connectDB() (*sqlx.DB, error) {
 		return db, nil
 	}
 
-	return nil, errors.New("Connection timeout")
+	msg := fmt.Sprintf("Operation timed out : %s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		conf.GetString("db.user"),
+		conf.GetString("db.host"),
+		conf.GetString("db.port"),
+		conf.GetString("db.database"),
+	)
+
+	return nil, errors.New(msg)
 }
 
 // New : Apply migration if it runs in production stage, then return DB connection
 func New() (*sqlx.DB, error) {
 	db, err := connectDB()
 	if err != nil {
-		log.Printf("DB connection failed: %v", err)
 		return nil, err
 	}
 
@@ -65,7 +71,7 @@ func New() (*sqlx.DB, error) {
 		log.Printf("Applied %v migrations", appliedCount)
 	}
 
-	db.SetMaxOpenConns(25500)
-	db.SetMaxIdleConns(25500)
+	// db.SetMaxOpenConns(25500)
+	// db.SetMaxIdleConns(25500)
 	return db, nil
 }

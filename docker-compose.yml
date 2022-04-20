@@ -2,7 +2,7 @@ version: '3'
 
 services:
   server:
-    build: 
+    build:
       context: ./server/caddy
       dockerfile: ./Dockerfile
     container_name: ratri-caddy
@@ -15,10 +15,12 @@ services:
       - app
 
   app:
-    build: 
+    build:
       context: ./app
       dockerfile: ./Dockerfile
     container_name: ratri-app
+    ports:
+      - 8080:8080
     tty: true
     depends_on:
       - db
