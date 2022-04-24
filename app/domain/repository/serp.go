@@ -7,5 +7,5 @@ import (
 
 // SerpRepository : Abstract operations that `Serp` model should have.
 type SerpRepository interface {
-	FetchSerpByTaskID(taskID, offset int) (*[]model.SearchPage, error)
+	FetchSerpByTaskID(taskID, offset int) ([]model.SearchPage, error)
 }

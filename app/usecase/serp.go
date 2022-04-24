@@ -9,9 +9,9 @@ import (
 
 // SerpUsecase : Abstract operations that SERP usecase should have.
 type SerpUsecase interface {
-	FetchSerp(taskID, offset int) (*[]model.SearchPage, error)
-	FetchSerpWithIcon(taskID, offset, top int) (*[]model.SerpWithIcon, error)
-	FetchSerpWithRatio(taskID, offset, top int) (*[]model.SerpWithRatio, error)
+	FetchSerp(taskID, offset int) ([]model.SearchPage, error)
+	FetchSerpWithIcon(taskID, offset, top int) ([]model.SerpWithIcon, error)
+	FetchSerpWithRatio(taskID, offset, top int) ([]model.SerpWithRatio, error)
 }
 
 // SerpImpl : Struct for serp usecase
@@ -26,25 +26,25 @@ func NewSerpUsecase(serpRepository repo.SerpRepository, linkedPageRepository rep
 }
 
 // FetchSerp : Get search results by taskID
-func (s *SerpImpl) FetchSerp(taskID, offset int) (*[]model.SearchPage, error) {
+func (s *SerpImpl) FetchSerp(taskID, offset int) ([]model.SearchPage, error) {
 	return s.serpRepo.FetchSerpByTaskID(taskID, offset)
 }
 
 // FetchSerpWithIcon : Get search results for Icon UI by taskID
-func (s *SerpImpl) FetchSerpWithIcon(taskID, offset, top int) (*[]model.SerpWithIcon, error) {
+func (s *SerpImpl) FetchSerpWithIcon(taskID, offset, top int) ([]model.SerpWithIcon, error) {
 	// serp : Return struct of this method
 	serp := []model.SerpWithIcon{}
 
 	srp, err := s.serpRepo.FetchSerpByTaskID(taskID, offset)
 	if err != nil {
-		return &serp, err
+		return serp, err
 	}
 
 	pageIds := []int{}
 	// serpMap : Map object to format SQL result to return struct.
 	serpMap := map[int]model.SerpWithIcon{}
 
-	for _, v := range *srp {
+	for _, v := range srp {
 		pageIds = append(pageIds, v.PageID)
 		serpMap[v.PageID] = model.SerpWithIcon{
 			PageID:  v.PageID,
@@ -57,10 +57,10 @@ func (s *SerpImpl) FetchSerpWithIcon(taskID, offset, top int) (*[]model.SerpWith
 
 	linked, err := s.lpRepo.GetBySearchPageIDs(pageIds, taskID, top)
 	if err != nil {
-		return &serp, err
+		return serp, err
 	}
 
-	for _, v := range *linked {
+	for _, v := range linked {
 		tempSerp := serpMap[v.PageID]
 		tempSerp.Linked = append(tempSerp.Linked, model.LinkedPage{
 			ID:       v.ID,
@@ -82,41 +82,43 @@ func (s *SerpImpl) FetchSerpWithIcon(taskID, offset, top int) (*[]model.SerpWith
 		serp = append(serp, serpMap[v])
 	}
 
-	return &serp, nil
+	return serp, nil
 }
 
 // FetchSerpWithRatio : Get search results for Ratio UI by taskID
-func (s *SerpImpl) FetchSerpWithRatio(taskID, offset, top int) (*[]model.SerpWithRatio, error) {
+func (s *SerpImpl) FetchSerpWithRatio(taskID, offset, top int) ([]model.SerpWithRatio, error) {
 	// serp : Return struct of this method
 	serp := []model.SerpWithRatio{}
 
 	srp, err := s.serpRepo.FetchSerpByTaskID(taskID, offset)
 	if err != nil {
-		return &serp, err
+		return serp, err
 	}
 
 	pageIds := []int{}
 	// serpMap : Map object to format SQL result to return struct.
 	serpMap := map[int]model.SerpWithRatio{}
 
-	for _, v := range *srp {
+	for _, v := range srp {
 		pageIds = append(pageIds, v.PageID)
 		serpMap[v.PageID] = model.SerpWithRatio{
-			PageID:       v.PageID,
-			Title:        v.Title,
-			URL:          v.URL,
-			Snippet:      v.Snippet,
-			Total:        0,
+			PageID:  v.PageID,
+			Title:   v.Title,
+			URL:     v.URL,
+			Snippet: v.Snippet,
+			Total:   0,
+			// [TODO] Performance measure.
+			// Distribution: make([]model.CategoryCount, 0, top),
 			Distribution: []model.CategoryCount{},
 		}
 	}
 
 	linked, err := s.lpRepo.GetRatioBySearchPageIDs(pageIds, taskID)
 	if err != nil {
-		return &serp, err
+		return serp, err
 	}
 
-	for _, v := range *linked {
+	for _, v := range linked {
 		tempSerp := serpMap[v.PageID]
 		tempSerp.Total += v.CategoryCount
 		if len(tempSerp.Distribution) < top {
@@ -133,5 +135,5 @@ func (s *SerpImpl) FetchSerpWithRatio(taskID, offset, top int) (*[]model.SerpWit
 		serp = append(serp, serpMap[v])
 	}
 
-	return &serp, nil
+	return serp, nil
 }

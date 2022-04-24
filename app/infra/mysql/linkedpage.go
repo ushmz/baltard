@@ -48,8 +48,7 @@ func (r *LinkedPageRepositoryImpl) Get(linkedPageID int) (model.LinkedPage, erro
 }
 
 // GetBySearchPageIDs : Get linked pages for the Icon UI by given search page IDs
-func (r *LinkedPageRepositoryImpl) GetBySearchPageIDs(pageID []int, taskID, top int) (*[]model.SearchPageWithLinkedPage, error) {
-	linked := []model.SearchPageWithLinkedPage{}
+func (r *LinkedPageRepositoryImpl) GetBySearchPageIDs(pageIDs []int, taskID, top int) ([]model.SearchPageWithLinkedPage, error) {
 
 	q := `
 		SELECT
@@ -70,7 +69,7 @@ func (r *LinkedPageRepositoryImpl) GetBySearchPageIDs(pageID []int, taskID, top 
 				FROM
 					search_page_similarweb_relation
 				WHERE
-					page_id IN( ?` + strings.Repeat(", ?", len(pageID)-1) + `)
+					page_id IN( ?` + strings.Repeat(", ?", len(pageIDs)-1) + `)
 					AND task_id = ?
 				ORDER BY
 					page_id ASC
@@ -82,22 +81,24 @@ func (r *LinkedPageRepositoryImpl) GetBySearchPageIDs(pageID []int, taskID, top 
 	`
 
 	a := []interface{}{}
-	for _, v := range pageID {
+	for _, v := range pageIDs {
 		a = append(a, v)
 	}
 	a = append(a, taskID)
 	a = append(a, top)
 
+	linked := []model.SearchPageWithLinkedPage{}
+	// [TODO] Performance measure.
+	// linked := make([]model.SearchPageWithLinkedPage, len(pageID))
 	if err := r.DB.Select(&linked, q, a...); err != nil {
-		return &linked, err
+		return nil, fmt.Errorf("failed to get linked pages with IDs(%v): %w", pageIDs, err)
 	}
 
-	return &linked, nil
+	return linked, nil
 }
 
 // GetRatioBySearchPageIDs : Get Ratio information for the Ratio UI by given search page IDs
-func (r *LinkedPageRepositoryImpl) GetRatioBySearchPageIDs(pageIds []int, taskID int) (*[]model.SearchPageWithLinkedPageRatio, error) {
-	linked := []model.SearchPageWithLinkedPageRatio{}
+func (r *LinkedPageRepositoryImpl) GetRatioBySearchPageIDs(pageIds []int, taskID int) ([]model.SearchPageWithLinkedPageRatio, error) {
 
 	q := `
 		SELECT DISTINCT
@@ -122,11 +123,14 @@ func (r *LinkedPageRepositoryImpl) GetRatioBySearchPageIDs(pageIds []int, taskID
 		a = append(a, v)
 	}
 
+	linked := []model.SearchPageWithLinkedPageRatio{}
+	// [TODO] Performance measure.
+	// linked := make([]model.SearchPageWithLinkedPageRatio, len(pageIds))
 	if err := r.DB.Select(&linked, q, a...); err != nil {
-		return &linked, err
+		return nil, fmt.Errorf("failed to get linked pages: %w", err)
 	}
 
-	return &linked, nil
+	return linked, nil
 }
 
 // Select gets listed `LinkedPage` specified with argument `linkedPageIds`.
@@ -135,11 +139,10 @@ func (r *LinkedPageRepositoryImpl) GetRatioBySearchPageIDs(pageIds []int, taskID
 // - It implicitly assume that passed argument `linkedPageIDs` is list of number
 //   (or check argument type and if it's not int value, return error)
 //   and make argument type as `[]interface{}`
-func (r *LinkedPageRepositoryImpl) Select(linkedPageIds []int) (*[]model.LinkedPage, error) {
-	linked := []model.LinkedPage{}
+func (r *LinkedPageRepositoryImpl) Select(pageIDs []int) ([]model.LinkedPage, error) {
 
 	dest := []interface{}{}
-	for _, v := range linkedPageIds {
+	for _, v := range pageIDs {
 		dest = append(dest, v)
 	}
 
@@ -159,21 +162,23 @@ func (r *LinkedPageRepositoryImpl) Select(linkedPageIds []int) (*[]model.LinkedP
 	`
 	q, a, err := sqlx.In(q, dest)
 	if err != nil {
-		return &linked, err
+		return nil, fmt.Errorf("failed to build query with parameters(%v): %w", pageIDs, err)
 	}
 
+	linked := []model.LinkedPage{}
+	// [TODO] Performance measure.
+	// linked := make([]model.LinkedPage, len(linkedPageIds))
 	if err := r.DB.Select(&linked, q, a...); err != nil {
 		if err == sql.ErrNoRows {
-			return &linked, model.NoSuchDataError{}
+			return nil, fmt.Errorf("failed to get linked pages with IDs(%v): %w", pageIDs, model.ErrNoSuchData)
 		}
-		return &linked, err
+		return nil, fmt.Errorf("failed to get linked pages with IDs(%v): %w", pageIDs, err)
 	}
-	return &linked, nil
+	return linked, nil
 }
 
 // List gets all `LinkedPage` records from DB
-func (r *LinkedPageRepositoryImpl) List(offset, limit int) (*[]model.LinkedPage, error) {
-	linked := []model.LinkedPage{}
+func (r *LinkedPageRepositoryImpl) List(offset, limit int) ([]model.LinkedPage, error) {
 
 	q := `
 		SELECT
@@ -189,16 +194,14 @@ func (r *LinkedPageRepositoryImpl) List(offset, limit int) (*[]model.LinkedPage,
 		LIMIT
 			?, ?
 	`
+	linked := []model.LinkedPage{}
 	if err := r.DB.Select(&linked, q, offset, limit); err != nil {
 		if err == sql.ErrNoRows {
-			return &linked, model.NoSuchDataError{}
+			return nil, fmt.Errorf("failed to get linked pages (offset=%d, limit=%d): %w", offset, limit, model.ErrNoSuchData)
 		}
-		if len(linked) == 0 {
-			return &linked, model.NoSuchDataError{}
-		}
-		return &linked, err
+		return nil, fmt.Errorf("failed to get linked pages (offset=%d, limit=%d): %w", offset, limit, err)
 	}
-	return &linked, nil
+	return linked, nil
 }
 
 // Create creates new `LinkedPage` record.

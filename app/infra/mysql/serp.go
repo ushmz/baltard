@@ -19,8 +19,10 @@ func NewSerpRepository(db *sqlx.DB) repo.SerpRepository {
 }
 
 // FetchSerpByTaskID : Get result pages by task ID
-func (s *SerpReporitoryImpl) FetchSerpByTaskID(taskID, offset int) (*[]model.SearchPage, error) {
+func (s *SerpReporitoryImpl) FetchSerpByTaskID(taskID, offset int) ([]model.SearchPage, error) {
 	srp := []model.SearchPage{}
+	// [TODO] Performance measure.
+	// srp := make([]model.SearchPage, 10)
 	err := s.DB.Select(&srp, `
 		SELECT
 			search_pages.id,
@@ -36,7 +38,7 @@ func (s *SerpReporitoryImpl) FetchSerpByTaskID(taskID, offset int) (*[]model.Sea
 	`, taskID, offset*10)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return &srp, model.NoSuchDataError{}
+			return srp, model.ErrNoSuchData
 		}
 		return nil, err
 	}
@@ -44,8 +46,8 @@ func (s *SerpReporitoryImpl) FetchSerpByTaskID(taskID, offset int) (*[]model.Sea
 	// `sqlx.DB.Select` does not throw `ErrNoRows`,
 	// so if length of fetched array is 0, return `model.NoSuchDataError`
 	if len(srp) == 0 {
-		return &srp, model.NoSuchDataError{}
+		return srp, model.ErrNoSuchData
 	}
 
-	return &srp, nil
+	return srp, nil
 }
