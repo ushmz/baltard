@@ -8,7 +8,7 @@ import (
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
-	"github.com/pkg/errors"
+	"golang.org/x/xerrors"
 )
 
 // UserAuthenticationImpl : Implemention of user authentication.
@@ -24,13 +24,13 @@ func NewUserAuthenticationImpl(app *firebase.App) authentication.UserAuthenticat
 // RegisterUser : Register user with externalID and password.
 func (u *UserAuthenticationImpl) RegisterUser(externalID, secret string) error {
 	if u == nil {
-		return model.ErrNilReceiver
+		return xerrors.Errorf("UserAuthenticationImpl.RegisterUser() is called with nil receiver: %w", model.ErrNilReceiver)
 	}
 
 	ctx := context.Background()
 	client, err := u.App.Auth(ctx)
 	if err != nil {
-		return errors.New("Failed to get auth client")
+		return xerrors.Errorf("Failed to get auth client: %w", err)
 	}
 
 	params := (&auth.UserToCreate{}).
@@ -41,9 +41,9 @@ func (u *UserAuthenticationImpl) RegisterUser(externalID, secret string) error {
 
 	if _, err = client.CreateUser(ctx, params); err != nil {
 		if auth.IsUIDAlreadyExists(err) {
-			return errors.New("Given ID is already used")
+			return xerrors.Errorf("Given ID is already used: %w", err)
 		}
-		return errors.New("Failed to create user")
+		return xerrors.Errorf("Failed to create user: %w", err)
 	}
 
 	return nil
@@ -52,17 +52,17 @@ func (u *UserAuthenticationImpl) RegisterUser(externalID, secret string) error {
 // DeleteUser : Delete user from application.
 func (u *UserAuthenticationImpl) DeleteUser(externalID string) error {
 	if u == nil {
-		return errors.WithStack(model.ErrNilReceiver)
+		return xerrors.Errorf("UserAuthenticationImpl.DeleteUser() is called with nil receiver: %w", model.ErrNilReceiver)
 	}
 
 	ctx := context.Background()
 	client, err := u.App.Auth(ctx)
 	if err != nil {
-		return errors.WithStack(errors.New("Failed to get auth client"))
+		return xerrors.Errorf("Failed to get auth client: %w", err)
 	}
 
 	if err := client.DeleteUser(context.Background(), externalID); err != nil {
-		return errors.WithStack(errors.New("Failed to delete user"))
+		return xerrors.Errorf("Failed to delete user: %w", err)
 	}
 	return nil
 }
@@ -70,18 +70,18 @@ func (u *UserAuthenticationImpl) DeleteUser(externalID string) error {
 // GenerateToken : Generate new token with externalID as an UID.
 func (u *UserAuthenticationImpl) GenerateToken(externalID string) (string, error) {
 	if u == nil {
-		return "", errors.WithStack(model.ErrNilReceiver)
+		return "", xerrors.Errorf("UserAuthenticationImpl.GenerateToken() is called with nil receiver: %w", model.ErrNilReceiver)
 	}
 
 	ctx := context.Background()
 	client, err := u.App.Auth(ctx)
 	if err != nil {
-		return "", errors.WithStack(errors.New("Failed to get auth client"))
+		return "", xerrors.Errorf("Failed to get auth client: %w", err)
 	}
 
 	token, err := client.CustomToken(ctx, externalID)
 	if err != nil {
-		return "", errors.WithStack(errors.New("Failed to generate user token"))
+		return "", xerrors.Errorf("Failed to generate user token: %w", err)
 	}
 	return token, nil
 }
@@ -89,18 +89,18 @@ func (u *UserAuthenticationImpl) GenerateToken(externalID string) (string, error
 // GenerateSessionCookie : Generate new session cookie with externalID as an UID.
 func (u *UserAuthenticationImpl) GenerateSessionCookie(idToken string, expiresIn time.Duration) (string, error) {
 	if u == nil {
-		return "", errors.WithStack(model.ErrNilReceiver)
+		return "", xerrors.Errorf("UserAuthenticationImpl.GenerateSessionCookie() is called with nil receiver: %w", model.ErrNilReceiver)
 	}
 
 	ctx := context.Background()
 	client, err := u.App.Auth(ctx)
 	if err != nil {
-		return "", errors.WithStack(err)
+		return "", xerrors.Errorf("Failed to get auth client: %w", err)
 	}
 
 	cookie, err := client.SessionCookie(ctx, idToken, expiresIn)
 	if err != nil {
-		return "", errors.WithStack(err)
+		return "", xerrors.Errorf("Failed to generate auth cookie: %w", err)
 	}
 	return cookie, nil
 }
@@ -108,17 +108,17 @@ func (u *UserAuthenticationImpl) GenerateSessionCookie(idToken string, expiresIn
 // RevokeToken : Revoke generated token with externalID as an UID.
 func (u *UserAuthenticationImpl) RevokeToken(externalID string) error {
 	if u == nil {
-		return errors.WithStack(model.ErrNilReceiver)
+		return xerrors.Errorf("UserAuthenticationImpl.RevokeToken() is called with nil receiver: %w", model.ErrNilReceiver)
 	}
 
 	ctx := context.Background()
 	client, err := u.App.Auth(ctx)
 	if err != nil {
-		return errors.WithStack(errors.New("Failed to get auth client"))
+		return xerrors.Errorf("Failed to get auth client: %w", err)
 	}
 
 	if err := client.RevokeRefreshTokens(ctx, externalID); err != nil {
-		return errors.WithStack(errors.New("Failed to revoke token"))
+		return xerrors.Errorf("Failed to revoke token: %w", err)
 	}
 	return nil
 }

@@ -6,6 +6,8 @@ import (
 	"ratri/domain/model"
 	"ratri/domain/store"
 	"strconv"
+
+	"github.com/pkg/errors"
 )
 
 // LogStore : Implemention of log exporting
@@ -18,6 +20,10 @@ func NewLogStore() *LogStore {
 
 // ExportSerpDwellTimeLog : Write all SERP dwell time log to buffer
 func (l *LogStore) ExportSerpDwellTimeLog(data []model.SerpDwellTimeLog, header bool, filetype store.FileType) (*bytes.Buffer, error) {
+	if l == nil {
+		return nil, errors.WithStack(model.ErrNilReceiver)
+	}
+
 	content := [][]string{}
 	if header {
 		content = append(content, []string{
@@ -53,6 +59,10 @@ func (l *LogStore) ExportSerpDwellTimeLog(data []model.SerpDwellTimeLog, header 
 
 // ExportPageDwellTimeLog : Write all result page dwell time log to buffer
 func (l *LogStore) ExportPageDwellTimeLog(data []model.PageDwellTimeLog, header bool, filetype store.FileType) (*bytes.Buffer, error) {
+	if l == nil {
+		return nil, errors.WithStack(model.ErrNilReceiver)
+	}
+
 	content := [][]string{}
 	if header {
 		content = append(content, []string{
@@ -90,6 +100,10 @@ func (l *LogStore) ExportPageDwellTimeLog(data []model.PageDwellTimeLog, header 
 
 // ExportSerpEventLog : Write all SERP event log to file
 func (l *LogStore) ExportSerpEventLog(data []model.SearchPageEventLog, header bool, filetype store.FileType) (*bytes.Buffer, error) {
+	if l == nil {
+		return nil, errors.WithStack(model.ErrNilReceiver)
+	}
+
 	content := [][]string{}
 	if header {
 		content = append(content, []string{
@@ -132,6 +146,10 @@ func (l *LogStore) ExportSerpEventLog(data []model.SearchPageEventLog, header bo
 
 // ExportSearchSessionLog : Write all search session logs to buffer
 func (l *LogStore) ExportSearchSessionLog(data []model.SearchSession, header bool, filetype store.FileType) (*bytes.Buffer, error) {
+	if l == nil {
+		return nil, errors.WithStack(model.ErrNilReceiver)
+	}
+
 	content := [][]string{}
 	if header {
 		content = append(content, []string{

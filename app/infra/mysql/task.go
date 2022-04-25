@@ -2,10 +2,12 @@ package mysql
 
 import (
 	"database/sql"
+	"fmt"
 	"ratri/domain/model"
 	repo "ratri/domain/repository"
 
 	"github.com/jmoiron/sqlx"
+	"golang.org/x/xerrors"
 )
 
 // TaskRepositoryImpl : Implemention of task repository
@@ -21,6 +23,10 @@ func NewTaskRepository(db *sqlx.DB) repo.TaskRepository {
 // FetchTaskInfo : Fetch task info by task id
 func (t *TaskRepositoryImpl) FetchTaskInfo(taskID int) (model.Task, error) {
 	task := model.Task{}
+	if t == nil {
+		return task, xerrors.Errorf("TaskRepositoryImpl.FetchTaskInfo() is called with nil receiver: %w", model.ErrNilReceiver)
+	}
+
 	row := t.DB.QueryRowx(`
 		SELECT
 			id,
@@ -36,9 +42,9 @@ func (t *TaskRepositoryImpl) FetchTaskInfo(taskID int) (model.Task, error) {
 
 	if err := row.StructScan(&task); err != nil {
 		if err == sql.ErrNoRows {
-			return task, model.NoSuchDataError{}
+			return task, xerrors.Errorf("Task with given ID(%d) is not found: %w", taskID, model.ErrNoSuchData)
 		}
-		return task, err
+		return task, xerrors.Errorf("Failed to get task with ID(%d): %w", taskID, err)
 	}
 
 	return task, nil
@@ -46,6 +52,10 @@ func (t *TaskRepositoryImpl) FetchTaskInfo(taskID int) (model.Task, error) {
 
 // UpdateTaskAllocation : Get task ID that the fewest perticipants are allocated
 func (t *TaskRepositoryImpl) UpdateTaskAllocation() (int, error) {
+	if t == nil {
+		return 0, fmt.Errorf("TaskRepositoryImpl.UpdateTaskAllocation() is called with nil receiver: %w", model.ErrNilReceiver)
+	}
+
 	tx := t.DB.MustBegin()
 	gc := model.GroupCounts{}
 	err := tx.Get(&gc, `
@@ -66,7 +76,7 @@ func (t *TaskRepositoryImpl) UpdateTaskAllocation() (int, error) {
 	`)
 	if err != nil {
 		tx.Rollback()
-		return 0, err
+		return 0, xerrors.Errorf("Failed to get fewest allocated group: %w", err)
 	}
 
 	_, err = tx.Exec(`
@@ -79,7 +89,7 @@ func (t *TaskRepositoryImpl) UpdateTaskAllocation() (int, error) {
 	`, gc.Count+1, gc.GroupID)
 	if err != nil {
 		tx.Rollback()
-		return 0, nil
+		return 0, xerrors.Errorf("Failed to update allocation count with groupID(%d): %w", gc.GroupID, err)
 	}
 
 	// [TODO] How to handle this error?
@@ -90,6 +100,10 @@ func (t *TaskRepositoryImpl) UpdateTaskAllocation() (int, error) {
 
 // GetTaskIDsByGroupID : Get task IDs by group ID
 func (t *TaskRepositoryImpl) GetTaskIDsByGroupID(groupID int) ([]int, error) {
+	if t == nil {
+		return []int{}, xerrors.Errorf("TaskRepositoryImpl.GetTaskIDsByGroupID() is called with nil receiver: %w", model.ErrNilReceiver)
+	}
+
 	taskIds := []int{}
 	err := t.DB.Select(&taskIds, `
 		SELECT
@@ -101,10 +115,7 @@ func (t *TaskRepositoryImpl) GetTaskIDsByGroupID(groupID int) ([]int, error) {
 	`, groupID)
 
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, model.NoSuchDataError{}
-		}
-		return nil, err
+		return nil, xerrors.Errorf("Failed to get task IDs with group ID(%d): %w", groupID, err)
 	}
 
 	return taskIds, nil
@@ -112,6 +123,10 @@ func (t *TaskRepositoryImpl) GetTaskIDsByGroupID(groupID int) ([]int, error) {
 
 // GetConditionIDByGroupID : Get condition ID by group ID
 func (t *TaskRepositoryImpl) GetConditionIDByGroupID(groupID int) (int, error) {
+	if t == nil {
+		return 0, xerrors.Errorf("TaskRepositoryImpl.GetConditionIDByGroupID() is called with nil receiver: %w", model.ErrNilReceiver)
+	}
+
 	var condition int
 	row := t.DB.QueryRow(`
 		SELECT
@@ -125,9 +140,9 @@ func (t *TaskRepositoryImpl) GetConditionIDByGroupID(groupID int) (int, error) {
 
 	if err := row.Scan(&condition); err != nil {
 		if err == sql.ErrNoRows {
-			return 0, model.NoSuchDataError{}
+			return 0, xerrors.Errorf("Condition ID with group ID(%d) is not found: %w", groupID, model.ErrNoSuchData)
 		}
-		return 0, err
+		return 0, xerrors.Errorf("Failed to get condition ID with groupID(%d)", groupID, err)
 	}
 
 	return condition, nil
@@ -135,6 +150,10 @@ func (t *TaskRepositoryImpl) GetConditionIDByGroupID(groupID int) (int, error) {
 
 // CreateTaskAnswer : Create new answer for the task
 func (t *TaskRepositoryImpl) CreateTaskAnswer(answer *model.Answer) error {
+	if t == nil {
+		return xerrors.Errorf("TaskRepositoryImpl.CreateTaskAnswer() is called with nil receiver: %w", model.ErrNilReceiver)
+	}
+
 	_, err := t.DB.NamedExec(`
 		INSERT INTO
 			answers (
@@ -152,7 +171,7 @@ func (t *TaskRepositoryImpl) CreateTaskAnswer(answer *model.Answer) error {
 			:reason
 		)`, answer)
 	if err != nil {
-		return err
+		return xerrors.Errorf("Failed to create new answer with parameters(%v): %w", answer, err)
 	}
 	return nil
 }

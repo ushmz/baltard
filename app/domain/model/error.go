@@ -1,19 +1,21 @@
 package model
 
-import "github.com/pkg/errors"
+import (
+	"golang.org/x/xerrors"
+)
 
 var (
+	// ErrNilReceiver : The receiver of called function is nil
+	ErrNilReceiver = xerrors.New("Reciever is nil")
+
 	// ErrBadRequest : HTTP request body or argument is invalid
-	ErrBadRequest = errors.New("Invalid request")
+	ErrBadRequest = xerrors.New("Invalid request")
 
 	// ErrNoSuchData : Requested data is not found
-	ErrNoSuchData = errors.New("Requested data is not found")
+	ErrNoSuchData = xerrors.New("Requested data is not found")
 
-	// ErrInternalServerError : Internal errors that don't have to tell users in detail
-	ErrInternalServerError = errors.New("Internal server error")
-
-	// ErrNilReceiver : The receiver of called function is nil
-	ErrNilReceiver = errors.New("Reciever is nil")
+	// ErrInternal : Internal errors that don't have to tell users in detail
+	ErrInternal = xerrors.New("Internal server error")
 )
 
 // ErrorMessage : Struct for error message response.
@@ -22,9 +24,17 @@ type ErrorMessage struct {
 	Message string `json:"message"`
 }
 
-// NoSuchDataError : Wrap no such data error like `sql.ErrNoRows`
-type NoSuchDataError struct{}
+// ErrWithMessage : Wrap errors with response messsage
+type ErrWithMessage struct {
+	error
+	Why string
+}
 
-func (e NoSuchDataError) Error() string {
-	return "No such data"
+// NewErrWithMessage : Return new ErrWithMessage
+func NewErrWithMessage(err error, why string) error {
+	return ErrWithMessage{err, why}
+}
+
+func (e *ErrWithMessage) Unwrap() error {
+	return e.error
 }

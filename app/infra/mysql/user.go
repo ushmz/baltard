@@ -7,7 +7,7 @@ import (
 	repo "ratri/domain/repository"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/pkg/errors"
+	"golang.org/x/xerrors"
 )
 
 // UserRepositoryImpl : Struct for use repository
@@ -23,15 +23,19 @@ func NewUserRepository(db *sqlx.DB) repo.UserRepository {
 // Create : Create new user
 func (u *UserRepositoryImpl) Create(uid string) (model.User, error) {
 	user := model.User{}
+	if u == nil {
+		return user, xerrors.Errorf("UserRepositoryImpl.Create() is called with nil receiver: %w", model.ErrNilReceiver)
+	}
+
 	// [TODO] Save completion code at the same time
 	rows, err := u.DB.Exec(`INSERT INTO users (uid) VALUES (?) `, uid)
 	if err != nil {
-		return user, err
+		return user, xerrors.Errorf("Failed to insert new user row: %w", err)
 	}
 
 	insertedID, err := rows.LastInsertId()
 	if err != nil {
-		return user, err
+		return user, xerrors.Errorf("Failed to get last inserted ID: %w", err)
 	}
 
 	user = model.User{
@@ -44,12 +48,16 @@ func (u *UserRepositoryImpl) Create(uid string) (model.User, error) {
 // FindByID : Find an user by ID
 func (u *UserRepositoryImpl) FindByID(userID int) (model.User, error) {
 	user := model.User{}
+	if u == nil {
+		return user, xerrors.Errorf("UserRepositoryImpl.FindByID() is called with nil receiver: %w", model.ErrNilReceiver)
+	}
+
 	row := u.DB.QueryRowx(`SELECT id, uid FROM users WHERE id = ?`, userID)
 	if err := row.StructScan(&user); err != nil {
 		if err == sql.ErrNoRows {
-			return user, model.ErrNoSuchData
+			return user, xerrors.Errorf("User with ID (%s) is not found: %w", userID, model.ErrNoSuchData)
 		}
-		return user, err
+		return user, xerrors.Errorf("Failed to get user with ID (%s): %w", userID, err)
 	}
 	return user, nil
 }
@@ -57,18 +65,25 @@ func (u *UserRepositoryImpl) FindByID(userID int) (model.User, error) {
 // FindByUID : Find an user by UID
 func (u *UserRepositoryImpl) FindByUID(uid string) (model.User, error) {
 	user := model.User{}
-	err := u.DB.Get(&user, `SELECT id, uid FROM users WHERE uid = ?`, uid)
-	if err != nil {
+	if u == nil {
+		return user, xerrors.Errorf("UserRepositoryImpl.FindByUID() is called with nil receiver: %w", model.ErrNilReceiver)
+	}
+
+	if err := u.DB.Get(&user, `SELECT id, uid FROM users WHERE uid = ?`, uid); err != nil {
 		if err == sql.ErrNoRows {
-			return user, model.ErrNoSuchData
+			return user, xerrors.Errorf("User with UID (%s) is not found: %w", uid, model.ErrNoSuchData)
 		}
-		return user, err
+		return user, xerrors.Errorf("Failed to get user with UID (%s): %w", uid, err)
 	}
 	return user, nil
 }
 
 // AddCompletionCode : Add completion code
 func (u *UserRepositoryImpl) AddCompletionCode(userID, code int) error {
+	if u == nil {
+		return xerrors.Errorf("UserRepositoryImpl.AddCompletionCode() is called with nil receiver: %w", model.ErrNilReceiver)
+	}
+
 	_, err := u.DB.Exec(`
 		INSERT INTO 
 			completion_codes (
@@ -80,13 +95,17 @@ func (u *UserRepositoryImpl) AddCompletionCode(userID, code int) error {
 		code,
 	)
 	if err != nil {
-		return err
+		return xerrors.Errorf("Failed to insert completion code (%d) to User (%d): %w", code, userID, err)
 	}
 	return nil
 }
 
 // GetCompletionCodeByID : Get task completion code by user ID
 func (u *UserRepositoryImpl) GetCompletionCodeByID(userID int) (int, error) {
+	if u == nil {
+		return 0, xerrors.Errorf("UserRepositoryImpl.GetCompletionCodeByID() is called with nil receiver: %w", model.ErrNilReceiver)
+	}
+
 	var code sql.NullInt64
 	row := u.DB.QueryRow(`
 		SELECT
@@ -99,13 +118,15 @@ func (u *UserRepositoryImpl) GetCompletionCodeByID(userID int) (int, error) {
 
 	if err := row.Scan(&code); err != nil {
 		if err == sql.ErrNoRows {
-			return 0, model.ErrNoSuchData
+			return 0, xerrors.Errorf("Completion code for user(%d) is not found: %w", userID, model.ErrNoSuchData)
 		}
-		return 0, errors.WithStack(err)
+		return 0, xerrors.Errorf("Failed to get completion code for user (%d): %w", userID, err)
 	}
 
 	if !code.Valid {
-		return 42, errors.WithStack(model.ErrInternalServerError)
+		// return 42, xerrors.Errorf("Completion code for user(%d) is not found: %w", userID, model.ErrInternal)
+		return 42, xerrors.Errorf("Completion code for user(%d) is invalid: %w", userID, model.ErrInternal)
 	}
+
 	return int(code.Int64), nil
 }
