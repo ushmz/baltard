@@ -81,7 +81,7 @@ func (l *LogRepositoryImpl) FetchAllSearchSessions() ([]model.SearchSession, err
 // CumulateSerpDwellTime : "Upsert" serp viewing time log.
 // Key (pair of user_id and task_id) doesn't exist, insert new record.
 // Key exists, increment `time_on_page` value.
-func (l *LogRepositoryImpl) CumulateSerpDwellTime(p model.SerpDwellTimeLogParam) error {
+func (l *LogRepositoryImpl) CumulateSerpDwellTime(p *model.SerpDwellTimeLogParam) error {
 	if l == nil {
 		return model.ErrNilReceiver
 	}
@@ -102,7 +102,7 @@ func (l *LogRepositoryImpl) CumulateSerpDwellTime(p model.SerpDwellTimeLogParam)
 			KEY UPDATE
 				time_on_page = time_on_page + 1, 
 				updated_at = CURRENT_TIMESTAMP
-	`, p)
+	`, &p)
 	if err != nil {
 		return fmt.Errorf("Try to store SERP dwell time log: %w", err)
 	}
@@ -112,7 +112,7 @@ func (l *LogRepositoryImpl) CumulateSerpDwellTime(p model.SerpDwellTimeLogParam)
 // CumulatePageDwellTime : "Upsert" page viewing time log.
 // Key (pair of user_id, task_id and page_id) doesn't exist, insert new record.
 // Key exists, increment `time_on_page` value.
-func (l *LogRepositoryImpl) CumulatePageDwellTime(p model.PageDwellTimeLogParam) error {
+func (l *LogRepositoryImpl) CumulatePageDwellTime(p *model.PageDwellTimeLogParam) error {
 	if l == nil {
 		return fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
 	}
@@ -135,7 +135,7 @@ func (l *LogRepositoryImpl) CumulatePageDwellTime(p model.PageDwellTimeLogParam)
 			KEY UPDATE
 				time_on_page = time_on_page + 1, 
 				updated_at = CURRENT_TIMESTAMP
-	`, p)
+	`, &p)
 	if err != nil {
 		return fmt.Errorf("Try to store result page dwell time log(%v): %w", p, err)
 	}
@@ -143,7 +143,7 @@ func (l *LogRepositoryImpl) CumulatePageDwellTime(p model.PageDwellTimeLogParam)
 }
 
 // StoreSerpEventLog : Insert new SERP event logs
-func (l *LogRepositoryImpl) StoreSerpEventLog(p model.SearchPageEventLogParam) error {
+func (l *LogRepositoryImpl) StoreSerpEventLog(p *model.SearchPageEventLogParam) error {
 	if l == nil {
 		return fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
 	}
@@ -169,7 +169,7 @@ func (l *LogRepositoryImpl) StoreSerpEventLog(p model.SearchPageEventLogParam) e
 			:serp_rank,
 			:is_visible,
 			:event
-		)`, p)
+		)`, &p)
 	if err != nil {
 		return fmt.Errorf("Try to store SERP event log(%v): %w", p, err)
 	}
@@ -179,7 +179,7 @@ func (l *LogRepositoryImpl) StoreSerpEventLog(p model.SearchPageEventLogParam) e
 // StoreSearchSeeion : Upsert searh session log.
 // Insert new row if the user start search session.
 // Update "ended_at" field value if the user end search session.
-func (l *LogRepositoryImpl) StoreSearchSeeion(s model.SearchSessionParam) error {
+func (l *LogRepositoryImpl) StoreSearchSeeion(s *model.SearchSessionParam) error {
 	if l == nil {
 		return fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
 	}
@@ -199,7 +199,7 @@ func (l *LogRepositoryImpl) StoreSearchSeeion(s model.SearchSessionParam) error 
 		ON DUPLICATE KEY
 			UPDATE
 				ended_at = CURRENT_TIMESTAMP
-		`, s)
+		`, &s)
 	if err != nil {
 		return fmt.Errorf("Try to store search session(%v): %w", s, err)
 	}
