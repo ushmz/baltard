@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -59,10 +60,41 @@ func main() {
 	}
 }
 
+func httpErrorHandler(err error, c echo.Context) {
+	he, ok := err.(*echo.HTTPError)
+	if !ok {
+		// Errors not use *echo.HTTPError, such as panic.
+		c.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+
+	switch he.Message.(type) {
+	case error:
+		// If `error` type is returned in controller(handler).
+		e := he.Message.(error)
+
+		if (errors.As(e, &handler.ErrWithMessage{})) {
+			em := e.(handler.ErrWithMessage)
+			// [TODO] Logging to file
+			fmt.Printf("%+v\n", e)
+			c.JSON(he.Code, em.Why)
+			return
+		}
+		c.NoContent(he.Code)
+	case string:
+		// If the error happened other than controller(handler), such as URL not found.
+		c.JSON(he.Code, he.Message)
+	default:
+		// Unreachable
+		c.JSON(http.StatusInternalServerError, "Unknown error")
+	}
+}
+
 func newRouter(d *sqlx.DB, app *firebase.App) *echo.Echo {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
+	e.HTTPErrorHandler = httpErrorHandler
 
 	conf := config.GetConfig()
 	e.Use(mw.Logger())
