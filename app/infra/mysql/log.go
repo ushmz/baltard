@@ -1,11 +1,11 @@
 package mysql
 
 import (
+	"fmt"
 	"ratri/domain/model"
 	repo "ratri/domain/repository"
 
 	"github.com/jmoiron/sqlx"
-	"golang.org/x/xerrors"
 )
 
 // LogRepositoryImpl : Struct for DB operation
@@ -22,13 +22,13 @@ func NewLogRepository(db *sqlx.DB) repo.LogRepository {
 // Please make sure that this method is used only for exporting data.
 func (l *LogRepositoryImpl) FetchAllSerpDwellTimeLogs() ([]model.SerpDwellTimeLog, error) {
 	if l == nil {
-		return nil, xerrors.Errorf("LogRepositoryImpl.FetchAllPageDwellTimeLogs() called with nil receiver: %w", model.ErrNilReceiver)
+		return nil, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
 	}
 
 	data := []model.SerpDwellTimeLog{}
 	err := l.DB.Select(&data, "SELECT * FROM logs_serp_dwell_time")
 	if err != nil {
-		return data, xerrors.Errorf("Failed to get SERP dwell time log: %w", err)
+		return data, fmt.Errorf("Try to get SERP dwell time log: %w", err)
 	}
 	return data, nil
 }
@@ -37,13 +37,13 @@ func (l *LogRepositoryImpl) FetchAllSerpDwellTimeLogs() ([]model.SerpDwellTimeLo
 // Please make sure that this method is used only for exporting data.
 func (l *LogRepositoryImpl) FetchAllPageDwellTimeLogs() ([]model.PageDwellTimeLog, error) {
 	if l == nil {
-		return nil, xerrors.Errorf("LogRepositoryImpl.FetchAllPageDwellTimeLogs() called with nil receiver: %w", model.ErrNilReceiver)
+		return nil, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
 	}
 
 	data := []model.PageDwellTimeLog{}
 	err := l.DB.Select(&data, "SELECT * FROM logs_page_dwell_time")
 	if err != nil {
-		return data, xerrors.Errorf("Failed to get result page dwell time log: %w", err)
+		return data, fmt.Errorf("Try to get result page dwell time log: %w", err)
 	}
 	return data, nil
 }
@@ -52,13 +52,13 @@ func (l *LogRepositoryImpl) FetchAllPageDwellTimeLogs() ([]model.PageDwellTimeLo
 // Please make sure that this method is used only for exporting data.
 func (l *LogRepositoryImpl) FetchAllSerpEventLogs() ([]model.SearchPageEventLog, error) {
 	if l == nil {
-		return nil, xerrors.Errorf("LogRepositoryImpl.FetchAllSerpEventLogs() called with nil receiver: %w", model.ErrNilReceiver)
+		return nil, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
 	}
 
 	data := []model.SearchPageEventLog{}
 	err := l.DB.Select(&data, "SELECT * FROM logs_event")
 	if err != nil {
-		return data, xerrors.Errorf("Failed to get SERP event logs: %w", err)
+		return data, fmt.Errorf("Try to get SERP event logs: %w", err)
 	}
 	return data, nil
 }
@@ -67,13 +67,13 @@ func (l *LogRepositoryImpl) FetchAllSerpEventLogs() ([]model.SearchPageEventLog,
 // Please make sure that this method is used only for exporting data.
 func (l *LogRepositoryImpl) FetchAllSearchSessions() ([]model.SearchSession, error) {
 	if l == nil {
-		return nil, xerrors.Errorf("LogRepositoryImpl.FetchAllSearchSessions() called with nil receiver: %w", model.ErrNilReceiver)
+		return nil, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
 	}
 
 	data := []model.SearchSession{}
 	err := l.DB.Select(&data, "SELECT * FROM search_session")
 	if err != nil {
-		return data, xerrors.Errorf("Failed to get search sessions: %w", err)
+		return data, fmt.Errorf("Try to get search sessions: %w", err)
 	}
 	return data, nil
 }
@@ -83,7 +83,7 @@ func (l *LogRepositoryImpl) FetchAllSearchSessions() ([]model.SearchSession, err
 // Key exists, increment `time_on_page` value.
 func (l *LogRepositoryImpl) CumulateSerpDwellTime(p model.SerpDwellTimeLogParam) error {
 	if l == nil {
-		return xerrors.Errorf("LogRepositoryImpl.CumulateSerpDwellTime() called with nil receiver: %w", model.ErrNilReceiver)
+		return model.ErrNilReceiver
 	}
 
 	_, err := l.DB.NamedExec(`
@@ -104,7 +104,7 @@ func (l *LogRepositoryImpl) CumulateSerpDwellTime(p model.SerpDwellTimeLogParam)
 				updated_at = CURRENT_TIMESTAMP
 	`, p)
 	if err != nil {
-		return xerrors.Errorf("Failed to store SERP dwell time log(%v): %w", p, err)
+		return fmt.Errorf("Try to store SERP dwell time log: %w", err)
 	}
 	return nil
 }
@@ -114,7 +114,7 @@ func (l *LogRepositoryImpl) CumulateSerpDwellTime(p model.SerpDwellTimeLogParam)
 // Key exists, increment `time_on_page` value.
 func (l *LogRepositoryImpl) CumulatePageDwellTime(p model.PageDwellTimeLogParam) error {
 	if l == nil {
-		return xerrors.Errorf("LogRepositoryImpl.CumulatePageDwellTime() called with nil receiver: %w", model.ErrNilReceiver)
+		return fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
 	}
 
 	_, err := l.DB.NamedExec(`
@@ -137,7 +137,7 @@ func (l *LogRepositoryImpl) CumulatePageDwellTime(p model.PageDwellTimeLogParam)
 				updated_at = CURRENT_TIMESTAMP
 	`, p)
 	if err != nil {
-		return xerrors.Errorf("Failed to store result page dwell time log(%v): %w", p, err)
+		return fmt.Errorf("Try to store result page dwell time log(%v): %w", p, err)
 	}
 	return nil
 }
@@ -145,7 +145,7 @@ func (l *LogRepositoryImpl) CumulatePageDwellTime(p model.PageDwellTimeLogParam)
 // StoreSerpEventLog : Insert new SERP event logs
 func (l *LogRepositoryImpl) StoreSerpEventLog(p model.SearchPageEventLogParam) error {
 	if l == nil {
-		return xerrors.Errorf("LogRepositoryImpl.StoreSerpEventLog() called with nil receiver: %w", model.ErrNilReceiver)
+		return fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
 	}
 
 	_, err := l.DB.NamedExec(`
@@ -171,7 +171,7 @@ func (l *LogRepositoryImpl) StoreSerpEventLog(p model.SearchPageEventLogParam) e
 			:event
 		)`, p)
 	if err != nil {
-		return xerrors.Errorf("Failed to store SERP event log(%v): %w", p, err)
+		return fmt.Errorf("Try to store SERP event log(%v): %w", p, err)
 	}
 	return nil
 }
@@ -181,7 +181,7 @@ func (l *LogRepositoryImpl) StoreSerpEventLog(p model.SearchPageEventLogParam) e
 // Update "ended_at" field value if the user end search session.
 func (l *LogRepositoryImpl) StoreSearchSeeion(s model.SearchSessionParam) error {
 	if l == nil {
-		return xerrors.Errorf("LogRepositoryImpl.StoreSearchSeeion() called with nil receiver: %w", model.ErrNilReceiver)
+		return fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
 	}
 
 	_, err := l.DB.NamedExec(`
@@ -201,7 +201,7 @@ func (l *LogRepositoryImpl) StoreSearchSeeion(s model.SearchSessionParam) error 
 				ended_at = CURRENT_TIMESTAMP
 		`, s)
 	if err != nil {
-		return xerrors.Errorf("Failed to store search session(%v): %w", s, err)
+		return fmt.Errorf("Try to store search session(%v): %w", s, err)
 	}
 	return nil
 }

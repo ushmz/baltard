@@ -2,10 +2,10 @@ package firebase
 
 import (
 	"context"
+	"fmt"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
-	"github.com/pkg/errors"
 	"google.golang.org/api/option"
 )
 
@@ -19,7 +19,7 @@ func InitApp() (*firebase.App, error) {
 func GetAuthClient(app *firebase.App) (*auth.Client, error) {
 	client, err := app.Auth(context.Background())
 	if err != nil {
-		return nil, errors.Errorf("Failed to get auth client %v", err)
+		return nil, fmt.Errorf("Failed to get auth client %v", err)
 	}
 	return client, nil
 }
