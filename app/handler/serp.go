@@ -2,8 +2,8 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
-	"strconv"
 
 	"ratri/domain/model"
 	"ratri/usecase"
@@ -21,6 +21,13 @@ func NewSerpHandler(serp usecase.SerpUsecase) *Serp {
 	return &Serp{usecase: serp}
 }
 
+// FetchSERPParam : Request parameters for fetch search result pages
+type FetchSERPParam struct {
+	ID     int `json:"id" param:"id"`
+	Offset int `json:"offset" query:"offset"`
+	Top    int `json:"top" query:"top"`
+}
+
 // FetchSerpWithRatioByID : Return search result pages with similarweb information (such as icon)
 // @Id fetch_serp_with_ratio_by_id
 // @Summary Returns json which have a list of search results with data for RatioUI.
@@ -35,48 +42,43 @@ func NewSerpHandler(serp usecase.SerpUsecase) *Serp {
 // @Failure 500
 // @Router /v1/serp/{taskId}/ratio [GET]
 func (s *Serp) FetchSerpWithRatioByID(c echo.Context) error {
-	// taskID : Get task Id from path parameter.
-	taskID := c.Param("id")
-	task, err := strconv.Atoi(taskID)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
-			Message: "Parameter `id` must be number",
-		})
+	if s == nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, model.ErrNilReceiver)
 	}
 
-	// offsetstr : Get offset from query parameter.
-	offsetstr := c.QueryParam("offset")
-	// offset : Parse string value to int value.
-	offset, err := strconv.Atoi(offsetstr)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
-			Message: "Parameter `offset` must be number",
-		})
+	p := FetchSERPParam{}
+	if err := c.Bind(&p); err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+				error: fmt.Errorf("Invalid request body: %w", err),
+				Why:   "Invalid request body",
+			},
+		)
 	}
 
-	// topstr : Return this number of top category.
-	topstr := c.QueryParam("top")
-	if topstr == "" {
-		topstr = "3"
-	}
-	// top : Parse string value to int value.
-	top, err := strconv.Atoi(topstr)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
-			Message: "Parameter `top` must be number",
-		})
+	if p.Top == 0 {
+		p.Top = 3
 	}
 
-	serp, err := s.usecase.FetchSerpWithRatio(task, offset, top)
+	serp, err := s.usecase.FetchSerpWithRatio(p.ID, p.Offset, p.Top)
 	if err != nil {
-		if errors.Is(err, model.NoSuchDataError{}) {
-			return c.JSON(http.StatusNotFound, model.ErrorMessage{
-				Message: "Pages not found",
-			})
+		if errors.Is(err, model.ErrNoSuchData) {
+			return echo.NewHTTPError(
+				http.StatusNotFound,
+				ErrWithMessage{
+					error: fmt.Errorf("Page nout found: %w", err),
+					Why:   "Page not found",
+				},
+			)
 		}
-		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-			Message: "Failed to fetch relations",
-		})
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Try to get search result: %w", err),
+				Why:   "Request failed",
+			},
+		)
 	}
 
 	return c.JSON(http.StatusOK, serp)
@@ -96,50 +98,43 @@ func (s *Serp) FetchSerpWithRatioByID(c echo.Context) error {
 // @Failure 500
 // @Router /v1/serp/{taskId}/icon [GET]
 func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
-	// taskID : Get task Id from path parameter.
-	taskID := c.Param("id")
-	task, err := strconv.Atoi(taskID)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
-			Message: "Parameter `id` must be number",
-		})
+	if s == nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, model.ErrNilReceiver)
 	}
 
-	// offsetstr : Get offset from query parameter.
-	offsetstr := c.QueryParam("offset")
-	// offset : Parse offset string to int value.
-	offset, err := strconv.Atoi(offsetstr)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
-			Message: "Parameter `offset` must be number",
-		})
+	p := FetchSERPParam{}
+	if err := c.Bind(&p); err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+				error: fmt.Errorf("Invalid request body: %w", err),
+				Why:   "Invalid request body",
+			},
+		)
 	}
 
-	// topstr : Return this number of top category.
-	topstr := c.QueryParam("top")
-	// If value is not specified, set default value `3`
-	if topstr == "" {
-		topstr = "10"
-	}
-	// top : Parse string value to int value.
-	top, err := strconv.Atoi(topstr)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
-			Message: "Parameter `top` must be number",
-		})
+	if p.Top == 0 {
+		p.Top = 3
 	}
 
-	serp, err := s.usecase.FetchSerpWithIcon(task, offset, top)
+	serp, err := s.usecase.FetchSerpWithIcon(p.ID, p.Offset, p.Top)
 	if err != nil {
-		if errors.Is(err, model.NoSuchDataError{}) {
-			return c.JSON(http.StatusNotFound, model.ErrorMessage{
-				Message: "Pages not found",
-			})
+		if errors.Is(err, model.ErrNoSuchData) {
+			return echo.NewHTTPError(
+				http.StatusNotFound,
+				ErrWithMessage{
+					error: fmt.Errorf("Page nout found: %w", err),
+					Why:   "Page not found",
+				},
+			)
 		}
-
-		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-			Message: "Failed to fetch relations",
-		})
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Try to get search result: %w", err),
+				Why:   "Request failed",
+			},
+		)
 	}
 
 	return c.JSON(http.StatusOK, serp)
@@ -158,34 +153,39 @@ func (s *Serp) FetchSerpWithIconByID(c echo.Context) error {
 // @Failure 500
 // @Router /v1/serp/{taskId} [GET]
 func (s *Serp) FetchSerpByID(c echo.Context) error {
-	// taskID : Get task Id from path parameter.
-	taskID := c.Param("id")
-	task, err := strconv.Atoi(taskID)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
-			Message: "Parameter `id` must be number",
-		})
+	if s == nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, model.ErrNilReceiver)
 	}
 
-	// offsetstr : Get offset from query parameter.
-	offsetstr := c.QueryParam("offset")
-	offset, err := strconv.Atoi(offsetstr)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
-			Message: "Parameter `offset` must be number",
-		})
+	p := FetchSERPParam{}
+	if err := c.Bind(&p); err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+				error: fmt.Errorf("Invalid request body: %w", err),
+				Why:   "Invalid request body",
+			},
+		)
 	}
 
-	serp, err := s.usecase.FetchSerp(task, offset)
+	serp, err := s.usecase.FetchSerp(p.ID, p.Offset)
 	if err != nil {
-		if errors.Is(err, model.NoSuchDataError{}) {
-			return c.JSON(http.StatusNotFound, model.ErrorMessage{
-				Message: "Pages not found",
-			})
+		if errors.Is(err, model.ErrNoSuchData) {
+			return echo.NewHTTPError(
+				http.StatusNotFound,
+				ErrWithMessage{
+					error: fmt.Errorf("Page nout found: %w", err),
+					Why:   "Page not found",
+				},
+			)
 		}
-		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-			Message: "Failed to fetch relations",
-		})
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Try to get search result: %w", err),
+				Why:   "Request failed",
+			},
+		)
 	}
 
 	return c.JSON(http.StatusOK, serp)

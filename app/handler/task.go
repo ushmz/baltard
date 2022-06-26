@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"ratri/domain/model"
 	"ratri/usecase"
@@ -22,6 +21,11 @@ func NewTaskHandler(task usecase.TaskUsecase) *Task {
 	return &Task{usecase: task}
 }
 
+// FetchTaskInfoParams : Request parameters for fetch task info
+type FetchTaskInfoParams struct {
+	ID int `json:"id" param:"id"`
+}
+
 // FetchTaskInfo : Fetch task info by task id
 // @Id fetch_task_info
 // @Summary Fetch task information.
@@ -34,25 +38,41 @@ func NewTaskHandler(task usecase.TaskUsecase) *Task {
 // @Failure 500 "Error with message"
 // @Router /v1/task/{id} [GET]
 func (t *Task) FetchTaskInfo(c echo.Context) error {
+	if t == nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, model.ErrNilReceiver)
+	}
 
-	// taskID : Get task Id from path parameter.
-	taskID := c.Param("id")
-	task, err := strconv.Atoi(taskID)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
-			Message: "Parameter `id` must be number",
-		})
+	p := FetchTaskInfoParams{}
+	if err := c.Bind(&p); err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+				error: fmt.Errorf("Cannot bind request body: %w", err),
+				Why:   "Parameter `id` is needed",
+			},
+		)
 	}
 
 	// Fetch task information by task Id
-	ti, err := t.usecase.FetchTaskInfo(task)
+	ti, err := t.usecase.FetchTaskInfo(p.ID)
 	if err != nil {
-		if errors.Is(err, model.NoSuchDataError{}) {
-			return c.JSON(http.StatusNotFound, model.ErrorMessage{
-				Message: fmt.Sprintf("TaskId %v not found", taskID),
-			})
+		if errors.Is(err, model.ErrNoSuchData) {
+			msg := fmt.Sprintf("Task with ID(%d) is not found", p.ID)
+			return echo.NewHTTPError(
+				http.StatusNotFound,
+				ErrWithMessage{
+					error: fmt.Errorf("%s: %w", msg, err),
+					Why:   msg,
+				},
+			)
 		}
-		return c.NoContent(http.StatusInternalServerError)
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Try to get search result: %w", err),
+				Why:   "Request failed",
+			},
+		)
 	}
 
 	return c.JSON(http.StatusOK, ti)
@@ -70,20 +90,29 @@ func (t *Task) FetchTaskInfo(c echo.Context) error {
 // @Failure 500 "Error with message"
 // @Router /v1/task/answer [POST]
 func (t *Task) SubmitTaskAnswer(c echo.Context) error {
-	// answer : Bind request body to struct
-	p := model.Answer{}
-	if err := c.Bind(&p); err != nil {
-		return c.JSON(http.StatusBadRequest, model.ErrorMessage{
-			Message: fmt.Sprintf("Invalid request body : %v", err),
-		})
+	if t == nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, model.ErrNilReceiver)
 	}
 
-	err := t.usecase.CreateTaskAnswer(&p)
-	// Execute query.
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-			Message: "Failed to submit answer.",
-		})
+	p := model.Answer{}
+	if err := c.Bind(&p); err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+				error: fmt.Errorf("Invalid request body: %w", err),
+				Why:   "Invalid request body",
+			},
+		)
+	}
+
+	if err := t.usecase.CreateTaskAnswer(&p); err != nil {
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Try to create answer: %w", err),
+				Why:   "Request failed",
+			},
+		)
 	}
 
 	return c.NoContent(http.StatusCreated)

@@ -33,20 +33,35 @@ func NewLogHandler(log usecase.LogUsecase) *Log {
 // @Failure 500 "Error with message"
 // @Router /v1/logs/serp [POST]
 func (l *Log) CumulateSerpDwellTime(c echo.Context) error {
+	if l == nil {
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver),
+				Why:   "Something went wrong with Server",
+			},
+		)
+	}
 	p := model.SerpDwellTimeLogParam{}
 	if err := c.Bind(&p); err != nil {
-		msg := model.ErrorMessage{
-			Message: fmt.Sprintf("Cannot bind request body : %v", err),
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+				error: fmt.Errorf("Invalid request body: %w", err),
+				Why:   "Invalid request body",
+			},
+		)
 	}
 
-	err := l.usecase.CumulateSerpDwellTime(p)
+	err := l.usecase.CumulateSerpDwellTime(&p)
 	if err != nil {
-		msg := model.ErrorMessage{
-			Message: "Database Execution error.",
-		}
-		return c.JSON(http.StatusInternalServerError, msg)
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Try to store SERP dwell time log: %w", err),
+				Why:   "Request failed",
+			},
+		)
 	}
 
 	return c.NoContent(http.StatusCreated)
@@ -70,20 +85,37 @@ type FileExportParam struct {
 // @Failure 500 "Error with message"
 // @Router /v1/logs/serp/export [GET]
 func (l *Log) ExportSerpDwellTime(c echo.Context) error {
+	if l == nil {
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver),
+				Why:   "Something went wrong with Server",
+			},
+		)
+	}
+
 	p := FileExportParam{}
 	if err := c.Bind(&p); err != nil {
-		msg := model.ErrorMessage{
-			Message: fmt.Sprintf("Cannot bind request body : %v", err),
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+
+				error: fmt.Errorf("Invalid request body: %w", err),
+				Why:   "Invalid request body",
+			},
+		)
 	}
 
 	b, err := l.usecase.ExportPageDwellTimeLog(p.Header, p.FileType)
 	if err != nil {
-		msg := model.ErrorMessage{
-			Message: "Failed to export data.",
-		}
-		return c.JSON(http.StatusInternalServerError, msg)
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Try to export SERP dwell time log: %w", err),
+				Why:   "Request failed",
+			},
+		)
 	}
 
 	if p.FileType == store.TSV {
@@ -107,20 +139,36 @@ func (l *Log) ExportSerpDwellTime(c echo.Context) error {
 // @Failure 500 "Error with message"
 // @Router /v1/logs/pageview [POST]
 func (l *Log) CumulatePageDwellTime(c echo.Context) error {
-	p := model.PageDwellTimeLogParam{}
-	if err := c.Bind(&p); err != nil {
-		msg := model.ErrorMessage{
-			Message: fmt.Sprintf("Cannot bind request body : %v", err),
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+	if l == nil {
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver),
+				Why:   "Something went wrong with Server",
+			},
+		)
 	}
 
-	err := l.usecase.CumulatePageDwellTime(p)
+	p := model.PageDwellTimeLogParam{}
+	if err := c.Bind(&p); err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+				error: fmt.Errorf("Invalid request body: %w", err),
+				Why:   "Invalid request body",
+			},
+		)
+	}
+
+	err := l.usecase.CumulatePageDwellTime(&p)
 	if err != nil {
-		msg := model.ErrorMessage{
-			Message: "Database Execution error.",
-		}
-		return c.JSON(http.StatusInternalServerError, msg)
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Try to store SERP dwell time log: %w", err),
+				Why:   "Request failed",
+			},
+		)
 	}
 
 	return c.NoContent(http.StatusCreated)
@@ -128,20 +176,36 @@ func (l *Log) CumulatePageDwellTime(c echo.Context) error {
 
 // ExportPageDwellTime : Export all page dwell time logs to file
 func (l *Log) ExportPageDwellTime(c echo.Context) error {
+	if l == nil {
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver),
+				Why:   "Something went wrong with Server",
+			},
+		)
+	}
+
 	p := FileExportParam{}
 	if err := c.Bind(&p); err != nil {
-		msg := model.ErrorMessage{
-			Message: fmt.Sprintf("Cannot bind request body : %v", err),
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+				error: fmt.Errorf("Invalid request body: %w", err),
+				Why:   "Invalid request body",
+			},
+		)
 	}
 
 	b, err := l.usecase.ExportPageDwellTimeLog(p.Header, p.FileType)
 	if err != nil {
-		msg := model.ErrorMessage{
-			Message: "Failed to export log.",
-		}
-		return c.JSON(http.StatusInternalServerError, msg)
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Try to export result page dwell time log: %w", err),
+				Why:   "Request failed",
+			},
+		)
 	}
 
 	if p.FileType == store.TSV {
@@ -165,20 +229,36 @@ func (l *Log) ExportPageDwellTime(c echo.Context) error {
 // @Failure 500 "Error with message"
 // @Router /v1/logs/click [POST]
 func (l *Log) CreateSerpEventLog(c echo.Context) error {
-	p := model.SearchPageEventLogParam{}
-	if err := c.Bind(&p); err != nil {
-		msg := model.ErrorMessage{
-			Message: fmt.Sprintf("Cannot bind request body : %v", err),
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+	if l == nil {
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver),
+				Why:   "Something went wrong with Server",
+			},
+		)
 	}
 
-	err := l.usecase.StoreSerpEventLog(p)
+	p := model.SearchPageEventLogParam{}
+	if err := c.Bind(&p); err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+				error: fmt.Errorf("Invalid request body: %w", err),
+				Why:   "Invalid request body",
+			},
+		)
+	}
+
+	err := l.usecase.StoreSerpEventLog(&p)
 	if err != nil {
-		msg := model.ErrorMessage{
-			Message: "Database Execution error.",
-		}
-		return c.JSON(http.StatusInternalServerError, msg)
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Try to store SERP event log: %w", err),
+				Why:   "Request failed",
+			},
+		)
 	}
 
 	return c.NoContent(http.StatusCreated)
@@ -186,20 +266,36 @@ func (l *Log) CreateSerpEventLog(c echo.Context) error {
 
 // ExportSerpEventLog : Export all SERP event logs to file
 func (l *Log) ExportSerpEventLog(c echo.Context) error {
+	if l == nil {
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver),
+				Why:   "Something went wrong with Server",
+			},
+		)
+	}
+
 	p := FileExportParam{}
 	if err := c.Bind(&p); err != nil {
-		msg := model.ErrorMessage{
-			Message: fmt.Sprintf("Cannot bind request body : %v", err),
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+				error: fmt.Errorf("Invalid request body: %w", err),
+				Why:   "Invalid request body",
+			},
+		)
 	}
 
 	b, err := l.usecase.ExportSerpEventLog(p.Header, p.FileType)
 	if err != nil {
-		msg := model.ErrorMessage{
-			Message: "Failed to export log.",
-		}
-		return c.JSON(http.StatusInternalServerError, msg)
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Try to export SERP event log: %w", err),
+				Why:   "Request failed",
+			},
+		)
 	}
 
 	if p.FileType == store.TSV {
@@ -223,20 +319,36 @@ func (l *Log) ExportSerpEventLog(c echo.Context) error {
 // @Failure 500 "Error with message"
 // @Router /v1/logs/session [POST]
 func (l *Log) StoreSearchSeeion(c echo.Context) error {
-	p := model.SearchSessionParam{}
-	if err := c.Bind(&p); err != nil {
-		msg := model.ErrorMessage{
-			Message: "Invalid request body.",
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+	if l == nil {
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver),
+				Why:   "Something went wrong with Server",
+			},
+		)
 	}
 
-	err := l.usecase.StoreSearchSeeion(p)
+	p := model.SearchSessionParam{}
+	if err := c.Bind(&p); err != nil {
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+				error: fmt.Errorf("Invalid request body: %w", err),
+				Why:   "Invalid request body",
+			},
+		)
+	}
+
+	err := l.usecase.StoreSearchSeeion(&p)
 	if err != nil {
-		msg := model.ErrorMessage{
-			Message: "Database Execution error.",
-		}
-		return c.JSON(http.StatusInternalServerError, msg)
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Try to store search session log: %w", err),
+				Why:   "Request failed",
+			},
+		)
 	}
 
 	return c.NoContent(http.StatusCreated)
@@ -244,20 +356,36 @@ func (l *Log) StoreSearchSeeion(c echo.Context) error {
 
 // ExportSearchSeeion : Export all search sessions to file
 func (l *Log) ExportSearchSeeion(c echo.Context) error {
+	if l == nil {
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver),
+				Why:   "Something went wrong with Server",
+			},
+		)
+	}
+
 	p := FileExportParam{}
 	if err := c.Bind(&p); err != nil {
-		msg := model.ErrorMessage{
-			Message: "Invalid request body.",
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+				error: fmt.Errorf("Invalid request body: %w", err),
+				Why:   "Invalid request body",
+			},
+		)
 	}
 
 	b, err := l.usecase.ExportSearchSeeion(p.Header, p.FileType)
 	if err != nil {
-		msg := model.ErrorMessage{
-			Message: "Failed to export log",
-		}
-		return c.JSON(http.StatusInternalServerError, msg)
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Try to export search session log: %w", err),
+				Why:   "Request failed",
+			},
+		)
 	}
 
 	if p.FileType == store.TSV {

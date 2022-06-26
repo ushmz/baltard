@@ -1,7 +1,8 @@
 package handler
 
 import (
-	"database/sql"
+	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -11,7 +12,6 @@ import (
 	"ratri/usecase"
 
 	"github.com/labstack/echo/v4"
-	"github.com/pkg/errors"
 )
 
 // User : Implemention of user handler
@@ -36,6 +36,16 @@ func NewUserHandler(user usecase.UserUsecase) *User {
 // @Failure 500 "Error with message"
 // @Router /users [POST]
 func (u *User) CreateUser(c echo.Context) error {
+	if u == nil {
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver),
+				Why:   "",
+			},
+		)
+	}
+
 	// u : Request body struct
 	p := model.UserParam{}
 	// Bind request body parameters to struct
@@ -46,26 +56,35 @@ func (u *User) CreateUser(c echo.Context) error {
 	// exist : Given uid is already exist or not
 	user, err := u.usecase.FindByUID(p.UID)
 	if err != nil {
-		switch errors.Cause(err) {
-		case model.ErrNoSuchData:
+		if errors.Is(err, model.ErrNoSuchData) {
 			user, err = u.usecase.CreateUser(p.UID)
 			if err != nil {
-				return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-					Message: "Failed to create new user.",
-				})
+				return echo.NewHTTPError(
+					http.StatusInternalServerError,
+					ErrWithMessage{
+						error: err,
+						Why:   "Try to create new user.",
+					},
+				)
 			}
-		default:
-			return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-				Message: "Failed to detect user existence.",
-			})
 		}
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{
+				error: err,
+				Why:   "Try to detect user existence.",
+			},
+		)
 	}
 
 	info, err := u.usecase.AllocateTask()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, model.ErrorMessage{
-			Message: "Failed to allocate task.",
-		})
+		return echo.NewHTTPError(
+			http.StatusInternalServerError, ErrWithMessage{
+				error: err,
+				Why:   "Try to allocate task.",
+			},
+		)
 	}
 
 	return c.JSON(http.StatusOK, model.UserResponse{
@@ -98,17 +117,31 @@ type CreateSessionParameter struct {
 // CreateSession : Generate session token by idToken
 func (u *User) CreateSession(c echo.Context) error {
 	if u == nil {
-		return c.JSON(http.StatusInternalServerError, nil)
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{error: model.ErrNilReceiver, Why: "Something went wrong with Server"},
+		)
 	}
 
 	p := new(CreateSessionParameter)
 	if err := c.Bind(p); err != nil {
-		return c.JSON(http.StatusBadRequest, "Invalid request body")
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+				error: err,
+				Why:   "Invalid request body",
+			},
+		)
 	}
 
 	cval, err := u.usecase.CreateSession(p.IDToken)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, nil)
+		return echo.NewHTTPError(http.StatusInternalServerError,
+			ErrWithMessage{
+				error: err,
+				Why:   "",
+			},
+		)
 	}
 
 	sc := createCookie("exp-session", cval)
@@ -132,20 +165,26 @@ func (u *User) GetCompletionCode(c echo.Context) error {
 	id := c.Param("id")
 	userID, err := strconv.Atoi(id)
 	if err != nil {
-		msg := model.ErrorMessage{
-			Message: "Parameter `userID` must be number",
-		}
-		return c.JSON(http.StatusBadRequest, msg)
+		return echo.NewHTTPError(
+			http.StatusBadRequest,
+			ErrWithMessage{
+				error: err,
+				Why:   "Parameter `userID` must be number",
+			},
+		)
 	}
 
 	// Fetch completion code by uid from DB
 	code, err := u.usecase.GetCompletionCode(userID)
 	if err != nil {
 		// If given uid not found in DB
-		if err == sql.ErrNoRows {
-			return c.NoContent(http.StatusNotFound)
+		if errors.Is(err, model.ErrNoSuchData) {
+			return echo.NewHTTPError(http.StatusNotFound, ErrWithMessage{error: err, Why: "Not found"})
 		}
-		return c.NoContent(http.StatusInternalServerError)
+		return echo.NewHTTPError(
+			http.StatusInternalServerError,
+			ErrWithMessage{error: err, Why: "Request failed"},
+		)
 	}
 
 	return c.JSON(http.StatusOK, code)
