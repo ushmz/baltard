@@ -1,11 +1,16 @@
 package model
 
 import (
-	"golang.org/x/xerrors"
 	"errors"
 )
 
 var (
+	// ErrDBOperationFailed : DB operation failed
+	ErrDBOperationFailed = errors.New("DB operation failed")
+
+	// ErrDBConnectionFailed : DB connection fauled
+	ErrDBConnectionFailed = errors.New("DB connection fauled")
+
 	// ErrNilReceiver : The receiver of called function is nil
 	ErrNilReceiver = errors.New("Called with nil reciever")
 
