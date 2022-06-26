@@ -2,6 +2,7 @@
 package usecase
 
 import (
+	"fmt"
 	"math/rand"
 	"strings"
 	"time"
@@ -9,21 +10,19 @@ import (
 	"ratri/domain/authentication"
 	"ratri/domain/model"
 	repo "ratri/domain/repository"
-
-	"github.com/pkg/errors"
 )
 
 // UserUsecase : Abstract operations that user usecase should have
 type UserUsecase interface {
-	FindByUID(uid string) (model.User, error)
-	CreateUser(uid string) (model.User, error)
+	FindByUID(uid string) (*model.User, error)
+	CreateUser(uid string) (*model.User, error)
 	CreateSession(idToken string) (string, error)
-	AllocateTask() (model.TaskInfo, error)
+	AllocateTask() (*model.TaskInfo, error)
 	GetCompletionCode(userID int) (int, error)
 }
 
-// UserImpl : Implemention of user usecase
-type UserImpl struct {
+// UserUsecaseImpl : Implemention of user usecase
+type UserUsecaseImpl struct {
 	userRepository repo.UserRepository
 	taskRepository repo.TaskRepository
 	userAuth       authentication.UserAuthentication
@@ -35,7 +34,7 @@ func NewUserUsecase(
 	taskRepository repo.TaskRepository,
 	userAuth authentication.UserAuthentication,
 ) UserUsecase {
-	return &UserImpl{
+	return &UserUsecaseImpl{
 		userRepository: userRepository,
 		taskRepository: taskRepository,
 		userAuth:       userAuth,
@@ -89,24 +88,24 @@ func generateSecret(length, lower, upper, digits, symbols int) string {
 }
 
 // FindByUID : Get a user by UID
-func (u *UserImpl) FindByUID(uid string) (model.User, error) {
+func (u *UserUsecaseImpl) FindByUID(uid string) (*model.User, error) {
 	if u == nil {
-		return model.User{}, errors.WithStack(model.ErrNilReceiver)
+		return nil, model.ErrNilReceiver
 	}
 
 	user, err := u.userRepository.FindByUID(uid)
 	if err != nil {
-		return model.User{}, errors.WithStack(err)
+		return nil, fmt.Errorf("Try to get user: %w", err)
 	}
 
-	return user, nil
+	return &user, nil
 
 }
 
 // CreateUser : Create new user on this system
-func (u *UserImpl) CreateUser(uid string) (model.User, error) {
+func (u *UserUsecaseImpl) CreateUser(uid string) (*model.User, error) {
 	if u == nil {
-		return model.User{}, errors.WithStack(model.ErrNilReceiver)
+		return nil, model.ErrNilReceiver
 	}
 
 	rand.Seed(time.Now().UnixNano())
@@ -116,74 +115,79 @@ func (u *UserImpl) CreateUser(uid string) (model.User, error) {
 	secret := generateSecret(16, 2, 2, 2, 2)
 
 	if err := u.userAuth.RegisterUser(uid, secret); err != nil {
-		return model.User{}, err
+		return nil, fmt.Errorf("Try to create new user of auth client: %w", err)
 	}
 
 	user, err := u.userRepository.Create(uid)
 	if err != nil {
-		return model.User{}, err
+		return nil, fmt.Errorf("Try to create internal user: %w", err)
 	}
 
 	// Insert completion code
 	if u.userRepository.AddCompletionCode(user.ID, randomNumber); err != nil {
-		return model.User{}, err
+		return nil, fmt.Errorf("Try to add completion code: %w", err)
 	}
 
 	token, err := u.userAuth.GenerateToken(uid)
 	if err != nil {
-		return model.User{}, err
+		return nil, fmt.Errorf("Try to generate token with auth client: %w", err)
 	}
 
 	user.Token = token
 
-	return user, nil
+	return &user, nil
 }
 
 // CreateSession : Create session cookie
-func (u *UserImpl) CreateSession(idToken string) (string, error) {
+func (u *UserUsecaseImpl) CreateSession(idToken string) (string, error) {
 	if u == nil {
-		return "", errors.WithStack(model.ErrNilReceiver)
+		return "", model.ErrNilReceiver
 	}
 
 	cookie, err := u.userAuth.GenerateSessionCookie(idToken, 1*time.Hour)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Try to create sessionn cookie with auth client: %w", err)
 	}
 	return cookie, nil
 }
 
 // AllocateTask : Allocate tasks to user
-func (u *UserImpl) AllocateTask() (model.TaskInfo, error) {
+func (u *UserUsecaseImpl) AllocateTask() (*model.TaskInfo, error) {
 	if u == nil {
-		return model.TaskInfo{}, errors.WithStack(model.ErrNilReceiver)
+		return nil, model.ErrNilReceiver
 	}
 
 	// groupID : Allocated group ID (consists of task IDs and condition ID)
 	groupID, err := u.taskRepository.UpdateTaskAllocation()
 	if err != nil {
-		return model.TaskInfo{}, err
+		return nil, fmt.Errorf("Try to update task allocation: %w", err)
 	}
 
 	// taskIDs : Allocated task IDs
 	taskIDs, err := u.taskRepository.GetTaskIDsByGroupID(groupID)
 	if err != nil {
-		return model.TaskInfo{}, err
+		return nil, fmt.Errorf("Try to get task IDs by group ID: %w", err)
 	}
 
 	// conditionID : Allocated condition ID
 	conditionID, err := u.taskRepository.GetConditionIDByGroupID(groupID)
 	if err != nil {
-		return model.TaskInfo{}, err
+		return nil, fmt.Errorf("Try to get condition ID by group ID: %w", err)
 	}
 
-	return model.TaskInfo{ConditionID: conditionID, GroupID: groupID, TaskIDs: taskIDs}, nil
+	return &model.TaskInfo{ConditionID: conditionID, GroupID: groupID, TaskIDs: taskIDs}, nil
 }
 
 // GetCompletionCode : Get user task completion code
-func (u *UserImpl) GetCompletionCode(userID int) (int, error) {
+func (u *UserUsecaseImpl) GetCompletionCode(userID int) (int, error) {
 	if u == nil {
-		return 0, errors.WithStack(model.ErrNilReceiver)
+		return 0, model.ErrNilReceiver
 	}
 
-	return u.userRepository.GetCompletionCodeByID(userID)
+	code, err := u.userRepository.GetCompletionCodeByID(userID)
+	if err != nil {
+		return 0, fmt.Errorf("Try to get completion code of user ID(%d): %w", userID, err)
+	}
+
+	return code, nil
 }

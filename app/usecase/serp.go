@@ -2,6 +2,7 @@
 package usecase
 
 import (
+	"fmt"
 	"ratri/domain/model"
 	repo "ratri/domain/repository"
 	"sort"
@@ -14,30 +15,41 @@ type SerpUsecase interface {
 	FetchSerpWithRatio(taskID, offset, top int) ([]model.SerpWithRatio, error)
 }
 
-// SerpImpl : Struct for serp usecase
-type SerpImpl struct {
+// SerpUsecaseImpl : Struct for serp usecase
+type SerpUsecaseImpl struct {
 	lpRepo   repo.LinkedPageRepository
 	serpRepo repo.SerpRepository
 }
 
 // NewSerpUsecase : Return new serp usecase struct
 func NewSerpUsecase(serpRepository repo.SerpRepository, linkedPageRepository repo.LinkedPageRepository) SerpUsecase {
-	return &SerpImpl{lpRepo: linkedPageRepository, serpRepo: serpRepository}
+	return &SerpUsecaseImpl{lpRepo: linkedPageRepository, serpRepo: serpRepository}
 }
 
 // FetchSerp : Get search results by taskID
-func (s *SerpImpl) FetchSerp(taskID, offset int) ([]model.SearchPage, error) {
+func (s *SerpUsecaseImpl) FetchSerp(taskID, offset int) ([]model.SearchPage, error) {
+	if s == nil {
+		return nil, model.ErrNilReceiver
+	}
+
 	return s.serpRepo.FetchSerpByTaskID(taskID, offset)
 }
 
 // FetchSerpWithIcon : Get search results for Icon UI by taskID
-func (s *SerpImpl) FetchSerpWithIcon(taskID, offset, top int) ([]model.SerpWithIcon, error) {
+func (s *SerpUsecaseImpl) FetchSerpWithIcon(taskID, offset, top int) ([]model.SerpWithIcon, error) {
+	if s == nil {
+		return nil, model.ErrNilReceiver
+	}
+
 	// serp : Return struct of this method
 	serp := []model.SerpWithIcon{}
 
+	// [TODO] Performance measure.
+	// serp := make([]model.SerpWithIcon, 10)
+
 	srp, err := s.serpRepo.FetchSerpByTaskID(taskID, offset)
 	if err != nil {
-		return serp, err
+		return serp, fmt.Errorf("Try to get search results with taskID(%d), offset(%d): %w", taskID, offset, err)
 	}
 
 	pageIds := []int{}
@@ -57,7 +69,7 @@ func (s *SerpImpl) FetchSerpWithIcon(taskID, offset, top int) ([]model.SerpWithI
 
 	linked, err := s.lpRepo.GetBySearchPageIDs(pageIds, taskID, top)
 	if err != nil {
-		return serp, err
+		return serp, fmt.Errorf("Try to get linked pages by page IDs: %w", err)
 	}
 
 	for _, v := range linked {
@@ -86,13 +98,17 @@ func (s *SerpImpl) FetchSerpWithIcon(taskID, offset, top int) ([]model.SerpWithI
 }
 
 // FetchSerpWithRatio : Get search results for Ratio UI by taskID
-func (s *SerpImpl) FetchSerpWithRatio(taskID, offset, top int) ([]model.SerpWithRatio, error) {
+func (s *SerpUsecaseImpl) FetchSerpWithRatio(taskID, offset, top int) ([]model.SerpWithRatio, error) {
+	if s == nil {
+		return nil, model.ErrNilReceiver
+	}
+
 	// serp : Return struct of this method
 	serp := []model.SerpWithRatio{}
 
 	srp, err := s.serpRepo.FetchSerpByTaskID(taskID, offset)
 	if err != nil {
-		return serp, err
+		return serp, fmt.Errorf("Try to get search pages by page ID(%d), offset (%d): %w", taskID, offset, err)
 	}
 
 	pageIds := []int{}
@@ -115,7 +131,7 @@ func (s *SerpImpl) FetchSerpWithRatio(taskID, offset, top int) ([]model.SerpWith
 
 	linked, err := s.lpRepo.GetRatioBySearchPageIDs(pageIds, taskID)
 	if err != nil {
-		return serp, err
+		return serp, fmt.Errorf("Try to get linked pages by page IDs: %w", err)
 	}
 
 	for _, v := range linked {
