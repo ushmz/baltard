@@ -35,17 +35,17 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 }
 
 // AddCompletionCode mocks base method.
-func (m *MockUserRepository) AddCompletionCode(userId, code int) error {
+func (m *MockUserRepository) AddCompletionCode(userID, code int) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddCompletionCode", userId, code)
+	ret := m.ctrl.Call(m, "AddCompletionCode", userID, code)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // AddCompletionCode indicates an expected call of AddCompletionCode.
-func (mr *MockUserRepositoryMockRecorder) AddCompletionCode(userId, code interface{}) *gomock.Call {
+func (mr *MockUserRepositoryMockRecorder) AddCompletionCode(userID, code interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddCompletionCode", reflect.TypeOf((*MockUserRepository)(nil).AddCompletionCode), userId, code)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddCompletionCode", reflect.TypeOf((*MockUserRepository)(nil).AddCompletionCode), userID, code)
 }
 
 // Create mocks base method.
@@ -63,47 +63,47 @@ func (mr *MockUserRepositoryMockRecorder) Create(uid interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockUserRepository)(nil).Create), uid)
 }
 
-// FindById mocks base method.
-func (m *MockUserRepository) FindById(UserId int) (model.User, error) {
+// FindByID mocks base method.
+func (m *MockUserRepository) FindByID(UserID int) (model.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindById", UserId)
+	ret := m.ctrl.Call(m, "FindByID", UserID)
 	ret0, _ := ret[0].(model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindById indicates an expected call of FindById.
-func (mr *MockUserRepositoryMockRecorder) FindById(UserId interface{}) *gomock.Call {
+// FindByID indicates an expected call of FindByID.
+func (mr *MockUserRepositoryMockRecorder) FindByID(UserID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindById", reflect.TypeOf((*MockUserRepository)(nil).FindById), UserId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockUserRepository)(nil).FindByID), UserID)
 }
 
-// FindByUid mocks base method.
-func (m *MockUserRepository) FindByUid(uid string) (model.User, error) {
+// FindByUID mocks base method.
+func (m *MockUserRepository) FindByUID(uid string) (model.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByUid", uid)
+	ret := m.ctrl.Call(m, "FindByUID", uid)
 	ret0, _ := ret[0].(model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindByUid indicates an expected call of FindByUid.
-func (mr *MockUserRepositoryMockRecorder) FindByUid(uid interface{}) *gomock.Call {
+// FindByUID indicates an expected call of FindByUID.
+func (mr *MockUserRepositoryMockRecorder) FindByUID(uid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByUid", reflect.TypeOf((*MockUserRepository)(nil).FindByUid), uid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByUID", reflect.TypeOf((*MockUserRepository)(nil).FindByUID), uid)
 }
 
-// GetCompletionCodeById mocks base method.
-func (m *MockUserRepository) GetCompletionCodeById(userId int) (int, error) {
+// GetCompletionCodeByID mocks base method.
+func (m *MockUserRepository) GetCompletionCodeByID(userID int) (int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCompletionCodeById", userId)
+	ret := m.ctrl.Call(m, "GetCompletionCodeByID", userID)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetCompletionCodeById indicates an expected call of GetCompletionCodeById.
-func (mr *MockUserRepositoryMockRecorder) GetCompletionCodeById(userId interface{}) *gomock.Call {
+// GetCompletionCodeByID indicates an expected call of GetCompletionCodeByID.
+func (mr *MockUserRepositoryMockRecorder) GetCompletionCodeByID(userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompletionCodeById", reflect.TypeOf((*MockUserRepository)(nil).GetCompletionCodeById), userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompletionCodeByID", reflect.TypeOf((*MockUserRepository)(nil).GetCompletionCodeByID), userID)
 }

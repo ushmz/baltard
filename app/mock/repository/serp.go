@@ -35,16 +35,16 @@ func (m *MockSerpRepository) EXPECT() *MockSerpRepositoryMockRecorder {
 }
 
 // FetchSerpByTaskID mocks base method.
-func (m *MockSerpRepository) FetchSerpByTaskID(taskId, offset int) (*[]model.SearchPage, error) {
+func (m *MockSerpRepository) FetchSerpByTaskID(taskID, offset int) ([]model.SearchPage, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FetchSerpByTaskID", taskId, offset)
-	ret0, _ := ret[0].(*[]model.SearchPage)
+	ret := m.ctrl.Call(m, "FetchSerpByTaskID", taskID, offset)
+	ret0, _ := ret[0].([]model.SearchPage)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FetchSerpByTaskID indicates an expected call of FetchSerpByTaskID.
-func (mr *MockSerpRepositoryMockRecorder) FetchSerpByTaskID(taskId, offset interface{}) *gomock.Call {
+func (mr *MockSerpRepositoryMockRecorder) FetchSerpByTaskID(taskID, offset interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerpByTaskID", reflect.TypeOf((*MockSerpRepository)(nil).FetchSerpByTaskID), taskId, offset)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerpByTaskID", reflect.TypeOf((*MockSerpRepository)(nil).FetchSerpByTaskID), taskID, offset)
 }

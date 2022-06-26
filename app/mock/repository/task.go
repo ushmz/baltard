@@ -49,48 +49,48 @@ func (mr *MockTaskRepositoryMockRecorder) CreateTaskAnswer(arg0 interface{}) *go
 }
 
 // FetchTaskInfo mocks base method.
-func (m *MockTaskRepository) FetchTaskInfo(taskId int) (model.Task, error) {
+func (m *MockTaskRepository) FetchTaskInfo(taskID int) (model.Task, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FetchTaskInfo", taskId)
+	ret := m.ctrl.Call(m, "FetchTaskInfo", taskID)
 	ret0, _ := ret[0].(model.Task)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FetchTaskInfo indicates an expected call of FetchTaskInfo.
-func (mr *MockTaskRepositoryMockRecorder) FetchTaskInfo(taskId interface{}) *gomock.Call {
+func (mr *MockTaskRepositoryMockRecorder) FetchTaskInfo(taskID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchTaskInfo", reflect.TypeOf((*MockTaskRepository)(nil).FetchTaskInfo), taskId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchTaskInfo", reflect.TypeOf((*MockTaskRepository)(nil).FetchTaskInfo), taskID)
 }
 
-// GetConditionIdByGroupId mocks base method.
-func (m *MockTaskRepository) GetConditionIdByGroupId(groupId int) (int, error) {
+// GetConditionIDByGroupID mocks base method.
+func (m *MockTaskRepository) GetConditionIDByGroupID(groupID int) (int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetConditionIdByGroupId", groupId)
+	ret := m.ctrl.Call(m, "GetConditionIDByGroupID", groupID)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetConditionIdByGroupId indicates an expected call of GetConditionIdByGroupId.
-func (mr *MockTaskRepositoryMockRecorder) GetConditionIdByGroupId(groupId interface{}) *gomock.Call {
+// GetConditionIDByGroupID indicates an expected call of GetConditionIDByGroupID.
+func (mr *MockTaskRepositoryMockRecorder) GetConditionIDByGroupID(groupID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConditionIdByGroupId", reflect.TypeOf((*MockTaskRepository)(nil).GetConditionIdByGroupId), groupId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConditionIDByGroupID", reflect.TypeOf((*MockTaskRepository)(nil).GetConditionIDByGroupID), groupID)
 }
 
-// GetTaskIdsByGroupId mocks base method.
-func (m *MockTaskRepository) GetTaskIdsByGroupId(groupId int) ([]int, error) {
+// GetTaskIDsByGroupID mocks base method.
+func (m *MockTaskRepository) GetTaskIDsByGroupID(groupID int) ([]int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTaskIdsByGroupId", groupId)
+	ret := m.ctrl.Call(m, "GetTaskIDsByGroupID", groupID)
 	ret0, _ := ret[0].([]int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetTaskIdsByGroupId indicates an expected call of GetTaskIdsByGroupId.
-func (mr *MockTaskRepositoryMockRecorder) GetTaskIdsByGroupId(groupId interface{}) *gomock.Call {
+// GetTaskIDsByGroupID indicates an expected call of GetTaskIDsByGroupID.
+func (mr *MockTaskRepositoryMockRecorder) GetTaskIDsByGroupID(groupID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTaskIdsByGroupId", reflect.TypeOf((*MockTaskRepository)(nil).GetTaskIdsByGroupId), groupId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTaskIDsByGroupID", reflect.TypeOf((*MockTaskRepository)(nil).GetTaskIDsByGroupID), groupID)
 }
 
 // UpdateTaskAllocation mocks base method.
