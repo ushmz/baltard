@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -19,6 +18,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
+	// "github.com/labstack/gommon/log"
 )
 
 func main() {
@@ -64,28 +64,23 @@ func httpErrorHandler(err error, c echo.Context) {
 	he, ok := err.(*echo.HTTPError)
 	if !ok {
 		// Errors not use *echo.HTTPError, such as panic.
+		c.Logger().Error(err.Error())
 		c.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 
 	switch he.Message.(type) {
+	case handler.ErrWithMessage:
+		em := he.Message.(handler.ErrWithMessage)
+		c.Logger().Error(em.Error())
+		c.JSON(he.Code, em.Why)
 	case error:
-		// If `error` type is returned in controller(handler).
 		e := he.Message.(error)
-
-		if (errors.As(e, &handler.ErrWithMessage{})) {
-			em := e.(handler.ErrWithMessage)
-			// [TODO] Logging to file
-			fmt.Printf("%+v\n", e)
-			c.JSON(he.Code, em.Why)
-			return
-		}
+		c.Logger().Error(e.Error())
 		c.NoContent(he.Code)
-	case string:
-		// If the error happened other than controller(handler), such as URL not found.
-		c.JSON(he.Code, he.Message)
 	default:
 		// Unreachable
+		c.Logger().Error(he.Message)
 		c.JSON(http.StatusInternalServerError, "Unknown error")
 	}
 }
@@ -95,10 +90,22 @@ func newRouter(d *sqlx.DB, app *firebase.App) *echo.Echo {
 	e.HideBanner = true
 	e.HidePort = true
 	e.HTTPErrorHandler = httpErrorHandler
+	e.Logger.SetOutput(os.Stderr)
 
 	conf := config.GetConfig()
-	e.Use(mw.Logger())
+	if env := conf.GetString("env"); env == "dev" {
+		e.Logger.SetHeader("[${level}]${message}")
+		e.Logger.SetOutput(os.Stdout)
+	}
+
+	// If you store access log with external web server like nginx,
+	// You don't need to use this log middleware.
+	// e.Use(mw.Logger())
+
+	// If you handle caches with external web server like nginx,
+	// You don't need to use this cache middleware.
 	// e.Use(mw.CacheAdapter())
+
 	e.Use(mw.CORSConfig(conf.GetStringSlice("server.cors")))
 
 	h := handler.NewHandler(d, app)
