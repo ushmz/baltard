@@ -7,7 +7,7 @@ import (
 
 // TaskRepository : Abstract operations that `Task` model should have.
 type TaskRepository interface {
-	FetchTaskInfo(taskID int) (model.Task, error)
+	FetchTaskInfo(taskID int) (*model.Task, error)
 	CreateTaskAnswer(*model.Answer) error
 	UpdateTaskAllocation() (int, error)
 	// Think about creating `ConditionReporitory` and `GroupReporitory` ???

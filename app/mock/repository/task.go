@@ -49,10 +49,10 @@ func (mr *MockTaskRepositoryMockRecorder) CreateTaskAnswer(arg0 interface{}) *go
 }
 
 // FetchTaskInfo mocks base method.
-func (m *MockTaskRepository) FetchTaskInfo(taskID int) (model.Task, error) {
+func (m *MockTaskRepository) FetchTaskInfo(taskID int) (*model.Task, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FetchTaskInfo", taskID)
-	ret0, _ := ret[0].(model.Task)
+	ret0, _ := ret[0].(*model.Task)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

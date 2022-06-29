@@ -34,7 +34,7 @@ func (t *TaskImpl) FetchTaskInfo(taskID int) (*model.Task, error) {
 		return nil, fmt.Errorf("Try to get task information: %w", err)
 	}
 
-	return &task, nil
+	return task, nil
 }
 
 // CreateTaskAnswer : Create new answer for the task
