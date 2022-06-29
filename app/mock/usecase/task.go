@@ -49,16 +49,16 @@ func (mr *MockTaskUsecaseMockRecorder) CreateTaskAnswer(answer interface{}) *gom
 }
 
 // FetchTaskInfo mocks base method.
-func (m *MockTaskUsecase) FetchTaskInfo(taskId int) (model.Task, error) {
+func (m *MockTaskUsecase) FetchTaskInfo(taskID int) (*model.Task, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FetchTaskInfo", taskId)
-	ret0, _ := ret[0].(model.Task)
+	ret := m.ctrl.Call(m, "FetchTaskInfo", taskID)
+	ret0, _ := ret[0].(*model.Task)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FetchTaskInfo indicates an expected call of FetchTaskInfo.
-func (mr *MockTaskUsecaseMockRecorder) FetchTaskInfo(taskId interface{}) *gomock.Call {
+func (mr *MockTaskUsecaseMockRecorder) FetchTaskInfo(taskID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchTaskInfo", reflect.TypeOf((*MockTaskUsecase)(nil).FetchTaskInfo), taskId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchTaskInfo", reflect.TypeOf((*MockTaskUsecase)(nil).FetchTaskInfo), taskID)
 }

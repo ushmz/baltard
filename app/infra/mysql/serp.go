@@ -1,11 +1,11 @@
 package mysql
 
 import (
+	"fmt"
 	"ratri/domain/model"
 	repo "ratri/domain/repository"
 
 	"github.com/jmoiron/sqlx"
-	"golang.org/x/xerrors"
 )
 
 // SerpReporitoryImpl : Implemention of SERP repository
@@ -21,7 +21,7 @@ func NewSerpRepository(db *sqlx.DB) repo.SerpRepository {
 // FetchSerpByTaskID : Get result pages by task ID
 func (s *SerpReporitoryImpl) FetchSerpByTaskID(taskID, offset int) ([]model.SearchPage, error) {
 	if s == nil {
-		return nil, xerrors.Errorf("SerpReporitoryImpl.FetchSerpByTaskID() is called with nil receiver: %w", model.ErrNoSuchData)
+		return nil, model.ErrNoSuchData
 	}
 
 	srp := []model.SearchPage{}
@@ -41,13 +41,13 @@ func (s *SerpReporitoryImpl) FetchSerpByTaskID(taskID, offset int) ([]model.Sear
 			?, 10
 	`, taskID, offset*10)
 	if err != nil {
-		return nil, xerrors.Errorf("Failed to get SERP with taskID(%d), offset(%d): %w", taskID, offset, err)
+		return nil, fmt.Errorf("Try to get SERP with taskID(%d), offset(%d): %w", taskID, offset, err)
 	}
 
 	// `sqlx.DB.Select` does not throw `ErrNoRows`,
 	// so if length of fetched array is 0, return `model.NoSuchDataError`
 	if len(srp) == 0 {
-		return srp, xerrors.Errorf("SERP with taskID(%d), offset(%d) is not found: %w", taskID, offset, err)
+		return srp, model.ErrNoSuchData
 	}
 
 	return srp, nil

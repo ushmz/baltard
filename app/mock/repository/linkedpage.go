@@ -35,55 +35,55 @@ func (m *MockLinkedPageRepository) EXPECT() *MockLinkedPageRepositoryMockRecorde
 }
 
 // Get mocks base method.
-func (m *MockLinkedPageRepository) Get(linkedPageId int) (model.LinkedPage, error) {
+func (m *MockLinkedPageRepository) Get(linkedPageID int) (model.LinkedPage, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", linkedPageId)
+	ret := m.ctrl.Call(m, "Get", linkedPageID)
 	ret0, _ := ret[0].(model.LinkedPage)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockLinkedPageRepositoryMockRecorder) Get(linkedPageId interface{}) *gomock.Call {
+func (mr *MockLinkedPageRepositoryMockRecorder) Get(linkedPageID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockLinkedPageRepository)(nil).Get), linkedPageId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockLinkedPageRepository)(nil).Get), linkedPageID)
 }
 
-// GetBySearchPageIds mocks base method.
-func (m *MockLinkedPageRepository) GetBySearchPageIds(pageId []int, taskId, top int) (*[]model.SearchPageWithLinkedPage, error) {
+// GetBySearchPageIDs mocks base method.
+func (m *MockLinkedPageRepository) GetBySearchPageIDs(pageID []int, taskID, top int) ([]model.SearchPageWithLinkedPage, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetBySearchPageIds", pageId, taskId, top)
-	ret0, _ := ret[0].(*[]model.SearchPageWithLinkedPage)
+	ret := m.ctrl.Call(m, "GetBySearchPageIDs", pageID, taskID, top)
+	ret0, _ := ret[0].([]model.SearchPageWithLinkedPage)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetBySearchPageIds indicates an expected call of GetBySearchPageIds.
-func (mr *MockLinkedPageRepositoryMockRecorder) GetBySearchPageIds(pageId, taskId, top interface{}) *gomock.Call {
+// GetBySearchPageIDs indicates an expected call of GetBySearchPageIDs.
+func (mr *MockLinkedPageRepositoryMockRecorder) GetBySearchPageIDs(pageID, taskID, top interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBySearchPageIds", reflect.TypeOf((*MockLinkedPageRepository)(nil).GetBySearchPageIds), pageId, taskId, top)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBySearchPageIDs", reflect.TypeOf((*MockLinkedPageRepository)(nil).GetBySearchPageIDs), pageID, taskID, top)
 }
 
-// GetRatioBySearchPageIds mocks base method.
-func (m *MockLinkedPageRepository) GetRatioBySearchPageIds(pageId []int, taskId int) (*[]model.SearchPageWithLinkedPageRatio, error) {
+// GetRatioBySearchPageIDs mocks base method.
+func (m *MockLinkedPageRepository) GetRatioBySearchPageIDs(pageID []int, taskID int) ([]model.SearchPageWithLinkedPageRatio, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetRatioBySearchPageIds", pageId, taskId)
-	ret0, _ := ret[0].(*[]model.SearchPageWithLinkedPageRatio)
+	ret := m.ctrl.Call(m, "GetRatioBySearchPageIDs", pageID, taskID)
+	ret0, _ := ret[0].([]model.SearchPageWithLinkedPageRatio)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetRatioBySearchPageIds indicates an expected call of GetRatioBySearchPageIds.
-func (mr *MockLinkedPageRepositoryMockRecorder) GetRatioBySearchPageIds(pageId, taskId interface{}) *gomock.Call {
+// GetRatioBySearchPageIDs indicates an expected call of GetRatioBySearchPageIDs.
+func (mr *MockLinkedPageRepositoryMockRecorder) GetRatioBySearchPageIDs(pageID, taskID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRatioBySearchPageIds", reflect.TypeOf((*MockLinkedPageRepository)(nil).GetRatioBySearchPageIds), pageId, taskId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRatioBySearchPageIDs", reflect.TypeOf((*MockLinkedPageRepository)(nil).GetRatioBySearchPageIDs), pageID, taskID)
 }
 
 // List mocks base method.
-func (m *MockLinkedPageRepository) List(offset, limit int) (*[]model.LinkedPage, error) {
+func (m *MockLinkedPageRepository) List(offset, limit int) ([]model.LinkedPage, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List", offset, limit)
-	ret0, _ := ret[0].(*[]model.LinkedPage)
+	ret0, _ := ret[0].([]model.LinkedPage)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -95,16 +95,16 @@ func (mr *MockLinkedPageRepositoryMockRecorder) List(offset, limit interface{}) 
 }
 
 // Select mocks base method.
-func (m *MockLinkedPageRepository) Select(linkedPageIds []int) (*[]model.LinkedPage, error) {
+func (m *MockLinkedPageRepository) Select(linkedPageIDs []int) ([]model.LinkedPage, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Select", linkedPageIds)
-	ret0, _ := ret[0].(*[]model.LinkedPage)
+	ret := m.ctrl.Call(m, "Select", linkedPageIDs)
+	ret0, _ := ret[0].([]model.LinkedPage)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Select indicates an expected call of Select.
-func (mr *MockLinkedPageRepositoryMockRecorder) Select(linkedPageIds interface{}) *gomock.Call {
+func (mr *MockLinkedPageRepositoryMockRecorder) Select(linkedPageIDs interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Select", reflect.TypeOf((*MockLinkedPageRepository)(nil).Select), linkedPageIds)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Select", reflect.TypeOf((*MockLinkedPageRepository)(nil).Select), linkedPageIDs)
 }

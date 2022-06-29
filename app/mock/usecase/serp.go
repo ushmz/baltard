@@ -35,46 +35,46 @@ func (m *MockSerpUsecase) EXPECT() *MockSerpUsecaseMockRecorder {
 }
 
 // FetchSerp mocks base method.
-func (m *MockSerpUsecase) FetchSerp(taskId, offset int) (*[]model.SearchPage, error) {
+func (m *MockSerpUsecase) FetchSerp(taskID, offset int) ([]model.SearchPage, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FetchSerp", taskId, offset)
-	ret0, _ := ret[0].(*[]model.SearchPage)
+	ret := m.ctrl.Call(m, "FetchSerp", taskID, offset)
+	ret0, _ := ret[0].([]model.SearchPage)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FetchSerp indicates an expected call of FetchSerp.
-func (mr *MockSerpUsecaseMockRecorder) FetchSerp(taskId, offset interface{}) *gomock.Call {
+func (mr *MockSerpUsecaseMockRecorder) FetchSerp(taskID, offset interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerp", reflect.TypeOf((*MockSerpUsecase)(nil).FetchSerp), taskId, offset)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerp", reflect.TypeOf((*MockSerpUsecase)(nil).FetchSerp), taskID, offset)
 }
 
 // FetchSerpWithIcon mocks base method.
-func (m *MockSerpUsecase) FetchSerpWithIcon(taskId, offset, top int) (*[]model.SerpWithIcon, error) {
+func (m *MockSerpUsecase) FetchSerpWithIcon(taskID, offset, top int) ([]model.SerpWithIcon, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FetchSerpWithIcon", taskId, offset, top)
-	ret0, _ := ret[0].(*[]model.SerpWithIcon)
+	ret := m.ctrl.Call(m, "FetchSerpWithIcon", taskID, offset, top)
+	ret0, _ := ret[0].([]model.SerpWithIcon)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FetchSerpWithIcon indicates an expected call of FetchSerpWithIcon.
-func (mr *MockSerpUsecaseMockRecorder) FetchSerpWithIcon(taskId, offset, top interface{}) *gomock.Call {
+func (mr *MockSerpUsecaseMockRecorder) FetchSerpWithIcon(taskID, offset, top interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerpWithIcon", reflect.TypeOf((*MockSerpUsecase)(nil).FetchSerpWithIcon), taskId, offset, top)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerpWithIcon", reflect.TypeOf((*MockSerpUsecase)(nil).FetchSerpWithIcon), taskID, offset, top)
 }
 
 // FetchSerpWithRatio mocks base method.
-func (m *MockSerpUsecase) FetchSerpWithRatio(taskId, offset, top int) (*[]model.SerpWithRatio, error) {
+func (m *MockSerpUsecase) FetchSerpWithRatio(taskID, offset, top int) ([]model.SerpWithRatio, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FetchSerpWithRatio", taskId, offset, top)
-	ret0, _ := ret[0].(*[]model.SerpWithRatio)
+	ret := m.ctrl.Call(m, "FetchSerpWithRatio", taskID, offset, top)
+	ret0, _ := ret[0].([]model.SerpWithRatio)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FetchSerpWithRatio indicates an expected call of FetchSerpWithRatio.
-func (mr *MockSerpUsecaseMockRecorder) FetchSerpWithRatio(taskId, offset, top interface{}) *gomock.Call {
+func (mr *MockSerpUsecaseMockRecorder) FetchSerpWithRatio(taskID, offset, top interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerpWithRatio", reflect.TypeOf((*MockSerpUsecase)(nil).FetchSerpWithRatio), taskId, offset, top)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchSerpWithRatio", reflect.TypeOf((*MockSerpUsecase)(nil).FetchSerpWithRatio), taskID, offset, top)
 }

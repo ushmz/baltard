@@ -1,21 +1,27 @@
 package model
 
 import (
-	"golang.org/x/xerrors"
+	"errors"
 )
 
 var (
+	// ErrDBOperationFailed : DB operation failed
+	ErrDBOperationFailed = errors.New("DB operation failed")
+
+	// ErrDBConnectionFailed : DB connection fauled
+	ErrDBConnectionFailed = errors.New("DB connection fauled")
+
 	// ErrNilReceiver : The receiver of called function is nil
-	ErrNilReceiver = xerrors.New("Reciever is nil")
+	ErrNilReceiver = errors.New("Called with nil reciever")
 
 	// ErrBadRequest : HTTP request body or argument is invalid
-	ErrBadRequest = xerrors.New("Invalid request")
+	ErrBadRequest = errors.New("Invalid request")
 
 	// ErrNoSuchData : Requested data is not found
-	ErrNoSuchData = xerrors.New("Requested data is not found")
+	ErrNoSuchData = errors.New("Requested data is not found")
 
 	// ErrInternal : Internal errors that don't have to tell users in detail
-	ErrInternal = xerrors.New("Internal server error")
+	ErrInternal = errors.New("Internal server error")
 )
 
 // ErrorMessage : Struct for error message response.

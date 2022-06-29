@@ -8,6 +8,9 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+// These Logger is for access log.
+// Error log handling is in `main/httpErrorHandler()`
+
 func logFormat() string {
 	// Refer to https://github.com/tkuchiki/alp
 	var format string
@@ -36,7 +39,7 @@ func logFormat() string {
 func Logger() echo.MiddlewareFunc {
 
 	ts := time.Now().Format("2006-01-02--15-04-05")
-	fn := "./.logs/" + ts + ".log"
+	fn := "./.logs/" + ts + ".access.log"
 
 	if err := os.MkdirAll(".logs", os.ModePerm); err != nil {
 		panic(err)
@@ -52,5 +55,6 @@ func Logger() echo.MiddlewareFunc {
 		Format: logFormat(),
 		Output: logFile,
 	}))
+
 	return logger
 }

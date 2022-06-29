@@ -1,10 +1,9 @@
 package mysql
 
 import (
-	"errors"
 	"fmt"
-	"log"
 	"ratri/config"
+	"ratri/domain/model"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -37,22 +36,15 @@ func connectDB() (*sqlx.DB, error) {
 	for i := 0; i < 30; i++ {
 		err = db.Ping()
 		if err != nil {
-			log.Println("DB is not ready. Retry connecting...")
+			fmt.Println("DB is not ready. Retry connecting...")
 			time.Sleep(1 * time.Second)
 			continue
 		}
-		log.Println("Success to connect DB")
+		fmt.Println("Success to connect DB")
 		return db, nil
 	}
 
-	msg := fmt.Sprintf("Operation timed out : %s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		conf.GetString("db.user"),
-		conf.GetString("db.host"),
-		conf.GetString("db.port"),
-		conf.GetString("db.database"),
-	)
-
-	return nil, errors.New(msg)
+	return nil, model.ErrDBConnectionFailed
 }
 
 // New : Apply migration if it runs in production stage, then return DB connection
@@ -66,9 +58,9 @@ func New() (*sqlx.DB, error) {
 	if conf.GetString("env") == "prod" {
 		appliedCount, err := migrate.Exec(db.DB, "mysql", migrations, migrate.Up)
 		if err != nil {
-			log.Printf("DB migration failed: %v", err)
+			return nil, fmt.Errorf("DB migration failed: %v", err)
 		}
-		log.Printf("Applied %v migrations", appliedCount)
+		fmt.Printf("Applied %v migrations", appliedCount)
 	}
 
 	// db.SetMaxOpenConns(25500)

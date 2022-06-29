@@ -10,6 +10,12 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// ErrWithMessage : Error with message used in response body
+type ErrWithMessage struct {
+	error
+	Why string
+}
+
 // Handler : Handle HTTP requests
 type Handler struct {
 	Log  *Log
