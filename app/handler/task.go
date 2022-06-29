@@ -70,7 +70,7 @@ func (t *Task) FetchTaskInfo(c echo.Context) error {
 			http.StatusInternalServerError,
 			ErrWithMessage{
 				error: fmt.Errorf("Try to get search result: %w", err),
-				Why:   "Request failed",
+				Why:   "Something went wrong",
 			},
 		)
 	}
@@ -110,7 +110,7 @@ func (t *Task) SubmitTaskAnswer(c echo.Context) error {
 			http.StatusInternalServerError,
 			ErrWithMessage{
 				error: fmt.Errorf("Try to create answer: %w", err),
-				Why:   "Request failed",
+				Why:   "Something went wrong",
 			},
 		)
 	}

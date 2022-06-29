@@ -22,7 +22,7 @@ func NewLogRepository(db *sqlx.DB) repo.LogRepository {
 // Please make sure that this method is used only for exporting data.
 func (l *LogRepositoryImpl) FetchAllSerpDwellTimeLogs() ([]model.SerpDwellTimeLog, error) {
 	if l == nil {
-		return nil, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
+		return nil, model.ErrNilReceiver
 	}
 
 	data := []model.SerpDwellTimeLog{}
@@ -37,7 +37,7 @@ func (l *LogRepositoryImpl) FetchAllSerpDwellTimeLogs() ([]model.SerpDwellTimeLo
 // Please make sure that this method is used only for exporting data.
 func (l *LogRepositoryImpl) FetchAllPageDwellTimeLogs() ([]model.PageDwellTimeLog, error) {
 	if l == nil {
-		return nil, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
+		return nil, model.ErrNilReceiver
 	}
 
 	data := []model.PageDwellTimeLog{}
@@ -52,7 +52,7 @@ func (l *LogRepositoryImpl) FetchAllPageDwellTimeLogs() ([]model.PageDwellTimeLo
 // Please make sure that this method is used only for exporting data.
 func (l *LogRepositoryImpl) FetchAllSerpEventLogs() ([]model.SearchPageEventLog, error) {
 	if l == nil {
-		return nil, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
+		return nil, model.ErrNilReceiver
 	}
 
 	data := []model.SearchPageEventLog{}
@@ -67,7 +67,7 @@ func (l *LogRepositoryImpl) FetchAllSerpEventLogs() ([]model.SearchPageEventLog,
 // Please make sure that this method is used only for exporting data.
 func (l *LogRepositoryImpl) FetchAllSearchSessions() ([]model.SearchSession, error) {
 	if l == nil {
-		return nil, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
+		return nil, model.ErrNilReceiver
 	}
 
 	data := []model.SearchSession{}
@@ -114,7 +114,7 @@ func (l *LogRepositoryImpl) CumulateSerpDwellTime(p *model.SerpDwellTimeLogParam
 // Key exists, increment `time_on_page` value.
 func (l *LogRepositoryImpl) CumulatePageDwellTime(p *model.PageDwellTimeLogParam) error {
 	if l == nil {
-		return fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
+		return model.ErrNilReceiver
 	}
 
 	_, err := l.DB.NamedExec(`
@@ -145,7 +145,7 @@ func (l *LogRepositoryImpl) CumulatePageDwellTime(p *model.PageDwellTimeLogParam
 // StoreSerpEventLog : Insert new SERP event logs
 func (l *LogRepositoryImpl) StoreSerpEventLog(p *model.SearchPageEventLogParam) error {
 	if l == nil {
-		return fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
+		return model.ErrNilReceiver
 	}
 
 	_, err := l.DB.NamedExec(`
@@ -181,7 +181,7 @@ func (l *LogRepositoryImpl) StoreSerpEventLog(p *model.SearchPageEventLogParam) 
 // Update "ended_at" field value if the user end search session.
 func (l *LogRepositoryImpl) StoreSearchSeeion(s *model.SearchSessionParam) error {
 	if l == nil {
-		return fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
+		return model.ErrNilReceiver
 	}
 
 	_, err := l.DB.NamedExec(`

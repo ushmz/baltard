@@ -20,10 +20,9 @@ func NewTaskRepository(db *sqlx.DB) repo.TaskRepository {
 }
 
 // FetchTaskInfo : Fetch task info by task id
-func (t *TaskRepositoryImpl) FetchTaskInfo(taskID int) (model.Task, error) {
-	task := model.Task{}
+func (t *TaskRepositoryImpl) FetchTaskInfo(taskID int) (*model.Task, error) {
 	if t == nil {
-		return task, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
+		return nil, model.ErrNoSuchData
 	}
 
 	row := t.DB.QueryRowx(`
@@ -39,7 +38,8 @@ func (t *TaskRepositoryImpl) FetchTaskInfo(taskID int) (model.Task, error) {
 			id = ?
 		`, taskID)
 
-	if err := row.StructScan(&task); err != nil {
+	task := new(model.Task)
+	if err := row.StructScan(task); err != nil {
 		if err == sql.ErrNoRows {
 			return task, fmt.Errorf("Task with given ID(%d) is not found: %w", taskID, model.ErrNoSuchData)
 		}
@@ -52,7 +52,7 @@ func (t *TaskRepositoryImpl) FetchTaskInfo(taskID int) (model.Task, error) {
 // UpdateTaskAllocation : Get task ID that the fewest perticipants are allocated
 func (t *TaskRepositoryImpl) UpdateTaskAllocation() (int, error) {
 	if t == nil {
-		return 0, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
+		return 0, model.ErrNilReceiver
 	}
 
 	tx := t.DB.MustBegin()

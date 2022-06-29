@@ -24,7 +24,7 @@ func NewLinkedPageRepository(db *sqlx.DB) repo.LinkedPageRepository {
 // Get gets a `LinkedPage` records specified with `linkedPageId`.
 func (r *LinkedPageRepositoryImpl) Get(linkedPageID int) (model.LinkedPage, error) {
 	if r == nil {
-		return model.LinkedPage{}, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
+		return model.LinkedPage{}, fmt.Errorf("LinkedPageRepositoryImpl.Get(): %w", model.ErrNilReceiver)
 	}
 
 	q := `
@@ -55,7 +55,7 @@ func (r *LinkedPageRepositoryImpl) Get(linkedPageID int) (model.LinkedPage, erro
 // GetBySearchPageIDs : Get linked pages for the Icon UI by given search page IDs
 func (r *LinkedPageRepositoryImpl) GetBySearchPageIDs(pageIDs []int, taskID, top int) ([]model.SearchPageWithLinkedPage, error) {
 	if r == nil {
-		return nil, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
+		return nil, fmt.Errorf("LinkedPageRepositoryImpl.GetBySearchPageIDs(): %w", model.ErrNilReceiver)
 	}
 
 	q := `
@@ -108,7 +108,7 @@ func (r *LinkedPageRepositoryImpl) GetBySearchPageIDs(pageIDs []int, taskID, top
 // GetRatioBySearchPageIDs : Get Ratio information for the Ratio UI by given search page IDs
 func (r *LinkedPageRepositoryImpl) GetRatioBySearchPageIDs(pageIds []int, taskID int) ([]model.SearchPageWithLinkedPageRatio, error) {
 	if r == nil {
-		return nil, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
+		return nil, fmt.Errorf("LinkedPageRepositoryImpl.GetRatioBySearchPageIDs(): %w", model.ErrNilReceiver)
 	}
 
 	a := []interface{}{}
@@ -152,7 +152,7 @@ func (r *LinkedPageRepositoryImpl) GetRatioBySearchPageIDs(pageIds []int, taskID
 //   and make argument type as `[]interface{}`
 func (r *LinkedPageRepositoryImpl) Select(pageIDs []int) ([]model.LinkedPage, error) {
 	if r == nil {
-		return nil, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
+		return nil, model.ErrNilReceiver
 	}
 
 	dest := []interface{}{}
@@ -194,7 +194,7 @@ func (r *LinkedPageRepositoryImpl) Select(pageIDs []int) ([]model.LinkedPage, er
 // List gets all `LinkedPage` records from DB
 func (r *LinkedPageRepositoryImpl) List(offset, limit int) ([]model.LinkedPage, error) {
 	if r == nil {
-		return nil, fmt.Errorf("Called with nil receiver: %w", model.ErrNilReceiver)
+		return nil, model.ErrNilReceiver
 	}
 
 	q := `
